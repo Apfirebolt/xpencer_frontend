@@ -19,6 +19,7 @@ export const useExpenseStore = create((set, get) => ({
     set({ fetching: true, error: null });
     try {
       const res = await httpClient.get('/expense', getAuthHeaders());
+      console.log("Fetched expenses response:", res.data);
       const data = res.data.expenses || res.data;
       set({ expenses: Array.isArray(data) ? data : [], fetching: false });
     } catch (err) {

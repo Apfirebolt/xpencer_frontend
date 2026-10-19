@@ -4,8 +4,9 @@ import { useState, useEffect, Fragment } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ExpenseForm from '@/components/ExpenseForm';
+import ExpenseCalendar from '@/components/ExpenseCalendar';
 import { useExpenseStore } from '@/store/useExpenseStore';
-import { WalletIcon, PlusCircleIcon, CalendarIcon, XMarkIcon, CurrencyDollarIcon } from '@heroicons/react/24/outline';
+import { WalletIcon, PlusCircleIcon, CalendarIcon, XMarkIcon, CurrencyDollarIcon, CalendarDaysIcon } from '@heroicons/react/24/outline';
 import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
@@ -13,14 +14,17 @@ import 'aos/dist/aos.css';
 export default function ExpenseClient() {
   const { expenses, fetching, loading, error, fetchExpenses, createExpense, getTotalSpent } = useExpenseStore();
   
-  // Modal & feedback state local to view
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  // Modals & feedback state
+  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+  const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     AOS.init({ duration: 800, once: true, easing: "ease-out-cubic" });
     fetchExpenses();
   }, [fetchExpenses]);
+
+  console.log(expenses);
 
   async function handleCreateExpense(newExpenseData) {
     setSuccessMessage('');
@@ -30,7 +34,7 @@ export default function ExpenseClient() {
       setSuccessMessage('Expense successfully recorded!');
       setTimeout(() => {
         setSuccessMessage('');
-        setIsModalOpen(false);
+        setIsFormModalOpen(false);
       }, 1500);
     }
   }
@@ -41,7 +45,7 @@ export default function ExpenseClient() {
 
       <main className="flex-grow max-w-7xl mx-auto w-full px-6 py-16 space-y-10">
         
-        {/* Page Header & Summary Card */}
+        {/* Page Header & Actions */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-tertiary/20 pb-6" data-aos="fade-down">
           <div>
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-wider uppercase border border-primary/20 mb-3">
@@ -53,7 +57,7 @@ export default function ExpenseClient() {
             </h1>
           </div>
 
-          <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
+          <div className="flex flex-wrap items-center gap-3 w-full md:w-auto justify-between md:justify-end">
             {/* Total Spent Quick Badge */}
             <div className="px-4 py-2.5 rounded-2xl bg-white dark:bg-tertiary/5 border border-tertiary/20 flex items-center gap-3 shadow-sm">
               <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
@@ -65,8 +69,18 @@ export default function ExpenseClient() {
               </div>
             </div>
 
+            {/* Open Calendar Modal Button */}
             <button
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => setIsCalendarModalOpen(true)}
+              className="px-5 py-3.5 rounded-2xl font-bold bg-tertiary/20 hover:bg-tertiary/30 text-dark dark:text-light border border-tertiary/30 transition-all flex items-center gap-2 cursor-pointer shrink-0"
+            >
+              <CalendarDaysIcon className="h-5 w-5 text-primary" />
+              <span>View Calendar</span>
+            </button>
+
+            {/* Add Expense Button */}
+            <button
+              onClick={() => setIsFormModalOpen(true)}
               className="px-6 py-3.5 rounded-2xl font-bold bg-primary hover:bg-secondary text-white transition-all shadow-lg shadow-primary/25 flex items-center gap-2 cursor-pointer shrink-0"
             >
               <PlusCircleIcon className="h-5 w-5" />
@@ -91,7 +105,7 @@ export default function ExpenseClient() {
                 <p className="text-xs text-dark/60 dark:text-light/60">Click the button above to add your first transaction.</p>
               </div>
               <button
-                onClick={() => setIsModalOpen(true)}
+                onClick={() => setIsFormModalOpen(true)}
                 className="px-5 py-2.5 rounded-xl text-xs font-bold bg-primary/10 hover:bg-primary/20 text-primary transition-all border border-primary/20 cursor-pointer"
               >
                 Add First Expense
@@ -132,10 +146,9 @@ export default function ExpenseClient() {
 
       </main>
 
-      {/* Headless UI Modal for Expense Form */}
-      <Transition appear show={isModalOpen} as={Fragment}>
-        <Dialog as="div" className="relative z-50" onClose={() => setIsModalOpen(false)}>
-          {/* Backdrop */}
+      {/* 1. Add Expense Form Modal */}
+      <Transition appear show={isFormModalOpen} as={Fragment}>
+        <Dialog as="div" className="relative z-50" onClose={() => setIsFormModalOpen(false)}>
           <TransitionChild
             as={Fragment}
             enter="ease-out duration-300"
@@ -161,7 +174,6 @@ export default function ExpenseClient() {
               >
                 <DialogPanel className="w-full max-w-md transform overflow-hidden rounded-3xl bg-white dark:bg-dark border border-tertiary/20 dark:border-tertiary/10 p-8 text-left align-middle shadow-2xl transition-all space-y-6">
                   
-                  {/* Modal Header */}
                   <div className="flex items-center justify-between border-b border-tertiary/20 pb-4">
                     <div className="flex items-center gap-2">
                       <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20">
@@ -172,14 +184,13 @@ export default function ExpenseClient() {
                       </DialogTitle>
                     </div>
                     <button
-                      onClick={() => setIsModalOpen(false)}
+                      onClick={() => setIsFormModalOpen(false)}
                       className="p-1.5 rounded-xl text-dark/50 dark:text-light/50 hover:bg-primary/10 hover:text-primary transition-colors cursor-pointer"
                     >
                       <XMarkIcon className="h-5 w-5" />
                     </button>
                   </div>
 
-                  {/* Feedback Alerts */}
                   {error && (
                     <div className="text-xs text-rose-600 dark:text-rose-400 bg-rose-500/10 border border-rose-500/20 p-3 rounded-xl font-medium">
                       {error}
@@ -192,8 +203,67 @@ export default function ExpenseClient() {
                     </div>
                   )}
 
-                  {/* Expense Form Component */}
                   <ExpenseForm onSubmitExpense={handleCreateExpense} loading={loading} />
+
+                </DialogPanel>
+              </TransitionChild>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
+
+      {/* 2. Expense Calendar Modal */}
+      <Transition appear show={isCalendarModalOpen} as={Fragment}>
+        <Dialog as="div" className="relative z-50" onClose={() => setIsCalendarModalOpen(false)}>
+          <TransitionChild
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-dark/60 backdrop-blur-sm" />
+          </TransitionChild>
+
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4 text-center">
+              <TransitionChild
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <DialogPanel className="w-full max-w-4xl transform overflow-hidden rounded-3xl bg-white dark:bg-dark border border-tertiary/20 dark:border-tertiary/10 p-8 text-left align-middle shadow-2xl transition-all space-y-6">
+                  
+                  <div className="flex items-center justify-between border-b border-tertiary/20 pb-4">
+                    <div className="flex items-center gap-2">
+                      <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20">
+                        <CalendarDaysIcon className="h-5 w-5 text-primary" />
+                      </div>
+                      <DialogTitle as="h3" className="text-lg font-bold font-heading text-dark dark:text-light">
+                        Monthly Expense Calendar
+                      </DialogTitle>
+                    </div>
+                    <button
+                      onClick={() => setIsCalendarModalOpen(false)}
+                      className="p-1.5 rounded-xl text-dark/50 dark:text-light/50 hover:bg-primary/10 hover:text-primary transition-colors cursor-pointer"
+                    >
+                      <XMarkIcon className="h-5 w-5" />
+                    </button>
+                  </div>
+
+                  {/* Calendar Component Inside Modal */}
+                  <ExpenseCalendar 
+                    expenses={expenses} 
+                    onSelectDate={(dateStr, items) => {
+                      console.log(`Selected date ${dateStr}`, items);
+                    }} 
+                  />
 
                 </DialogPanel>
               </TransitionChild>
