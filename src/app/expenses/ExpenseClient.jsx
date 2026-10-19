@@ -4,63 +4,34 @@ import { useState, useEffect, Fragment } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ExpenseForm from '@/components/ExpenseForm';
-import httpClient from '@/lib/api';
-import { WalletIcon, PlusCircleIcon, CalendarIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { useExpenseStore } from '@/store/useExpenseStore';
+import { WalletIcon, PlusCircleIcon, CalendarIcon, XMarkIcon, CurrencyDollarIcon } from '@heroicons/react/24/outline';
 import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
 export default function ExpenseClient() {
-  const [expenses, setExpenses] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [fetching, setFetching] = useState(true);
-  const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+  const { expenses, fetching, loading, error, fetchExpenses, createExpense, getTotalSpent } = useExpenseStore();
   
-  // Modal state
+  // Modal & feedback state local to view
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     AOS.init({ duration: 800, once: true, easing: "ease-out-cubic" });
     fetchExpenses();
-  }, []);
-
-  async function fetchExpenses() {
-    try {
-      setFetching(true);
-      const res = await httpClient.get('/expenses');
-      const data = res.data.expenses || res.data;
-      setExpenses(Array.isArray(data) ? data : []);
-    } catch (err) {
-      console.error("Failed to fetch expenses:", err);
-      setExpenses([]);
-    } finally {
-      setFetching(false);
-    }
-  }
+  }, [fetchExpenses]);
 
   async function handleCreateExpense(newExpenseData) {
-    setError('');
     setSuccessMessage('');
-    setLoading(true);
+    const result = await createExpense(newExpenseData);
 
-    try {
-      const res = await httpClient.post('/expenses', newExpenseData);
-      const createdExpense = res.data.expense || res.data;
-      
-      setExpenses([createdExpense, ...expenses]);
+    if (result.success) {
       setSuccessMessage('Expense successfully recorded!');
-      
-      // Close modal on success after a short delay
       setTimeout(() => {
         setSuccessMessage('');
         setIsModalOpen(false);
       }, 1500);
-    } catch (err) {
-      const errorMessage = err.response?.data?.error || err.message || "Failed to save expense.";
-      setError(errorMessage);
-    } finally {
-      setLoading(false);
     }
   }
 
@@ -68,9 +39,9 @@ export default function ExpenseClient() {
     <div className="min-h-screen bg-light dark:bg-dark text-dark dark:text-light flex flex-col font-sans selection:bg-primary selection:text-white transition-colors duration-200">
       <Header />
 
-      <main className="flex-grow max-w-7xl mx-auto w-full px-6 py-16 space-y-12">
+      <main className="flex-grow max-w-7xl mx-auto w-full px-6 py-16 space-y-10">
         
-        {/* Page Header & Trigger Button */}
+        {/* Page Header & Summary Card */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-tertiary/20 pb-6" data-aos="fade-down">
           <div>
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-wider uppercase border border-primary/20 mb-3">
@@ -82,10 +53,18 @@ export default function ExpenseClient() {
             </h1>
           </div>
 
-          <div className="flex items-center gap-4">
-            <p className="hidden sm:block text-xs text-dark/60 dark:text-light/60 font-sans max-w-xs text-right">
-              Log daily transactions and monitor your spending categories.
-            </p>
+          <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
+            {/* Total Spent Quick Badge */}
+            <div className="px-4 py-2.5 rounded-2xl bg-white dark:bg-tertiary/5 border border-tertiary/20 flex items-center gap-3 shadow-sm">
+              <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                <CurrencyDollarIcon className="h-4 w-4" />
+              </div>
+              <div>
+                <p className="text-[10px] uppercase font-bold text-dark/50 dark:text-light/50 font-heading">Total Tracked</p>
+                <p className="text-sm font-extrabold font-heading text-primary">${getTotalSpent().toFixed(2)}</p>
+              </div>
+            </div>
+
             <button
               onClick={() => setIsModalOpen(true)}
               className="px-6 py-3.5 rounded-2xl font-bold bg-primary hover:bg-secondary text-white transition-all shadow-lg shadow-primary/25 flex items-center gap-2 cursor-pointer shrink-0"
