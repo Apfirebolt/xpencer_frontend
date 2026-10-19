@@ -29,3 +29,21 @@ const currencies = [
   { code: 'OMR', symbol: 'ر.ع.', name: 'Omani Rial' },
   { code: 'KWD', symbol: 'د.ك', name: 'Kuwaiti Dinar' },
 ]
+
+const budgetCategories = [
+  'Housing',
+  'Utilities',
+  'Groceries',
+  'Transportation',
+  'Healthcare',
+  'Insurance',
+  'Debt',
+  'Savings',
+  'Entertainment',
+  'Dining Out',
+  'Education',
+  'Personal Care',
+  'Miscellaneous'
+];
+
+export { currencies, budgetCategories };
