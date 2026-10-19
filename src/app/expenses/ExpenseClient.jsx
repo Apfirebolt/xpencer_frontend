@@ -5,8 +5,10 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ExpenseForm from '@/components/ExpenseForm';
 import ExpenseCalendar from '@/components/ExpenseCalendar';
+import ExpenseCardView from '@/components/ExpenseCard';
+import ExpenseListView from '@/components/ExpenseList';
 import { useExpenseStore } from '@/store/useExpenseStore';
-import { WalletIcon, PlusCircleIcon, CalendarIcon, XMarkIcon, CurrencyDollarIcon, CalendarDaysIcon } from '@heroicons/react/24/outline';
+import { WalletIcon, PlusCircleIcon, XMarkIcon, CurrencyDollarIcon, CalendarDaysIcon, Squares2X2Icon, ListBulletIcon } from '@heroicons/react/24/outline';
 import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
@@ -14,17 +16,16 @@ import 'aos/dist/aos.css';
 export default function ExpenseClient() {
   const { expenses, fetching, loading, error, fetchExpenses, createExpense, getTotalSpent } = useExpenseStore();
   
-  // Modals & feedback state
+  // Modals & View toggle state
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
+  const [viewMode, setViewMode] = useState('card'); // 'card' | 'list'
   const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     AOS.init({ duration: 800, once: true, easing: "ease-out-cubic" });
     fetchExpenses();
   }, [fetchExpenses]);
-
-  console.log(expenses);
 
   async function handleCreateExpense(newExpenseData) {
     setSuccessMessage('');
@@ -75,7 +76,7 @@ export default function ExpenseClient() {
               className="px-5 py-3.5 rounded-2xl font-bold bg-tertiary/20 hover:bg-tertiary/30 text-dark dark:text-light border border-tertiary/30 transition-all flex items-center gap-2 cursor-pointer shrink-0"
             >
               <CalendarDaysIcon className="h-5 w-5 text-primary" />
-              <span>View Calendar</span>
+              <span>Calendar</span>
             </button>
 
             {/* Add Expense Button */}
@@ -89,16 +90,45 @@ export default function ExpenseClient() {
           </div>
         </div>
 
-        {/* Expenses List Section */}
-        <div className="space-y-6 max-w-3xl mx-auto w-full" data-aos="fade-up">
+        {/* Transactions Section Controls (View Mode Toggles) */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4" data-aos="fade-up">
           <h2 className="text-xl font-bold font-heading">Recent Transactions</h2>
 
+          {/* Card vs List View Toggle Switch */}
+          <div className="flex items-center p-1.5 rounded-2xl bg-white dark:bg-tertiary/5 border border-tertiary/20 shadow-sm">
+            <button
+              onClick={() => setViewMode('card')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                viewMode === 'card' 
+                  ? 'bg-primary text-white shadow-md shadow-primary/20' 
+                  : 'text-dark/70 dark:text-light/70 hover:text-primary'
+              }`}
+            >
+              <Squares2X2Icon className="h-4 w-4" />
+              <span>Card View</span>
+            </button>
+            <button
+              onClick={() => setViewMode('list')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                viewMode === 'list' 
+                  ? 'bg-primary text-white shadow-md shadow-primary/20' 
+                  : 'text-dark/70 dark:text-light/70 hover:text-primary'
+              }`}
+            >
+              <ListBulletIcon className="h-4 w-4" />
+              <span>List View</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Transactions Display Area */}
+        <div className="w-full" data-aos="fade-up" data-aos-delay="100">
           {fetching ? (
             <div className="p-12 text-center text-sm text-dark/50 dark:text-light/50 bg-white/50 dark:bg-dark/50 rounded-3xl border border-tertiary/20">
               Loading expenses...
             </div>
           ) : expenses.length === 0 ? (
-            <div className="p-16 text-center space-y-4 bg-white/50 dark:bg-dark/50 rounded-3xl border border-tertiary/20">
+            <div className="p-16 text-center space-y-4 max-w-md mx-auto bg-white/50 dark:bg-dark/50 rounded-3xl border border-tertiary/20">
               <WalletIcon className="h-12 w-12 text-primary mx-auto opacity-50" />
               <div className="space-y-1">
                 <p className="text-sm font-semibold text-dark dark:text-light">No expenses logged yet</p>
@@ -112,35 +142,11 @@ export default function ExpenseClient() {
               </button>
             </div>
           ) : (
-            <div className="space-y-4">
-              {expenses.map((exp) => (
-                <div 
-                  key={exp._id || Math.random()} 
-                  className="p-6 rounded-2xl bg-white/80 dark:bg-dark/80 border border-tertiary/20 dark:border-tertiary/10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-sm hover:border-primary/40 transition-all"
-                >
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="px-2.5 py-1 rounded-lg bg-primary/10 text-primary text-xs font-bold font-mono">
-                        {exp.type}
-                      </span>
-                      <span className="text-xs text-dark/40 dark:text-light/40 flex items-center gap-1">
-                        <CalendarIcon className="h-3.5 w-3.5" />
-                        {exp.createdAt ? new Date(exp.createdAt).toLocaleDateString() : 'Just now'}
-                      </span>
-                    </div>
-                    <p className="text-sm font-medium text-dark dark:text-light pt-1">
-                      {exp.description || 'No description provided'}
-                    </p>
-                  </div>
-
-                  <div className="text-right">
-                    <span className="text-lg font-extrabold font-heading text-primary">
-                      ${Number(exp.amount).toFixed(2)}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
+            viewMode === 'card' ? (
+              <ExpenseCardView expenses={expenses} />
+            ) : (
+              <ExpenseListView expenses={expenses} />
+            )
           )}
         </div>
 
@@ -257,13 +263,7 @@ export default function ExpenseClient() {
                     </button>
                   </div>
 
-                  {/* Calendar Component Inside Modal */}
-                  <ExpenseCalendar 
-                    expenses={expenses} 
-                    onSelectDate={(dateStr, items) => {
-                      console.log(`Selected date ${dateStr}`, items);
-                    }} 
-                  />
+                  <ExpenseCalendar expenses={expenses} />
 
                 </DialogPanel>
               </TransitionChild>
