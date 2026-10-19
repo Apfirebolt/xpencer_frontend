@@ -2,12 +2,12 @@
 import AboutClient from "./AboutClient";
 
 export const metadata = {
-  title: "About Softgenie Beats | Browser-Based DAW & Virtual Synth Studio",
-  description: "Discover Softgenie Beats, a high-performance browser-based Digital Audio Workstation (DAW) powered by Tone.js, Web Audio API, and client-side audio rendering.",
-  keywords: ["Browser DAW", "Tone.js Studio", "Web Audio API", "Virtual Synthesizer", "Online Music Producer"],
+  title: "About Xpencer | Smart Expense & Budget Management Suite",
+  description: "Discover Xpencer, an intelligent expense tracking software featuring budget planning, category sorting, and effortless group bill splitting.",
+  keywords: ["Expense Management", "Budget Planner", "Bill Splitter", "Finance Tracker", "Smart Ledger"],
   openGraph: {
-    title: "About Softgenie Beats | Browser-Based DAW",
-    description: "Compose multi-track arrangements and play virtual instruments directly in your browser with zero installation.",
+    title: "About Xpencer | Master Your Money",
+    description: "Track budgets, categorize spending automatically, and split bills effortlessly in one secure dashboard.",
     type: "website",
   },
 };

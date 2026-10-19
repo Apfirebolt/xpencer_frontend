@@ -5,16 +5,16 @@ import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import Cookie from "js-cookie";
 import { 
-  MusicalNoteIcon, 
-  SparklesIcon, 
-  CpuChipIcon, 
-  MicrophoneIcon, 
-  AdjustmentsHorizontalIcon,
-  ShieldCheckIcon,
+  WalletIcon, 
+  ChartPieIcon, 
+  UserGroupIcon, 
+  ShieldCheckIcon, 
+  RectangleStackIcon,
   CodeBracketIcon,
   ArrowRightIcon,
   BoltIcon,
-  UserCircleIcon
+  UserCircleIcon,
+  CurrencyDollarIcon
 } from "@heroicons/react/24/outline";
 
 const AboutPage = () => {
@@ -33,34 +33,34 @@ const AboutPage = () => {
 
   const features = [
     {
-      icon: <MusicalNoteIcon className="h-6 w-6 text-primary" />,
-      title: "50+ Virtual Instruments",
-      description: "From Poly, FM, and AM synthesized lead synths to authentic acoustic guitars, orchestral strings, grand pianos, and punchy drum kits."
+      icon: <ChartPieIcon className="h-6 w-6 text-primary" />,
+      title: "Intelligent Budget Planner",
+      description: "Set monthly category limits, receive real-time spending pace warnings, and visualize your financial allocations effortlessly."
     },
     {
-      icon: <CpuChipIcon className="h-6 w-6 text-primary" />,
-      title: "Real-Time Tone.js DSP",
-      description: "Low-latency browser audio synthesis and signal processing routing chains powered by the Web Audio API."
+      icon: <RectangleStackIcon className="h-6 w-6 text-primary" />,
+      title: "Automated Expense Tracking",
+      description: "Log daily transactions, organize items with custom tags, and instantly audit where every dollar goes with granular filters."
     },
     {
-      icon: <AdjustmentsHorizontalIcon className="h-6 w-6 text-primary" />,
-      title: "Multi-Track Arrangement",
-      description: "GarageBand-style arrangement lanes supporting up to 5 simultaneous tracks with draggable blocks, edge-resizing, and cross-track routing."
+      icon: <UserGroupIcon className="h-6 w-6 text-primary" />,
+      title: "Seamless Bill Splitting",
+      description: "Split dinners, group trips, and shared household bills with friends using flexible percentage, exact amount, or equal splits."
     },
     {
-      icon: <MicrophoneIcon className="h-6 w-6 text-primary" />,
-      title: "Voice Studio & Granular EQ",
-      description: "Pro-grade vocal recording with hardware noise suppression, echo cancellation, and a 5-band parametric voice equalizer."
-    },
-    {
-      icon: <SparklesIcon className="h-6 w-6 text-primary" />,
-      title: "Interactive Studio Keypads",
-      description: "Seamless computer keyboard and mouse bindings across 21-key standard and 37-key professional studio octave layouts."
+      icon: <CurrencyDollarIcon className="h-6 w-6 text-primary" />,
+      title: "Multi-Currency Support",
+      description: "Manage expenses across global currencies with live conversion rates, making international travel and remote collaboration smooth."
     },
     {
       icon: <ShieldCheckIcon className="h-6 w-6 text-primary" />,
-      title: "Offline Master Export",
-      description: "Render complex multi-track arrangements directly in the browser via Tone.Offline and download professional WAV master mixes."
+      title: "Secure Encrypted Ledger",
+      description: "Your financial data is protected with rigorous encryption standards, secure HTTP-only session cookies, and strict data isolation."
+    },
+    {
+      icon: <WalletIcon className="h-6 w-6 text-primary" />,
+      title: "Real-Time Net Worth Insights",
+      description: "Monitor your financial health indicators, outstanding balances with peers, and historical spending trends on demand."
     }
   ];
 
@@ -78,37 +78,37 @@ const AboutPage = () => {
             {user ? (
               <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold border border-emerald-500/20 shadow-sm">
                 <UserCircleIcon className="h-4 w-4" />
-                <span>Active Studio Session: <strong className="text-dark dark:text-light">{user.username || user.email}</strong></span>
+                <span>Active Financial Session: <strong className="text-dark dark:text-light">{user.username || user.email}</strong></span>
               </div>
             ) : (
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-wider uppercase border border-primary/20 shadow-sm">
                 <CodeBracketIcon className="h-4 w-4 animate-pulse" />
-                <span>Browser-based DAW</span>
+                <span>Smart Expense Suite</span>
               </div>
             )}
             
             <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight font-heading leading-tight">
-              Crafting Audio Engineering <span className="text-primary">Without Boundaries.</span>
+              Master Your Money <span className="text-primary">Without Friction.</span>
             </h1>
             
             <p className="text-dark/70 dark:text-light/70 text-base sm:text-lg leading-relaxed font-sans max-w-2xl">
-              Beats Lounge bridges high-level web technology and professional audio engineering. Compose multi-track arrangements, 
-              sculpt real-time DSP effects, and mix virtual instruments directly inside your browser with zero installation.
+              Xpencer brings clarity to personal and shared finances. Keep budgets on track, categorize daily purchases, 
+              and split group expenses effortlessly all in one beautifully engineered dashboard.
             </p>
 
             <div className="flex flex-wrap items-center gap-4 pt-4">
               <a
-                href="/instrument"
+                href="/dashboard"
                 className="px-6 py-3.5 rounded-2xl font-bold bg-primary hover:bg-secondary text-white transition-all flex items-center gap-2 shadow-lg shadow-primary/25 group"
               >
-                <span>Launch Workstation</span>
+                <span>Open Dashboard</span>
                 <ArrowRightIcon className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </a>
               <a
-                href="/editor"
+                href="/budgets"
                 className="px-6 py-3.5 rounded-2xl font-bold bg-tertiary/20 hover:bg-tertiary/30 text-dark dark:text-light transition-all border border-tertiary/30"
               >
-                Explore Audio Editor
+                Explore Budgets
               </a>
             </div>
           </div>
@@ -124,25 +124,25 @@ const AboutPage = () => {
                   <div className="w-3 h-3 rounded-full bg-warning" />
                   <div className="w-3 h-3 rounded-full bg-success" />
                 </div>
-                <span className="text-xs font-mono text-dark/50 dark:text-light/50">beats-lounge-dsp.wasm</span>
+                <span className="text-xs font-mono text-dark/50 dark:text-light/50">xpencer-ledger.secure</span>
               </div>
 
               <div className="space-y-3 font-mono text-xs">
                 <div className="p-3 rounded-xl bg-dark/5 dark:bg-white/5 border border-tertiary/20 flex items-center justify-between">
-                  <span className="text-primary font-bold">SYNTH_ENGINE</span>
-                  <span className="text-success">Active (Poly/FM/AM)</span>
+                  <span className="text-primary font-bold">BUDGET_ENGINE</span>
+                  <span className="text-success">Active & Monitoring</span>
                 </div>
                 <div className="p-3 rounded-xl bg-dark/5 dark:bg-white/5 border border-tertiary/20 flex items-center justify-between">
-                  <span className="text-primary font-bold">ARRANGEMENT_TRACKS</span>
-                  <span className="text-light">5 Simultaneous Lanes</span>
+                  <span className="text-primary font-bold">EXPENSE_SPLITS</span>
+                  <span className="text-light">Peer-to-Peer Sync</span>
                 </div>
                 <div className="p-3 rounded-xl bg-dark/5 dark:bg-white/5 border border-tertiary/20 flex items-center justify-between">
-                  <span className="text-primary font-bold">LATENCY</span>
-                  <span className="text-warning">&lt; 12ms (Web Audio)</span>
+                  <span className="text-primary font-bold">SECURITY</span>
+                  <span className="text-warning">End-to-End Encrypted</span>
                 </div>
                 {user && (
                   <div className="p-3 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-between">
-                    <span className="text-primary font-bold">PRODUCER_SESSION</span>
+                    <span className="text-primary font-bold">USER_SESSION</span>
                     <span className="text-primary truncate max-w-[160px]">{user.email}</span>
                   </div>
                 )}
@@ -150,7 +150,7 @@ const AboutPage = () => {
 
               <div className="pt-2 flex items-center gap-3 text-xs text-dark/60 dark:text-light/60">
                 <BoltIcon className="h-4 w-4 text-primary" />
-                <span>Zero backend audio processing. Fully client-side rendered.</span>
+                <span>Zero third-party tracking. Private financial ledger.</span>
               </div>
             </div>
           </div>
@@ -159,9 +159,9 @@ const AboutPage = () => {
         {/* FEATURE GRID with AOS */}
         <div className="space-y-12">
           <div className="text-center space-y-3 max-w-xl mx-auto" data-aos="fade-up">
-            <h2 className="text-3xl font-bold tracking-tight font-heading">Engineered for Producers & Developers</h2>
+            <h2 className="text-3xl font-bold tracking-tight font-heading">Engineered for Smart Financial Control</h2>
             <p className="text-xs text-dark/60 dark:text-light/60 font-sans">
-              Explore the core technical capabilities powering the Beats Lounge audio ecosystem.
+              Explore the core capabilities powering the Xpencer ecosystem.
             </p>
           </div>
 
@@ -194,11 +194,11 @@ const AboutPage = () => {
           
           <h3 className="text-3xl font-extrabold tracking-tight font-heading">Powered by Modern Web Standards</h3>
           <p className="text-sm text-dark/70 dark:text-light/70 max-w-2xl mx-auto font-sans leading-relaxed">
-            Crafted with Next.js App Router, React, Tailwind CSS, Tone.js for high-level audio graph manipulation, 
-            the native Web Audio API, and Wavesurfer.js for precise visual waveform inspection.
+            Crafted with Next.js App Router, React, Tailwind CSS, Mongoose for robust relational data persistence, 
+            and secure cookie-based session management.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-2.5 pt-4">
-            {["Next.js", "React", "Tone.js", "Web Audio API", "Tailwind CSS", "MediaRecorder API"].map((tech, idx) => (
+            {["Next.js", "React", "MongoDB", "Mongoose", "Tailwind CSS", "Axios"].map((tech, idx) => (
               <span key={idx} className="px-4 py-2 rounded-xl bg-white/80 dark:bg-dark/80 border border-tertiary/30 text-primary font-mono text-xs font-bold shadow-sm">
                 {tech}
               </span>
