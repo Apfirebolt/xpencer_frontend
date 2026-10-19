@@ -7,6 +7,7 @@ import ExpenseForm from '@/components/ExpenseForm';
 import ExpenseCalendar from '@/components/ExpenseCalendar';
 import ExpenseCardView from '@/components/ExpenseCard';
 import ExpenseListView from '@/components/ExpenseList';
+import ExpenseChart from '@/components/ExpenseChart';
 import { useExpenseStore } from '@/store/useExpenseStore';
 import { WalletIcon, PlusCircleIcon, XMarkIcon, CurrencyDollarIcon, CalendarDaysIcon, Squares2X2Icon, ListBulletIcon } from '@heroicons/react/24/outline';
 import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react';
@@ -44,7 +45,7 @@ export default function ExpenseClient() {
     <div className="min-h-screen bg-light dark:bg-dark text-dark dark:text-light flex flex-col font-sans selection:bg-primary selection:text-white transition-colors duration-200">
       <Header />
 
-      <main className="flex-grow max-w-7xl mx-auto w-full px-6 py-16 space-y-10">
+      <main className="flex-grow max-w-7xl mx-auto w-full px-6 py-16 space-y-12">
         
         {/* Page Header & Actions */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-tertiary/20 pb-6" data-aos="fade-down">
@@ -90,8 +91,16 @@ export default function ExpenseClient() {
           </div>
         </div>
 
+        {/* Expense Charts Section (Rendered if expenses exist) */}
+        {!fetching && expenses.length > 0 && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8" data-aos="fade-up">
+            <ExpenseChart expenses={expenses} type="line" />
+            <ExpenseChart expenses={expenses} type="doughnut" />
+          </div>
+        )}
+
         {/* Transactions Section Controls (View Mode Toggles) */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4" data-aos="fade-up">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-4" data-aos="fade-up">
           <h2 className="text-xl font-bold font-heading">Recent Transactions</h2>
 
           {/* Card vs List View Toggle Switch */}
