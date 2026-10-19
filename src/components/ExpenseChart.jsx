@@ -6,85 +6,119 @@ import {
   LinearScale, 
   PointElement, 
   LineElement, 
+  BarElement,
   ArcElement, 
+  RadialLinearScale,
   Title, 
   Tooltip, 
   Legend, 
   Filler 
 } from 'chart.js';
-import { Line, Doughnut } from 'react-chartjs-2';
+import { Line, Doughnut, Bar, PolarArea } from 'react-chartjs-2';
+import { useState } from 'react';
 
-// Register Chart.js components
+// Register all required Chart.js modules
 ChartJS.register(
   CategoryScale, 
   LinearScale, 
   PointElement, 
   LineElement, 
+  BarElement,
   ArcElement, 
+  RadialLinearScale,
   Title, 
   Tooltip, 
   Legend, 
   Filler
 );
 
-export default function ExpenseChart({ expenses = [], type = 'line' }) {
-  // 1. Process data for Line Chart (Spending over days of the month)
+const CHART_TYPES = [
+  { id: 'line', label: 'Daily Trend' },
+  { id: 'doughnut', label: 'Category Doughnut' },
+  { id: 'bar', label: 'Category Bars' },
+  { id: 'polar', label: 'Category Polar' },
+];
+
+const CHART_COLORS = [
+  '#6366f1', // Primary
+  '#ec4899', // Pink
+  '#10b981', // Emerald
+  '#f59e0b', // Amber
+  '#3b82f6', // Blue
+  '#8b5cf6', // Purple
+  '#14b8a6', // Teal
+  '#64748b', // Slate
+];
+
+export default function ExpenseChart({ expenses = [] }) {
+  const [activeType, setActiveType] = useState('line');
+
+  // 1. Process data for Line Chart (Spending over days)
   const dailySpending = {};
-  // 2. Process data for Doughnut Chart (Spending breakdown by category)
+  // 2. Process data for Category Charts (Doughnut, Bar, Polar)
   const categorySpending = {};
 
   expenses.forEach((exp) => {
     if (!exp.createdAt) return;
     
-    // Format Date for Line Chart (e.g., "Aug 12")
+    // Line Chart Date Key
     const dateObj = new Date(exp.createdAt);
     const dateKey = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    
     dailySpending[dateKey] = (dailySpending[dateKey] || 0) + Number(exp.amount || 0);
 
-    // Group by Category for Doughnut Chart
+    // Category Key
     const cat = exp.type || 'Other';
     categorySpending[cat] = (categorySpending[cat] || 0) + Number(exp.amount || 0);
   });
 
-  // Line Chart Data
+  const categories = Object.keys(categorySpending);
+  const categoryAmounts = Object.values(categorySpending);
+
+  // Chart Datasets
   const lineData = {
     labels: Object.keys(dailySpending),
-    datasets: [
-      {
-        label: 'Daily Spend ($)',
-        data: Object.values(dailySpending),
-        fill: true,
-        backgroundColor: 'rgba(99, 102, 241, 0.1)', // Primary theme color with opacity
-        borderColor: '#6366f1', // Primary theme color
-        borderWidth: 3,
-        tension: 0.4,
-        pointBackgroundColor: '#6366f1',
-        pointRadius: 4,
-      },
-    ],
+    datasets: [{
+      label: 'Daily Spend ($)',
+      data: Object.values(dailySpending),
+      fill: true,
+      backgroundColor: 'rgba(99, 102, 241, 0.1)',
+      borderColor: '#6366f1',
+      borderWidth: 3,
+      tension: 0.4,
+      pointBackgroundColor: '#6366f1',
+      pointRadius: 4,
+    }],
   };
 
-  // Doughnut Chart Data
   const doughnutData = {
-    labels: Object.keys(categorySpending),
-    datasets: [
-      {
-        data: Object.values(categorySpending),
-        backgroundColor: [
-          '#6366f1', // Primary
-          '#ec4899', // Pink / Accent
-          '#10b981', // Emerald / Success
-          '#f59e0b', // Amber / Warning
-          '#3b82f6', // Blue
-          '#8b5cf6', // Purple
-          '#14b8a6', // Teal
-          '#64748b', // Slate
-        ],
-        borderWidth: 2,
-        borderColor: '#ffffff',
-      },
-    ],
+    labels: categories,
+    datasets: [{
+      data: categoryAmounts,
+      backgroundColor: CHART_COLORS,
+      borderWidth: 2,
+      borderColor: '#ffffff',
+    }],
+  };
+
+  const barData = {
+    labels: categories,
+    datasets: [{
+      label: 'Spend by Category ($)',
+      data: categoryAmounts,
+      backgroundColor: '#6366f1',
+      borderRadius: 12,
+      borderSkipped: false,
+    }],
+  };
+
+  const polarData = {
+    labels: categories,
+    datasets: [{
+      data: categoryAmounts,
+      backgroundColor: CHART_COLORS.map(c => c + 'cc'), // add opacity
+      borderWidth: 1,
+      borderColor: '#ffffff',
+    }],
   };
 
   const commonOptions = {
@@ -93,10 +127,7 @@ export default function ExpenseChart({ expenses = [], type = 'line' }) {
     plugins: {
       legend: {
         position: 'bottom',
-        labels: {
-          font: { family: 'sans-serif', size: 11 },
-          boxWidth: 12,
-        },
+        labels: { font: { family: 'sans-serif', size: 11 }, boxWidth: 12 },
       },
     },
   };
@@ -104,34 +135,57 @@ export default function ExpenseChart({ expenses = [], type = 'line' }) {
   const lineOptions = {
     ...commonOptions,
     scales: {
-      y: {
-        beginAtZero: true,
-        grid: { color: 'rgba(150, 150, 150, 0.1)' },
-      },
-      x: {
-        grid: { display: false },
-      },
+      y: { beginAtZero: true, grid: { color: 'rgba(150, 150, 150, 0.1)' } },
+      x: { grid: { display: false } },
+    },
+  };
+
+  const barOptions = {
+    ...commonOptions,
+    scales: {
+      y: { beginAtZero: true, grid: { color: 'rgba(150, 150, 150, 0.1)' } },
+      x: { grid: { display: false } },
     },
   };
 
   return (
-    <div className="w-full bg-white dark:bg-tertiary/5 border border-tertiary/20 dark:border-tertiary/10 rounded-3xl p-6 shadow-sm">
-      <div className="mb-4">
-        <h3 className="text-lg font-bold font-heading">
-          {type === 'line' ? 'Monthly Spending Trend' : 'Category Breakdown'}
-        </h3>
-        <p className="text-xs text-dark/60 dark:text-light/60 font-sans">
-          {type === 'line' ? 'Visualizing outflow across days of the month' : 'Proportion of expenses by category type'}
-        </p>
+    <div className="w-full bg-white dark:bg-tertiary/5 border border-tertiary/20 dark:border-tertiary/10 rounded-3xl p-6 shadow-sm space-y-6">
+      
+      {/* Header & Chart Switcher Tabs */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h3 className="text-lg font-bold font-heading">Expense Analytics</h3>
+          <p className="text-xs text-dark/60 dark:text-light/60 font-sans">
+            Inspect your financial outflow across various visual metrics
+          </p>
+        </div>
+
+        {/* Tab Controls */}
+        <div className="flex flex-wrap items-center gap-1.5 p-1 rounded-2xl bg-light dark:bg-dark border border-tertiary/20">
+          {CHART_TYPES.map((type) => (
+            <button
+              key={type.id}
+              onClick={() => setActiveType(type.id)}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                activeType === type.id
+                  ? 'bg-primary text-white shadow-md shadow-primary/20'
+                  : 'text-dark/70 dark:text-light/70 hover:text-primary'
+              }`}
+            >
+              {type.label}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <div className="h-72 w-full">
-        {type === 'line' ? (
-          <Line data={lineData} options={lineOptions} />
-        ) : (
-          <Doughnut data={doughnutData} options={commonOptions} />
-        )}
+      {/* Render Selected Chart */}
+      <div className="h-80 w-full pt-2">
+        {activeType === 'line' && <Line data={lineData} options={lineOptions} />}
+        {activeType === 'doughnut' && <Doughnut data={doughnutData} options={commonOptions} />}
+        {activeType === 'bar' && <Bar data={barData} options={barOptions} />}
+        {activeType === 'polar' && <PolarArea data={polarData} options={commonOptions} />}
       </div>
+
     </div>
   );
 }

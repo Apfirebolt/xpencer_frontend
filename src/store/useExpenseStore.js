@@ -51,6 +51,38 @@ export const useExpenseStore = create((set, get) => ({
     }
   },
 
+  // Generate random mock expenses (10, 20, 30, or 40 items)
+  generateMockExpenses: async (count = 10, month, year) => {
+    set({ loading: true, error: null });
+    try {
+      await httpClient.post('/expense/generate-mock', { count, month, year }, getAuthHeaders());
+      // Refresh expenses list after generation
+      await get().fetchExpenses();
+      set({ loading: false });
+      return { success: true };
+    } catch (err) {
+      const errorMessage = err.response?.data?.error || err.response?.data?.message || err.message || "Failed to generate mock expenses.";
+      set({ error: errorMessage, loading: false });
+      return { success: false, error: errorMessage };
+    }
+  },
+
+  // Clear all auto-generated test expenses
+  clearMockExpenses: async () => {
+    set({ loading: true, error: null });
+    try {
+      await httpClient.delete('/expense/generate-mock', getAuthHeaders());
+      // Refresh expenses list after deletion
+      await get().fetchExpenses();
+      set({ loading: false });
+      return { success: true };
+    } catch (err) {
+      const errorMessage = err.response?.data?.error || err.response?.data?.message || err.message || "Failed to clear mock expenses.";
+      set({ error: errorMessage, loading: false });
+      return { success: false, error: errorMessage };
+    }
+  },
+
   // Compute total spending dynamically
   getTotalSpent: () => {
     const { expenses } = get();

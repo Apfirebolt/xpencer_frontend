@@ -7,9 +7,10 @@ import ExpenseForm from '@/components/ExpenseForm';
 import ExpenseCalendar from '@/components/ExpenseCalendar';
 import ExpenseCardView from '@/components/ExpenseCard';
 import ExpenseListView from '@/components/ExpenseList';
+import ExpenseAgGrid from '@/components/ExpenseAgGrid';
 import ExpenseChart from '@/components/ExpenseChart';
 import { useExpenseStore } from '@/store/useExpenseStore';
-import { WalletIcon, PlusCircleIcon, XMarkIcon, CurrencyDollarIcon, CalendarDaysIcon, Squares2X2Icon, ListBulletIcon } from '@heroicons/react/24/outline';
+import { WalletIcon, PlusCircleIcon, XMarkIcon, CurrencyDollarIcon, CalendarDaysIcon, Squares2X2Icon, ListBulletIcon, TableCellsIcon } from '@heroicons/react/24/outline';
 import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
@@ -17,10 +18,10 @@ import 'aos/dist/aos.css';
 export default function ExpenseClient() {
   const { expenses, fetching, loading, error, fetchExpenses, createExpense, getTotalSpent } = useExpenseStore();
   
-  // Modals & View toggle state
+  // Modals & View toggle state ('card' | 'list' | 'grid')
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
-  const [viewMode, setViewMode] = useState('card'); // 'card' | 'list'
+  const [viewMode, setViewMode] = useState('card'); 
   const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
@@ -103,7 +104,7 @@ export default function ExpenseClient() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-4" data-aos="fade-up">
           <h2 className="text-xl font-bold font-heading">Recent Transactions</h2>
 
-          {/* Card vs List View Toggle Switch */}
+          {/* Card, List & AG Grid View Toggle Switches */}
           <div className="flex items-center p-1.5 rounded-2xl bg-white dark:bg-tertiary/5 border border-tertiary/20 shadow-sm">
             <button
               onClick={() => setViewMode('card')}
@@ -126,6 +127,17 @@ export default function ExpenseClient() {
             >
               <ListBulletIcon className="h-4 w-4" />
               <span>List View</span>
+            </button>
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                viewMode === 'grid' 
+                  ? 'bg-primary text-white shadow-md shadow-primary/20' 
+                  : 'text-dark/70 dark:text-light/70 hover:text-primary'
+              }`}
+            >
+              <TableCellsIcon className="h-4 w-4" />
+              <span>Grid View</span>
             </button>
           </div>
         </div>
@@ -151,11 +163,11 @@ export default function ExpenseClient() {
               </button>
             </div>
           ) : (
-            viewMode === 'card' ? (
-              <ExpenseCardView expenses={expenses} />
-            ) : (
-              <ExpenseListView expenses={expenses} />
-            )
+            <>
+              {viewMode === 'card' && <ExpenseCardView expenses={expenses} />}
+              {viewMode === 'list' && <ExpenseListView expenses={expenses} />}
+              {viewMode === 'grid' && <ExpenseAgGrid expenses={expenses} />}
+            </>
           )}
         </div>
 
