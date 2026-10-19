@@ -29,7 +29,7 @@ export const useBudgetStore = create((set, get) => ({
 
     set({ fetching: true, error: null });
     try {
-      const res = await httpClient.get(`/api/budget?month=${m}&year=${y}`, getAuthHeaders());
+      const res = await httpClient.get(`/budget?month=${m}&year=${y}`, getAuthHeaders());
       const data = res.data.budgets || res.data;
       set({ 
         budgets: Array.isArray(data) ? data : [], 
@@ -50,7 +50,7 @@ export const useBudgetStore = create((set, get) => ({
   setBudget: async (budgetData) => {
     set({ loading: true, error: null });
     try {
-      const res = await httpClient.post('/api/budget', budgetData, getAuthHeaders());
+      const res = await httpClient.post('/budget', budgetData, getAuthHeaders());
       
       // Refresh the budget list for that month/year after saving
       const targetMonth = budgetData.month || get().selectedMonth;
