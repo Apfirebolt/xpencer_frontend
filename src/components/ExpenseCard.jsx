@@ -15,7 +15,7 @@ export default function ExpenseCardView({ expenses }) {
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="px-3 py-1 rounded-xl bg-primary/10 text-primary text-xs font-bold font-mono border border-primary/20">
-                {exp.type}
+                {exp.category}
               </span>
               <span className="text-xs text-dark/40 dark:text-light/40 flex items-center gap-1 font-mono">
                 <CalendarIcon className="h-3.5 w-3.5" />

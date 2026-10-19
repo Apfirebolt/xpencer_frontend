@@ -2,37 +2,33 @@
 
 import { useState } from 'react';
 import { CurrencyDollarIcon, TagIcon, DocumentTextIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
-
-const EXPENSE_CATEGORIES = [
-  "Food & Dining",
-  "Transport",
-  "Shopping",
-  "Bills & Utilities",
-  "Entertainment",
-  "Health & Fitness",
-  "Travel",
-  "Other"
-];
+import { expenseCategories as EXPENSE_CATEGORIES, expenseMode as EXPENSE_MODES, expenseTypes as EXPENSE_TYPES } from '../utils/constants';
 
 export default function ExpenseForm({ onSubmitExpense, loading }) {
   const [amount, setAmount] = useState('');
-  const [type, setType] = useState(EXPENSE_CATEGORIES[0]);
+  const [category, setCategory] = useState(EXPENSE_CATEGORIES[0]);
+  const [mode, setMode] = useState(EXPENSE_MODES[0]);
   const [description, setDescription] = useState('');
+  const [expenseType, setExpenseType] = useState(EXPENSE_TYPES[0]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!amount || !type) return;
+    if (!amount || !category || !expenseType || !mode) return;
 
     onSubmitExpense({
       amount: parseFloat(amount),
-      type,
-      description: description.trim()
+      category,
+      type: expenseType,
+      mode,          // Cash, UPI, Card, etc.
+      description: description.trim() || 'No description provided'
     });
 
     // Clear form on submit
     setAmount('');
     setDescription('');
-    setType(EXPENSE_CATEGORIES[0]);
+    setCategory(EXPENSE_CATEGORIES[0]);
+    setExpenseType(EXPENSE_TYPES[0]); // This line remains the same because the setter function is still named setExpenseType.
+    setMode(EXPENSE_MODES[0]);
   };
 
   return (
@@ -62,7 +58,7 @@ export default function ExpenseForm({ onSubmitExpense, loading }) {
 
       {/* Category Type Field */}
       <div className="space-y-1.5">
-        <label htmlFor="type" className="block text-xs font-bold text-dark dark:text-light uppercase tracking-wider font-heading">
+        <label htmlFor="category" className="block text-xs font-bold text-dark dark:text-light uppercase tracking-wider font-heading">
           Category Type *
         </label>
         <div className="relative">
@@ -70,15 +66,40 @@ export default function ExpenseForm({ onSubmitExpense, loading }) {
             <TagIcon className="h-4 w-4" />
           </span>
           <select
-            id="type"
-            value={type}
-            onChange={(e) => setType(e.target.value)}
+            id="category"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
             className="w-full pl-10 pr-4 py-3 text-sm bg-white dark:bg-dark border border-tertiary/30 rounded-xl focus:outline-none focus:border-primary text-dark dark:text-light shadow-inner cursor-pointer"
             required
           >
             {EXPENSE_CATEGORIES.map((cat) => (
               <option key={cat} value={cat}>
                 {cat}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* Expense Mode Field */}
+      <div className="space-y-1.5">
+        <label htmlFor="expenseMode" className="block text-xs font-bold text-dark dark:text-light uppercase tracking-wider font-heading">
+          Expense Mode *
+        </label>
+        <div className="relative">
+          <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-dark/30 dark:text-light/30">
+            <TagIcon className="h-4 w-4" />
+          </span>
+          <select
+            id="expenseMode"
+            value={mode}
+            onChange={(e) => setMode(e.target.value)}
+            className="w-full pl-10 pr-4 py-3 text-sm bg-white dark:bg-dark border border-tertiary/30 rounded-xl focus:outline-none focus:border-primary text-dark dark:text-light shadow-inner cursor-pointer"
+            required
+          >
+            {EXPENSE_MODES.map((m) => (
+              <option key={m} value={m}>
+                {m}
               </option>
             ))}
           </select>

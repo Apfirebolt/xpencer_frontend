@@ -16,7 +16,7 @@ export default function ExpenseListView({ expenses }) {
   const columnDefs = useMemo(() => [
     {
       headerName: 'Category',
-      field: 'type',
+      field: 'category',
       flex: 1,
       minWidth: 150,
       cellRenderer: (params) => (
@@ -52,6 +52,22 @@ export default function ExpenseListView({ expenses }) {
             <span className="text-xs text-dark/60 dark:text-light/60 flex items-center gap-1.5 font-mono">
               <CalendarIcon className="h-3.5 w-3.5" />
               {dateStr}
+            </span>
+          </div>
+        );
+      },
+    },
+    {
+      headerName: 'Mode',
+      field: 'mode',
+      flex: 1,
+      minWidth: 150,
+      cellRenderer: (params) => {
+        const mode = params.value || 'N/A';
+        return (
+          <div className="flex items-center h-full">
+            <span className="text-xs text-dark/60 dark:text-light/60 flex items-center gap-1.5 font-mono">
+              {mode}
             </span>
           </div>
         );

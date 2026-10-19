@@ -19,7 +19,7 @@ export default function ExpenseListView({ expenses }) {
             <div className="space-y-1">
               <div className="flex items-center gap-2">
                 <span className="px-2.5 py-0.5 rounded-lg bg-primary/10 text-primary text-xs font-bold font-mono">
-                  {exp.type}
+                  {exp.category}
                 </span>
                 <span className="text-xs text-dark/40 dark:text-light/40 flex items-center gap-1 font-mono">
                   <CalendarIcon className="h-3.5 w-3.5" />

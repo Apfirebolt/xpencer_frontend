@@ -46,4 +46,32 @@ const budgetCategories = [
   'Miscellaneous'
 ];
 
-export { currencies, budgetCategories };
+const expenseTypes = [
+  'Fixed',
+  'Variable',
+  'Discretionary'
+]
+
+const expenseMode = [
+  'Cash',
+  'Credit Card',
+  'Gift Card',
+  'Debit Card',
+  'Bank Transfer',
+  'Mobile Payment',
+  'Cheque',
+  'UPI'
+]
+
+const expenseCategories = [
+  "Food & Dining",
+  "Transport",
+  "Shopping",
+  "Bills & Utilities",
+  "Entertainment",
+  "Health & Fitness",
+  "Travel",
+  "Other"
+];
+
+export { currencies, budgetCategories, expenseTypes, expenseMode, expenseCategories };
