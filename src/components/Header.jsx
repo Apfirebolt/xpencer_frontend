@@ -6,18 +6,18 @@ import { usePathname, useRouter } from "next/navigation";
 import Cookie from "js-cookie";
 import { 
   HomeIcon, 
-  ScissorsIcon,
-  MusicalNoteIcon,
+  WalletIcon,
+  ChartPieIcon,
+  RectangleStackIcon,
+  UserGroupIcon,
   InformationCircleIcon,
   Bars3Icon, 
   XMarkIcon,
   SunIcon,
   MoonIcon,
-  RadioIcon,
   ArrowRightOnRectangleIcon,
   UserCircleIcon,
-  ArrowRightIcon,
-  UserPlusIcon
+  ArrowRightIcon
 } from "@heroicons/react/24/outline";
 
 const Header = () => {
@@ -75,7 +75,10 @@ const Header = () => {
   }, [pathname]);
 
   const navLinks = [
-    { name: "Home", href: "/", icon: HomeIcon },
+    { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
+    { name: "Budgets", href: "/budgets", icon: ChartPieIcon },
+    { name: "Expenses", href: "/expenses", icon: RectangleStackIcon },
+    { name: "Splits", href: "/splits", icon: UserGroupIcon },
     { name: "About", href: "/about", icon: InformationCircleIcon },
   ];
 
@@ -86,11 +89,11 @@ const Header = () => {
         {/* Brand / Logo & Theme Toggle */}
         <div className="flex items-center gap-3">
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:scale-105 transition-transform">
-              <RadioIcon className="h-5 w-5 text-primary animate-pulse" />
+            <div className="w-9 h-9 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:scale-105 transition-transform">
+              <WalletIcon className="h-5 w-5 text-primary" />
             </div>
             <span className="text-xl sm:text-2xl font-extrabold tracking-wider font-heading">
-              SoftGenie <span className="text-primary">Beats</span> 
+              X <span className="text-primary"> pencer</span> 
             </span>
           </Link>
 
@@ -110,7 +113,7 @@ const Header = () => {
         {/* Desktop Navigation Links & Auth Actions */}
         <div className="hidden md:flex items-center gap-6">
           <nav>
-            <ul className="flex items-center gap-2 font-sans">
+            <ul className="flex items-center gap-1.5 font-sans">
               {navLinks.map((link) => {
                 const Icon = link.icon;
                 const isActive = pathname === link.href;
@@ -119,7 +122,7 @@ const Header = () => {
                   <li key={link.href}>
                     <Link 
                       href={link.href} 
-                      className={`px-4 py-2 rounded-full font-semibold text-sm flex items-center space-x-2 transition-all duration-200 whitespace-nowrap ${
+                      className={`px-3.5 py-2 rounded-full font-semibold text-xs flex items-center space-x-1.5 transition-all duration-200 whitespace-nowrap ${
                         isActive 
                           ? 'bg-primary text-white shadow-md shadow-primary/25 scale-[1.02]' 
                           : 'text-dark dark:text-light/80 hover:text-primary dark:hover:text-tertiary hover:bg-primary/10'
