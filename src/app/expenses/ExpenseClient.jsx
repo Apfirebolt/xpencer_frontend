@@ -9,8 +9,9 @@ import ExpenseCardView from '@/components/ExpenseCard';
 import ExpenseListView from '@/components/ExpenseList';
 import ExpenseAgGrid from '@/components/ExpenseAgGrid';
 import ExpenseChart from '@/components/ExpenseChart';
+import MockExpenseModal from '@/components/MockExpenseModal';
 import { useExpenseStore } from '@/store/useExpenseStore';
-import { WalletIcon, PlusCircleIcon, XMarkIcon, CurrencyDollarIcon, CalendarDaysIcon, Squares2X2Icon, ListBulletIcon, TableCellsIcon } from '@heroicons/react/24/outline';
+import { WalletIcon, PlusCircleIcon, XMarkIcon, CurrencyDollarIcon, CalendarDaysIcon, Squares2X2Icon, ListBulletIcon, TableCellsIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
@@ -21,6 +22,7 @@ export default function ExpenseClient() {
   // Modals & View toggle state ('card' | 'list' | 'grid')
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
+  const [isMockModalOpen, setIsMockModalOpen] = useState(false);
   const [viewMode, setViewMode] = useState('card'); 
   const [successMessage, setSuccessMessage] = useState('');
 
@@ -71,6 +73,15 @@ export default function ExpenseClient() {
                 <p className="text-sm font-extrabold font-heading text-primary">${getTotalSpent().toFixed(2)}</p>
               </div>
             </div>
+
+            {/* Mock Data Generator Modal Button */}
+            <button
+              onClick={() => setIsMockModalOpen(true)}
+              className="px-5 py-3.5 rounded-2xl font-bold bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 transition-all flex items-center gap-2 cursor-pointer shrink-0 text-xs"
+            >
+              <SparklesIcon className="h-4 w-4" />
+              <span>Mock Data</span>
+            </button>
 
             {/* Open Calendar Modal Button */}
             <button
@@ -292,6 +303,9 @@ export default function ExpenseClient() {
           </div>
         </Dialog>
       </Transition>
+
+      {/* 3. Mock Data Generator Modal */}
+      <MockExpenseModal isOpen={isMockModalOpen} onClose={() => setIsMockModalOpen(false)} />
 
       <Footer />
     </div>
