@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, Fragment } from 'react';
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import Cookie from "js-cookie";
+import { useNotificationStore } from "@/store/useNotificationStore";
 import { 
   HomeIcon, 
   WalletIcon,
@@ -23,7 +24,8 @@ import {
   ShieldCheckIcon,
   CodeBracketIcon,
   CpuChipIcon,
-  Cog6ToothIcon
+  Cog6ToothIcon,
+  BellIcon
 } from "@heroicons/react/24/outline";
 
 const Header = () => {
@@ -34,6 +36,8 @@ const Header = () => {
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [user, setUser] = useState(null);
+
+  const { unreadCount, fetchNotifications } = useNotificationStore();
 
   const closeTimeoutRef = useRef(null);
   const userDropdownRef = useRef(null);
@@ -52,12 +56,15 @@ const Header = () => {
     const userCookie = Cookie.get('user');
     if (userCookie) {
       try {
-        setUser(JSON.parse(userCookie));
+        const parsedUser = JSON.parse(userCookie);
+        setUser(parsedUser);
+        // Fetch unread notification count on load if logged in
+        fetchNotifications();
       } catch (err) {
         console.error("Failed to parse user cookie:", err);
       }
     }
-  }, [pathname]);
+  }, [pathname, fetchNotifications]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -203,7 +210,7 @@ const Header = () => {
               <div className="relative" ref={userDropdownRef}>
                 <button
                   onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
-                  className="flex items-center gap-2.5 px-3.5 py-2 rounded-2xl bg-primary/10 hover:bg-primary/15 border border-primary/20 text-xs font-semibold text-dark dark:text-light transition-all cursor-pointer"
+                  className="flex items-center gap-2.5 px-3.5 py-2 rounded-2xl bg-primary/10 hover:bg-primary/15 border border-primary/20 text-xs font-semibold text-dark dark:text-light transition-all cursor-pointer relative"
                 >
                   {currentAvatar ? (
                     <div className="w-6 h-6 rounded-full overflow-hidden shrink-0">
@@ -213,25 +220,46 @@ const Header = () => {
                     <UserCircleIcon className="h-4 w-4 text-primary shrink-0" />
                   )}
                   <span className="max-w-[140px] truncate">{user.email || user.firstName}</span>
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-rose-500 border-2 border-white dark:border-dark" />
+                  )}
                   <ChevronDownIcon className={`h-3 w-3 transition-transform duration-200 ${isUserDropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
 
                 {/* Dropdown Menu */}
                 {isUserDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-52 rounded-2xl bg-white dark:bg-dark border border-tertiary/20 shadow-xl py-2 z-50 animate-fadeIn">
+                  <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white dark:bg-dark border border-tertiary/20 shadow-xl py-2 z-50 animate-fadeIn">
                     <div className="px-4 py-2 border-b border-tertiary/20">
                       <p className="text-[10px] uppercase font-bold text-dark/40 dark:text-light/40">Signed in as</p>
                       <p className="text-xs font-bold truncate text-dark dark:text-light">{user.email}</p>
                     </div>
 
-                    <div className="py-1">
+                    <div className="py-1 space-y-0.5">
                       <Link
                         href="/settings"
                         onClick={() => setIsUserDropdownOpen(false)}
-                        className="flex items-center gap-2.5 px-4 py-2.5 text-xs font-semibold hover:bg-primary/10 hover:text-primary transition-colors"
+                        className="flex items-center justify-between px-4 py-2.5 text-xs font-semibold hover:bg-primary/10 hover:text-primary transition-colors"
                       >
-                        <Cog6ToothIcon className="h-4 w-4 text-primary" />
-                        <span>Settings</span>
+                        <div className="flex items-center gap-2.5">
+                          <Cog6ToothIcon className="h-4 w-4 text-primary" />
+                          <span>Settings</span>
+                        </div>
+                      </Link>
+
+                      <Link
+                        href="/notifications"
+                        onClick={() => setIsUserDropdownOpen(false)}
+                        className="flex items-center justify-between px-4 py-2.5 text-xs font-semibold hover:bg-primary/10 hover:text-primary transition-colors"
+                      >
+                        <div className="flex items-center gap-2.5">
+                          <BellIcon className="h-4 w-4 text-primary" />
+                          <span>Notifications</span>
+                        </div>
+                        {unreadCount > 0 && (
+                          <span className="px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 text-[10px] font-mono font-bold border border-rose-500/20">
+                            {unreadCount}
+                          </span>
+                        )}
                       </Link>
                     </div>
 
@@ -270,9 +298,12 @@ const Header = () => {
         {/* Mobile Menu Button */}
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="md:hidden p-2 rounded-xl text-dark dark:text-light hover:bg-primary/10 focus:outline-none transition-colors border border-tertiary/20 cursor-pointer"
+          className="md:hidden p-2 rounded-xl text-dark dark:text-light hover:bg-primary/10 focus:outline-none transition-colors border border-tertiary/20 cursor-pointer relative"
           aria-label="Toggle mobile menu"
         >
+          {unreadCount > 0 && !isMobileMenuOpen && (
+            <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full bg-rose-500 border border-white dark:border-dark" />
+          )}
           {isMobileMenuOpen ? (
             <XMarkIcon className="h-6 w-6 text-primary" />
           ) : (
@@ -390,17 +421,33 @@ const Header = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 pt-1">
+                <div className="grid grid-cols-1 gap-2 pt-1">
                   <Link
                     href="/settings"
-                    className="py-2.5 text-center rounded-xl text-xs font-bold text-dark dark:text-light bg-tertiary/20 hover:bg-tertiary/30 border border-tertiary/30 transition-colors flex items-center justify-center gap-1.5"
+                    className="py-2.5 px-4 rounded-xl text-xs font-bold text-dark dark:text-light bg-tertiary/20 hover:bg-tertiary/30 border border-tertiary/30 transition-colors flex items-center gap-2"
                   >
                     <Cog6ToothIcon className="h-4 w-4 text-primary" />
                     <span>Settings</span>
                   </Link>
+
+                  <Link
+                    href="/notifications"
+                    className="py-2.5 px-4 rounded-xl text-xs font-bold text-dark dark:text-light bg-tertiary/20 hover:bg-tertiary/30 border border-tertiary/30 transition-colors flex items-center justify-between"
+                  >
+                    <div className="flex items-center gap-2">
+                      <BellIcon className="h-4 w-4 text-primary" />
+                      <span>Notifications</span>
+                    </div>
+                    {unreadCount > 0 && (
+                      <span className="px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 text-[10px] font-mono font-bold border border-rose-500/20">
+                        {unreadCount} new
+                      </span>
+                    )}
+                  </Link>
+
                   <button
                     onClick={handleLogout}
-                    className="py-2.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/20 transition-all flex items-center justify-center gap-1.5 text-xs font-bold cursor-pointer"
+                    className="w-full py-2.5 px-4 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/20 transition-all flex items-center gap-2 text-xs font-bold cursor-pointer"
                   >
                     <ArrowRightOnRectangleIcon className="h-4 w-4" />
                     <span>Logout</span>

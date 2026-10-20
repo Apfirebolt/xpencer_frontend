@@ -17,7 +17,7 @@ export const useNotificationStore = create((set, get) => ({
   fetchNotifications: async () => {
     set({ fetching: true, error: null });
     try {
-      const res = await httpClient.get('/api/notifications', getAuthHeaders());
+      const res = await httpClient.get('/notifications', getAuthHeaders());
       set({ 
         notifications: res.data.notifications || [], 
         unreadCount: res.data.unreadCount || 0,
