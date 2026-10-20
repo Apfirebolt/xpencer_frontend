@@ -4,8 +4,11 @@ import { useState, useEffect, Fragment } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BudgetForm from '@/components/BudgetForm';
+import BudgetComparisonChart from '@/components/BudgetComparisonChart';
 import { useBudgetStore } from '@/store/useBudgetStore';
-import { ChartPieIcon, PlusCircleIcon, CurrencyDollarIcon, CalendarDaysIcon, XMarkIcon, TrashIcon } from '@heroicons/react/24/outline';
+import httpClient from '@/lib/api';
+import Cookie from 'js-cookie';
+import { ChartPieIcon, PlusCircleIcon, CurrencyDollarIcon, CalendarDaysIcon, XMarkIcon, TrashIcon, ScaleIcon } from '@heroicons/react/24/outline';
 import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
@@ -14,6 +17,11 @@ const MONTH_NAMES = [
   "January", "February", "March", "April", "May", "June", 
   "July", "August", "September", "October", "November", "December"
 ];
+
+const getAuthHeaders = () => {
+  const token = Cookie.get('token');
+  return token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+};
 
 export default function BudgetClient() {
   const { 
@@ -32,7 +40,14 @@ export default function BudgetClient() {
   } = useBudgetStore();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+
+  // Comparison State
+  const [compareMonth2, setCompareMonth2] = useState(selectedMonth === 1 ? 12 : selectedMonth - 1);
+  const [compareYear2, setCompareYear2] = useState(selectedMonth === 1 ? selectedYear - 1 : selectedYear);
+  const [comparisonData, setComparisonData] = useState(null);
+  const [comparingLoading, setComparingLoading] = useState(false);
 
   useEffect(() => {
     AOS.init({ duration: 800, once: true, easing: "ease-out-cubic" });
@@ -58,9 +73,31 @@ export default function BudgetClient() {
     }
   }
 
+  // Fetch comparison data between Month 1 (selected) and Month 2
+  async function handleRunComparison() {
+    setComparingLoading(true);
+    try {
+      const res2 = await httpClient.get(`/budget?month=${compareMonth2}&year=${compareYear2}`, getAuthHeaders());
+      const month2Budgets = res2.data.budgets || res2.data || [];
+
+      setComparisonData({
+        month1: { month: selectedMonth, year: selectedYear, budgets },
+        month2: { month: Number(compareMonth2), year: Number(compareYear2), budgets: month2Budgets }
+      });
+    } catch (err) {
+      console.error("Failed to fetch comparison data:", err);
+    } finally {
+      setComparingLoading(false);
+    }
+  }
+
   const totalLimit = getTotalBudgetLimit();
   const totalSpent = getTotalBudgetSpent();
   const overallPercentage = totalLimit > 0 ? Math.min(Math.round((totalSpent / totalLimit) * 100), 100) : 0;
+
+  // Compute totals for comparison month 2
+  const month2Limit = comparisonData?.month2.budgets.reduce((acc, b) => acc + Number(b.limit || 0), 0) || 0;
+  const month2Spent = comparisonData?.month2.budgets.reduce((acc, b) => acc + Number(b.spent || 0), 0) || 0;
 
   return (
     <div className="min-h-screen bg-light dark:bg-dark text-dark dark:text-light flex flex-col font-sans selection:bg-primary selection:text-white transition-colors duration-200">
@@ -91,6 +128,15 @@ export default function BudgetClient() {
                 <option key={name} value={idx + 1}>{name} {selectedYear}</option>
               ))}
             </select>
+
+            {/* Compare 2 Months Button */}
+            <button
+              onClick={() => { setIsCompareModalOpen(true); handleRunComparison(); }}
+              className="px-5 py-3 rounded-2xl font-bold bg-tertiary/20 hover:bg-tertiary/30 text-dark dark:text-light border border-tertiary/30 transition-all flex items-center gap-2 cursor-pointer shrink-0 text-xs"
+            >
+              <ScaleIcon className="h-4 w-4 text-primary" />
+              <span>Compare Months</span>
+            </button>
 
             <button
               onClick={() => setIsModalOpen(true)}
@@ -209,64 +255,122 @@ export default function BudgetClient() {
 
       </main>
 
-      {/* Headless UI Modal for Setting Budget */}
+      {/* 1. Set Budget Modal */}
       <Transition appear show={isModalOpen} as={Fragment}>
         <Dialog as="div" className="relative z-50" onClose={() => setIsModalOpen(false)}>
-          <TransitionChild
-            as={Fragment}
-            enter="ease-out duration-300"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
-            leave="ease-in duration-200"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-          >
+          <TransitionChild as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0" enterTo="opacity-100" leave="ease-in duration-200" leaveFrom="opacity-100" leaveTo="opacity-0">
             <div className="fixed inset-0 bg-dark/60 backdrop-blur-sm" />
           </TransitionChild>
-
           <div className="fixed inset-0 overflow-y-auto">
             <div className="flex min-h-full items-center justify-center p-4 text-center">
-              <TransitionChild
-                as={Fragment}
-                enter="ease-out duration-300"
-                enterFrom="opacity-0 scale-95"
-                enterTo="opacity-100 scale-100"
-                leave="ease-in duration-200"
-                leaveFrom="opacity-100 scale-100"
-                leaveTo="opacity-0 scale-95"
-              >
-                <DialogPanel className="w-full max-w-md transform overflow-hidden rounded-3xl bg-white dark:bg-dark border border-tertiary/20 dark:border-tertiary/10 p-8 text-left align-middle shadow-2xl transition-all space-y-6">
-                  
+              <TransitionChild as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0 scale-95" enterTo="opacity-100 scale-100" leave="ease-in duration-200" leaveFrom="opacity-100 scale-100" leaveTo="opacity-0 scale-95">
+                <DialogPanel className="w-full max-w-md transform overflow-hidden rounded-3xl bg-white dark:bg-dark border border-tertiary/20 p-8 text-left align-middle shadow-2xl transition-all space-y-6">
                   <div className="flex items-center justify-between border-b border-tertiary/20 pb-4">
                     <div className="flex items-center gap-2">
-                      <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20">
+                      <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
                         <ChartPieIcon className="h-5 w-5 text-primary" />
                       </div>
                       <DialogTitle as="h3" className="text-lg font-bold font-heading text-dark dark:text-light">
                         Set Monthly Budget
                       </DialogTitle>
                     </div>
-                    <button
-                      onClick={() => setIsModalOpen(false)}
-                      className="p-1.5 rounded-xl text-dark/50 dark:text-light/50 hover:bg-primary/10 hover:text-primary transition-colors cursor-pointer"
-                    >
+                    <button onClick={() => setIsModalOpen(false)} className="p-1.5 rounded-xl text-dark/50 hover:bg-primary/10 hover:text-primary cursor-pointer">
+                      <XMarkIcon className="h-5 w-5" />
+                    </button>
+                  </div>
+                  {error && <div className="text-xs text-rose-600 bg-rose-500/10 p-3 rounded-xl font-medium">{error}</div>}
+                  {successMessage && <div className="text-xs text-emerald-600 bg-emerald-500/10 p-3 rounded-xl font-medium">{successMessage}</div>}
+                  <BudgetForm onSubmitBudget={handleSaveBudget} loading={loading} />
+                </DialogPanel>
+              </TransitionChild>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
+
+      {/* 2. Compare 2 Months Modal */}
+      <Transition appear show={isCompareModalOpen} as={Fragment}>
+        <Dialog as="div" className="relative z-50" onClose={() => setIsCompareModalOpen(false)}>
+          <TransitionChild as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0" enterTo="opacity-100" leave="ease-in duration-200" leaveFrom="opacity-100" leaveTo="opacity-0">
+            <div className="fixed inset-0 bg-dark/60 backdrop-blur-sm" />
+          </TransitionChild>
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4 text-center">
+              <TransitionChild as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0 scale-95" enterTo="opacity-100 scale-100" leave="ease-in duration-200" leaveFrom="opacity-100 scale-100" leaveTo="opacity-0 scale-95">
+                <DialogPanel className="w-full max-w-4xl transform overflow-hidden rounded-3xl bg-white dark:bg-dark border border-tertiary/20 p-8 text-left align-middle shadow-2xl transition-all space-y-6">
+                  
+                  <div className="flex items-center justify-between border-b border-tertiary/20 pb-4">
+                    <div className="flex items-center gap-2">
+                      <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
+                        <ScaleIcon className="h-5 w-5 text-primary" />
+                      </div>
+                      <DialogTitle as="h3" className="text-lg font-bold font-heading text-dark dark:text-light">
+                        Compare Budget & Expenses Across Two Months
+                      </DialogTitle>
+                    </div>
+                    <button onClick={() => setIsCompareModalOpen(false)} className="p-1.5 rounded-xl text-dark/50 hover:bg-primary/10 hover:text-primary cursor-pointer">
                       <XMarkIcon className="h-5 w-5" />
                     </button>
                   </div>
 
-                  {error && (
-                    <div className="text-xs text-rose-600 dark:text-rose-400 bg-rose-500/10 border border-rose-500/20 p-3 rounded-xl font-medium">
-                      {error}
+                  {/* Comparison Month Pickers */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-2xl bg-tertiary/5 border border-tertiary/20">
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold uppercase font-heading">Primary Month</label>
+                      <div className="px-4 py-3 rounded-xl bg-white dark:bg-dark border border-tertiary/30 text-sm font-bold">
+                        {MONTH_NAMES[selectedMonth - 1]} {selectedYear}
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold uppercase font-heading">Comparison Month</label>
+                      <select
+                        value={compareMonth2}
+                        onChange={(e) => setCompareMonth2(Number(e.target.value))}
+                        className="w-full px-4 py-3 rounded-xl bg-white dark:bg-dark border border-tertiary/30 text-sm font-bold focus:outline-none focus:border-primary cursor-pointer"
+                      >
+                        {MONTH_NAMES.map((name, idx) => (
+                          <option key={name} value={idx + 1}>{name} {selectedYear}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={handleRunComparison}
+                    disabled={comparingLoading}
+                    className="w-full py-3 text-sm font-bold text-white bg-primary hover:bg-secondary rounded-xl transition-all shadow-lg cursor-pointer"
+                  >
+                    {comparingLoading ? "Comparing..." : "Run Comparison"}
+                  </button>
+
+                  {/* Comparison Results */}
+                  {comparisonData && (
+                    <div className="space-y-6 pt-4 border-t border-tertiary/20">
+                      <div className="grid grid-cols-2 gap-4 text-center">
+                        <div className="p-4 rounded-2xl bg-primary/5 border border-primary/10 space-y-1">
+                          <p className="text-xs font-bold text-dark/60">{MONTH_NAMES[comparisonData.month1.month - 1]} {comparisonData.month1.year}</p>
+                          <p className="text-sm font-semibold">Budget: <span className="text-primary font-bold">${totalLimit.toFixed(2)}</span></p>
+                          <p className="text-sm font-semibold">Spent: <span className="font-bold">${totalSpent.toFixed(2)}</span></p>
+                        </div>
+                        <div className="p-4 rounded-2xl bg-secondary/5 border border-secondary/10 space-y-1">
+                          <p className="text-xs font-bold text-dark/60">{MONTH_NAMES[comparisonData.month2.month - 1]} {comparisonData.month2.year}</p>
+                          <p className="text-sm font-semibold">Budget: <span className="text-primary font-bold">${month2Limit.toFixed(2)}</span></p>
+                          <p className="text-sm font-semibold">Spent: <span className="font-bold">${month2Spent.toFixed(2)}</span></p>
+                        </div>
+                      </div>
+
+                      {/* Render professional comparison charts */}
+                      <BudgetComparisonChart comparisonData={comparisonData} />
+
+                      {/* Variance summary */}
+                      <div className="p-4 rounded-2xl bg-tertiary/5 border border-tertiary/20 flex justify-between items-center text-xs font-bold">
+                        <span>Spending Variance:</span>
+                        <span className={totalSpent >= month2Spent ? 'text-rose-500' : 'text-emerald-500'}>
+                          ${(totalSpent - month2Spent).toFixed(2)} ({((totalSpent - (month2Spent || 1)) / (month2Spent || 1) * 100).toFixed(1)}%)
+                        </span>
+                      </div>
                     </div>
                   )}
-
-                  {successMessage && (
-                    <div className="text-xs text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 p-3 rounded-xl font-medium">
-                      {successMessage}
-                    </div>
-                  )}
-
-                  <BudgetForm onSubmitBudget={handleSaveBudget} loading={loading} />
 
                 </DialogPanel>
               </TransitionChild>

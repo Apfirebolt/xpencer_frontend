@@ -70,7 +70,7 @@ export const useBudgetStore = create((set, get) => ({
   deleteBudget: async (budgetId) => {
     set({ loading: true, error: null });
     try {
-      await httpClient.delete(`/api/budget/${budgetId}`, getAuthHeaders());
+      await httpClient.delete(`/budget/${budgetId}`, getAuthHeaders());
       set((state) => ({
         budgets: state.budgets.filter((b) => b._id !== budgetId),
         loading: false,
