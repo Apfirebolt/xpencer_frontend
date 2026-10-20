@@ -10,6 +10,7 @@ import ExpenseListView from "@/components/ExpenseList";
 import ExpenseAgGrid from "@/components/ExpenseAgGrid";
 import ExpenseChart from "@/components/ExpenseChart";
 import MockExpenseModal from "@/components/MockExpenseModal";
+import ConfirmModal from "@/components/ConfirmModal";
 import { useExpenseStore } from "@/store/useExpenseStore";
 import {
   WalletIcon,
@@ -41,6 +42,7 @@ export default function ExpenseClient() {
     error,
     fetchExpenses,
     createExpense,
+    deleteExpense,
     getTotalSpent,
   } = useExpenseStore();
 
@@ -49,6 +51,12 @@ export default function ExpenseClient() {
   const [isAnalyticsOpen, setIsAnalyticsOpen] = useState(false);
   const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
   const [isMockModalOpen, setIsMockModalOpen] = useState(false);
+  
+  // Confirmation Delete Modal State
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [expenseToDeleteId, setExpenseToDeleteId] = useState(null);
+  const [deleting, setDeleting] = useState(false);
+
   const [viewMode, setViewMode] = useState("card");
   const [successMessage, setSuccessMessage] = useState("");
 
@@ -69,6 +77,28 @@ export default function ExpenseClient() {
       }, 1500);
     }
   }
+
+  // Prompt confirmation modal for deletion
+  const promptDeleteExpense = (id) => {
+    setExpenseToDeleteId(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  // Execute deletion upon confirmation
+  const handleConfirmDelete = async () => {
+    if (!expenseToDeleteId) return;
+    setDeleting(true);
+
+    try {
+      await deleteExpense(expenseToDeleteId);
+      setIsDeleteModalOpen(false);
+      setExpenseToDeleteId(null);
+    } catch (err) {
+      console.error("Failed to delete expense:", err);
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-light dark:bg-dark text-dark dark:text-light flex flex-col font-sans selection:bg-primary selection:text-white transition-colors duration-200">
@@ -224,8 +254,12 @@ export default function ExpenseClient() {
             </div>
           ) : (
             <>
-              {viewMode === "card" && <ExpenseCardView expenses={expenses} />}
-              {viewMode === "list" && <ExpenseListView expenses={expenses} />}
+              {viewMode === "card" && (
+                <ExpenseCardView expenses={expenses} onDelete={promptDeleteExpense} />
+              )}
+              {viewMode === "list" && (
+                <ExpenseListView expenses={expenses} onDelete={promptDeleteExpense} />
+              )}
               {viewMode === "grid" && <ExpenseAgGrid expenses={expenses} />}
             </>
           )}
@@ -369,6 +403,17 @@ export default function ExpenseClient() {
       <MockExpenseModal
         isOpen={isMockModalOpen}
         onClose={() => setIsMockModalOpen(false)}
+      />
+
+      {/* 4. Confirmation Delete Modal */}
+      <ConfirmModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        title="Delete Transaction"
+        message="Are you sure you want to delete this expense record? This action cannot be undone."
+        confirmText="Yes, Delete"
+        loading={deleting}
       />
 
       <Footer />

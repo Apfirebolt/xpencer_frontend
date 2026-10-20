@@ -1,8 +1,8 @@
 'use client';
 
-import { CalendarIcon, TagIcon } from '@heroicons/react/24/outline';
+import { CalendarIcon, TagIcon, TrashIcon } from '@heroicons/react/24/outline';
 
-export default function ExpenseCardView({ expenses }) {
+export default function ExpenseCardView({ expenses, onDelete }) {
   if (!expenses || expenses.length === 0) return null;
 
   return (
@@ -17,10 +17,24 @@ export default function ExpenseCardView({ expenses }) {
               <span className="px-3 py-1 rounded-xl bg-primary/10 text-primary text-xs font-bold font-mono border border-primary/20">
                 {exp.category}
               </span>
-              <span className="text-xs text-dark/40 dark:text-light/40 flex items-center gap-1 font-mono">
-                <CalendarIcon className="h-3.5 w-3.5" />
-                {exp.createdAt ? new Date(exp.createdAt).toLocaleDateString() : 'Just now'}
-              </span>
+              
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-dark/40 dark:text-light/40 flex items-center gap-1 font-mono">
+                  <CalendarIcon className="h-3.5 w-3.5" />
+                  {exp.createdAt ? new Date(exp.createdAt).toLocaleDateString() : 'Just now'}
+                </span>
+
+                {/* Delete Button Trigger */}
+                {onDelete && (
+                  <button
+                    onClick={() => onDelete(exp._id)}
+                    className="p-1.5 rounded-xl text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer opacity-0 group-hover:opacity-100"
+                    title="Delete Expense"
+                  >
+                    <TrashIcon className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
             </div>
 
             <p className="text-sm font-medium text-dark dark:text-light leading-relaxed">

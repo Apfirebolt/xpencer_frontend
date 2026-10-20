@@ -51,6 +51,24 @@ export const useExpenseStore = create((set, get) => ({
     }
   },
 
+  // Delete an expense by ID with auth header
+  deleteExpense: async (expenseId) => {
+    set({ loading: true, error: null });
+    try {
+      await httpClient.delete(`/expense/${expenseId}`, getAuthHeaders());
+      // Remove the deleted expense from the current list
+      set((state) => ({
+        expenses: state.expenses.filter((exp) => exp._id !== expenseId),
+        loading: false,
+      }));
+      return { success: true };
+    } catch (err) {
+      const errorMessage = err.response?.data?.error || err.response?.data?.message || err.message || "Failed to delete expense.";
+      set({ error: errorMessage, loading: false });
+      return { success: false, error: errorMessage };
+    }
+  },
+
   // Generate random mock expenses (10, 20, 30, or 40 items)
   generateMockExpenses: async (count = 10, month, year) => {
     set({ loading: true, error: null });
