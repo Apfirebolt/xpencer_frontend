@@ -105,9 +105,8 @@ export default function ExpenseClient() {
 
         {/* Expense Charts Section (Rendered if expenses exist) */}
         {!fetching && expenses.length > 0 && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8" data-aos="fade-up">
+          <div className="grid grid-cols-1 gap-8" data-aos="fade-up">
             <ExpenseChart expenses={expenses} type="line" />
-            <ExpenseChart expenses={expenses} type="doughnut" />
           </div>
         )}
 
