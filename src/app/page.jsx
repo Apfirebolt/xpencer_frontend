@@ -1,14 +1,14 @@
+'use client';
+
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Link from "next/link";
+import { useTranslation } from "@/context/LanguageContext";
 import { SparklesIcon, WalletIcon, ChartPieIcon, ArrowRightIcon, ShieldCheckIcon, UserGroupIcon, CurrencyDollarIcon } from "@heroicons/react/24/outline";
 
-export const metadata = {
-  title: "Xpencer | Smart Expense Management, Budgets & Bill Splitting",
-  description: "Track budgets, categorize spending automatically, monitor financial insights, and split group expenses effortlessly in one secure platform.",
-};
-
 export default function Home() {
+  const { t } = useTranslation();
+
   return (
     <div className="min-h-screen bg-light dark:bg-dark text-dark dark:text-light flex flex-col font-sans selection:bg-primary selection:text-white transition-colors duration-200">
       <Header />
@@ -23,15 +23,15 @@ export default function Home() {
           <div className="max-w-5xl mx-auto text-center relative z-10 space-y-8" data-aos="fade-up">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-wider">
               <SparklesIcon className="h-4 w-4 animate-pulse" />
-              <span>Next-Gen Smart Financial Ledger</span>
+              <span>{t('home.heroBadge')}</span>
             </div>
 
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-tight font-heading">
-              Master Your Money, <span className="text-primary">Without Friction.</span>
+              {t('home.heroTitle1')} <span className="text-primary">{t('home.heroTitle2')}</span>
             </h1>
 
             <p className="text-base sm:text-lg text-dark/70 dark:text-light/70 max-w-2xl mx-auto leading-relaxed font-sans">
-              Set budgets, track expenses automatically across intelligent categories, and split group bills effortlessly with friends and colleagues. Secure, private, and lightning fast.
+              {t('home.heroSubtitle')}
             </p>
 
             {/* CTA Buttons */}
@@ -40,7 +40,7 @@ export default function Home() {
                 href="/dashboard"
                 className="w-full sm:w-auto px-8 py-4 rounded-2xl font-bold bg-primary text-white hover:bg-secondary transition-all shadow-xl shadow-primary/25 flex items-center justify-center gap-2 group"
               >
-                <span>Open Dashboard</span>
+                <span>{t('home.openDashboard')}</span>
                 <ArrowRightIcon className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Link>
 
@@ -49,7 +49,7 @@ export default function Home() {
                 className="w-full sm:w-auto px-8 py-4 rounded-2xl font-bold bg-tertiary/20 hover:bg-tertiary/30 text-dark dark:text-light border border-tertiary/30 transition-all flex items-center justify-center gap-2"
               >
                 <ChartPieIcon className="h-4 w-4 text-primary" />
-                <span>Explore Budgets</span>
+                <span>{t('home.exploreBudgets')}</span>
               </Link>
             </div>
           </div>
@@ -61,10 +61,10 @@ export default function Home() {
             
             <div className="text-center space-y-3 max-w-xl mx-auto" data-aos="fade-up">
               <h2 className="text-3xl font-bold tracking-tight font-heading">
-                Engineered for Complete Financial Clarity
+                {t('home.featuresTitle')}
               </h2>
               <p className="text-xs text-dark/60 dark:text-light/60 font-sans">
-                Built with robust security standards and intuitive workflows to keep your personal and group finances perfectly balanced.
+                {t('home.featuresSubtitle')}
               </p>
             </div>
 
@@ -79,9 +79,9 @@ export default function Home() {
                 <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:scale-110 transition-transform">
                   <ChartPieIcon className="h-6 w-6 text-primary" />
                 </div>
-                <h3 className="text-lg font-bold font-heading">Intelligent Budgets</h3>
+                <h3 className="text-lg font-bold font-heading">{t('home.feature1Title')}</h3>
                 <p className="text-xs text-dark/70 dark:text-light/70 leading-relaxed font-sans">
-                  Allocate monthly spending limits by category, track your pace in real-time, and get notified before you exceed your target thresholds.
+                  {t('home.feature1Desc')}
                 </p>
               </div>
 
@@ -94,9 +94,9 @@ export default function Home() {
                 <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:scale-110 transition-transform">
                   <UserGroupIcon className="h-6 w-6 text-primary" />
                 </div>
-                <h3 className="text-lg font-bold font-heading">Effortless Bill Splits</h3>
+                <h3 className="text-lg font-bold font-heading">{t('home.feature2Title')}</h3>
                 <p className="text-xs text-dark/70 dark:text-light/70 leading-relaxed font-sans">
-                  Split dinners, group trips, and shared household bills among friends using equal splits, percentages, or custom exact amounts instantly.
+                  {t('home.feature2Desc')}
                 </p>
               </div>
 
@@ -109,9 +109,9 @@ export default function Home() {
                 <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:scale-110 transition-transform">
                   <ShieldCheckIcon className="h-6 w-6 text-primary" />
                 </div>
-                <h3 className="text-lg font-bold font-heading">Secure Ledger & Privacy</h3>
+                <h3 className="text-lg font-bold font-heading">{t('home.feature3Title')}</h3>
                 <p className="text-xs text-dark/70 dark:text-light/70 leading-relaxed font-sans">
-                  Your financial data is protected with encrypted sessions, secure database indexing, and strict user data isolation guarantees.
+                  {t('home.feature3Desc')}
                 </p>
               </div>
 

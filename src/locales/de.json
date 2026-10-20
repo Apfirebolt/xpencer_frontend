@@ -15,16 +15,16 @@
     "language": "Sprache",
     "explore": "Xpencer erkunden",
     "platformInsights": "Plattform-Einblicke & Architektur",
-    "platformDesc": "Entdecken Sie die technischen Prinzipien, Sicherheitsstandards und Tools von Xpencer.",
+    "platformDesc": "Entdecken Sie die Prinzipien und Sicherheitsstandards von Xpencer.",
     "aboutXpencer": "Über Xpencer",
-    "aboutXpencerDesc": "Unsere Mission, Vision und Kernphilosophie der Finanzverfolgung.",
-    "techStack": "Tech-Stack",
-    "techStackDesc": "Erstellt mit Next.js, Mongoose, AG Grid und Chart.js-Analysen.",
+    "aboutXpencerDesc": "Unsere Mission, Vision und Finanzphilosophie.",
+    "techStack": "Technologie-Stack",
+    "techStackDesc": "Entwickelt mit Next.js, Mongoose, AG Grid und Chart.js.",
     "securityPrivacy": "Sicherheit & Datenschutz",
-    "securityPrivacyDesc": "JWT-Authentifizierung, verschlüsselte Daten und sichere Cookie-Speicherung.",
-    "apiDocs": "API & Swagger-Dokumentation",
-    "apiDocsDesc": "Erkunden Sie Full-Stack-OpenAPI-Dokumentation und Backend-Routen.",
-    "aboutAndArchitecture": "Über uns & Architektur"
+    "securityPrivacyDesc": "JWT-Authentifizierung und sichere Cookie-Speicherung.",
+    "apiDocs": "API & Swagger-Doku",
+    "apiDocsDesc": "OpenAPI-Dokumentation und Backend-Routen erkunden.",
+    "aboutAndArchitecture": "Über & Architektur"
   },
   "expenses": {
     "title": "Verwalten Sie Ihre Ausgaben",
@@ -37,7 +37,7 @@
     "noExpenses": "Noch keine Ausgaben erfasst"
   },
   "footer": {
-    "description": "Die intelligente Ausgabenmanagement-Suite für Einzelpersonen und Teams. Budgets verfolgen, Ausgaben automatisch kategorisieren und Rechnungen mühelos teilen.",
+    "description": "Die intelligente Ausgabenmanagement-Suite für Einzelpersonen und Teams. Budgets verfolgen, Ausgaben automatisch kategorisieren und Rechnungen teilen.",
     "platform": "Plattform",
     "dashboard": "Übersicht",
     "budgetPlanner": "Budgetplaner",
@@ -48,16 +48,32 @@
     "groupSplitting": "Gruppenteilung",
     "secureLedger": "Sicher verschlüsseltes Hauptbuch",
     "newsletterTitle": "Übernehmen Sie die Kontrolle über Ihre Finanzen",
-    "newsletterSubtitle": "Treten Sie unserer Warteliste bei, um über neue Budgetierungseinblicke und App-Updates informiert zu werden.",
+    "newsletterSubtitle": "Treten Sie unserer Warteliste bei, um über neue Budgetierungseinblicke informiert zu werden.",
     "emailPlaceholder": "Geben Sie Ihre E-Mail-Adresse ein",
     "joining": "Wird beigetreten...",
     "getEarlyAccess": "Frühzeitigen Zugang erhalten",
-    "defaultSuccess": "Sie stehen auf der Warteliste für den frühzeitigen Zugang!",
+    "defaultSuccess": "Sie stehen auf der Warteliste!",
     "defaultError": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
     "networkError": "Netzwerkfehler. Bitte überprüfen Sie Ihre Verbindung.",
     "rights": "Xpencer. Alle Rechte vorbehalten.",
     "privacy": "Datenschutz",
     "terms": "Nutzungsbedingungen",
     "security": "Sicherheit & Daten"
+  },
+  "home": {
+    "heroBadge": "Intelligentes Finanzhauptbuch der nächsten Generation",
+    "heroTitle1": "Kontrollieren Sie Ihr Geld,",
+    "heroTitle2": "Ganz ohne Reibung.",
+    "heroSubtitle": "Setzen Sie Budgets, erfassen Sie Ausgaben automatisch und teilen Sie Gruppenrechnungen mühelos mit Freunden. Sicher, privat und blitzschnell.",
+    "openDashboard": "Dashboard öffnen",
+    "exploreBudgets": "Budgets erkunden",
+    "featuresTitle": "Entwickelt für absolute finanzielle Klarheit",
+    "featuresSubtitle": "Mit robusten Sicherheitsstandards und intuitiven Arbeitsabläufen für perfekte Balance.",
+    "feature1Title": "Intelligente Budgets",
+    "feature1Desc": "Monatliche Ausgabenlimits festlegen, in Echtzeit verfolgen und rechtzeitig benachrichtigt werden.",
+    "feature2Title": "Mühelose Rechnungsaufteilung",
+    "feature2Desc": "Teilen Sie Abendessen, Gruppenreisen und Haushaltskosten sofort unter Freunden auf.",
+    "feature3Title": "Sicheres Hauptbuch & Datenschutz",
+    "feature3Desc": "Ihre Finanzdaten sind durch verschlüsselte Sitzungen und strenge Isolierung geschützt."
   }
 }

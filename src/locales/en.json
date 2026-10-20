@@ -59,5 +59,21 @@
     "privacy": "Privacy Policy",
     "terms": "Terms of Service",
     "security": "Security & Data"
+  },
+  "home": {
+    "heroBadge": "Next-Gen Smart Financial Ledger",
+    "heroTitle1": "Master Your Money,",
+    "heroTitle2": "Without Friction.",
+    "heroSubtitle": "Set budgets, track expenses automatically across intelligent categories, and split group bills effortlessly with friends and colleagues. Secure, private, and lightning fast.",
+    "openDashboard": "Open Dashboard",
+    "exploreBudgets": "Explore Budgets",
+    "featuresTitle": "Engineered for Complete Financial Clarity",
+    "featuresSubtitle": "Built with robust security standards and intuitive workflows to keep your personal and group finances perfectly balanced.",
+    "feature1Title": "Intelligent Budgets",
+    "feature1Desc": "Allocate monthly spending limits by category, track your pace in real-time, and get notified before you exceed your target thresholds.",
+    "feature2Title": "Effortless Bill Splits",
+    "feature2Desc": "Split dinners, group trips, and shared household bills among friends using equal splits, percentages, or custom exact amounts instantly.",
+    "feature3Title": "Secure Ledger & Privacy",
+    "feature3Desc": "Your financial data is protected with encrypted sessions, secure database indexing, and strict user data isolation guarantees."
   }
 }
