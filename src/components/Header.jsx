@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Fragment } from 'react';
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import Cookie from "js-cookie";
@@ -22,7 +22,8 @@ import {
   SparklesIcon,
   ShieldCheckIcon,
   CodeBracketIcon,
-  CpuChipIcon
+  CpuChipIcon,
+  Cog6ToothIcon
 } from "@heroicons/react/24/outline";
 
 const Header = () => {
@@ -30,10 +31,12 @@ const Header = () => {
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAboutMegaMenuOpen, setIsAboutMegaMenuOpen] = useState(false);
+  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [user, setUser] = useState(null);
 
   const closeTimeoutRef = useRef(null);
+  const userDropdownRef = useRef(null);
 
   // Initialize theme and check user session on mount
   useEffect(() => {
@@ -56,6 +59,17 @@ const Header = () => {
     }
   }, [pathname]);
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userDropdownRef.current && !userDropdownRef.current.contains(event.target)) {
+        setIsUserDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const toggleTheme = () => {
     if (isDarkMode) {
       document.documentElement.classList.remove('dark');
@@ -72,12 +86,14 @@ const Header = () => {
     Cookie.remove('user');
     Cookie.remove('token');
     setUser(null);
+    setIsUserDropdownOpen(false);
     router.push('/login');
   };
 
   useEffect(() => {
     setIsMobileMenuOpen(false);
     setIsAboutMegaMenuOpen(false);
+    setIsUserDropdownOpen(false);
   }, [pathname]);
 
   const handleMouseEnterAbout = () => {
@@ -105,6 +121,8 @@ const Header = () => {
     { name: "API & Swagger Docs", href: "/api-docs", description: "Explore full-stack OpenAPI documentation and backend routes.", icon: CpuChipIcon },
   ];
 
+  const currentAvatar = user?.profilePic?.url || null;
+
   return (
     <header className="relative sticky top-0 z-50 bg-white/80 dark:bg-dark/90 backdrop-blur-xl border-b border-tertiary/20 dark:border-tertiary/10 transition-colors shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
@@ -116,7 +134,7 @@ const Header = () => {
               <WalletIcon className="h-5 w-5 text-primary" />
             </div>
             <span className="text-xl sm:text-2xl font-extrabold tracking-wider font-heading">
-              X <span className="text-primary"> pencer</span> 
+              X <span className="text-primary"> Pencer</span> 
             </span>
           </Link>
 
@@ -179,22 +197,55 @@ const Header = () => {
             </ul>
           </nav>
 
-          {/* Desktop Auth Section */}
+          {/* Desktop User Dropdown / Auth Section */}
           <div className="flex items-center gap-3 pl-4 border-l border-tertiary/20">
             {user ? (
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-primary/10 border border-primary/20 text-xs font-semibold text-dark dark:text-light">
-                  <UserCircleIcon className="h-4 w-4 text-primary" />
-                  <span className="max-w-[140px] truncate">{user.email}</span>
-                </div>
+              <div className="relative" ref={userDropdownRef}>
                 <button
-                  onClick={handleLogout}
-                  className="p-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/20 transition-all flex items-center gap-1.5 text-xs font-bold cursor-pointer"
-                  title="Logout"
+                  onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
+                  className="flex items-center gap-2.5 px-3.5 py-2 rounded-2xl bg-primary/10 hover:bg-primary/15 border border-primary/20 text-xs font-semibold text-dark dark:text-light transition-all cursor-pointer"
                 >
-                  <ArrowRightOnRectangleIcon className="h-4 w-4" />
-                  <span>Logout</span>
+                  {currentAvatar ? (
+                    <div className="w-6 h-6 rounded-full overflow-hidden shrink-0">
+                      <img src={currentAvatar} alt="Avatar" className="w-full h-full object-cover" />
+                    </div>
+                  ) : (
+                    <UserCircleIcon className="h-4 w-4 text-primary shrink-0" />
+                  )}
+                  <span className="max-w-[140px] truncate">{user.email || user.firstName}</span>
+                  <ChevronDownIcon className={`h-3 w-3 transition-transform duration-200 ${isUserDropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
+
+                {/* Dropdown Menu */}
+                {isUserDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-52 rounded-2xl bg-white dark:bg-dark border border-tertiary/20 shadow-xl py-2 z-50 animate-fadeIn">
+                    <div className="px-4 py-2 border-b border-tertiary/20">
+                      <p className="text-[10px] uppercase font-bold text-dark/40 dark:text-light/40">Signed in as</p>
+                      <p className="text-xs font-bold truncate text-dark dark:text-light">{user.email}</p>
+                    </div>
+
+                    <div className="py-1">
+                      <Link
+                        href="/settings"
+                        onClick={() => setIsUserDropdownOpen(false)}
+                        className="flex items-center gap-2.5 px-4 py-2.5 text-xs font-semibold hover:bg-primary/10 hover:text-primary transition-colors"
+                      >
+                        <Cog6ToothIcon className="h-4 w-4 text-primary" />
+                        <span>Settings</span>
+                      </Link>
+                    </div>
+
+                    <div className="border-t border-tertiary/20 pt-1">
+                      <button
+                        onClick={handleLogout}
+                        className="w-full flex items-center gap-2.5 px-4 py-2.5 text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 transition-colors text-left cursor-pointer"
+                      >
+                        <ArrowRightOnRectangleIcon className="h-4 w-4" />
+                        <span>Logout</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="flex items-center gap-2">
@@ -230,7 +281,7 @@ const Header = () => {
         </button>
       </div>
 
-      {/* FULL-SCREEN ANIMATED "ABOUT" MEGA-MENU (Anchored strictly to the header container width bounds) */}
+      {/* FULL-SCREEN ANIMATED "ABOUT" MEGA-MENU */}
       <div 
         className={`absolute top-full left-0 w-full bg-white/95 dark:bg-dark/95 backdrop-blur-2xl border-b border-tertiary/20 dark:border-tertiary/10 shadow-2xl transition-all duration-300 ease-in-out overflow-hidden hidden md:block ${
           isAboutMegaMenuOpen ? 'max-h-[500px] opacity-100 py-10 pointer-events-auto' : 'max-h-0 opacity-0 py-0 pointer-events-none'
@@ -322,21 +373,39 @@ const Header = () => {
             })}
           </div>
 
-          {/* Mobile Auth Section */}
+          {/* Mobile User Dropdown / Auth Section */}
           <div className="pt-4 border-t border-tertiary/20 space-y-3">
             {user ? (
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-primary/10 border border-primary/20 text-xs font-semibold text-dark dark:text-light">
-                  <UserCircleIcon className="h-5 w-5 text-primary shrink-0" />
-                  <span className="truncate">{user.email}</span>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-primary/10 border border-primary/20 text-xs font-semibold text-dark dark:text-light">
+                  <div className="flex items-center gap-2 truncate">
+                    {currentAvatar ? (
+                      <div className="w-5 h-5 rounded-full overflow-hidden shrink-0">
+                        <img src={currentAvatar} alt="Avatar" className="w-full h-full object-cover" />
+                      </div>
+                    ) : (
+                      <UserCircleIcon className="h-4 w-4 text-primary shrink-0" />
+                    )}
+                    <span className="truncate">{user.email}</span>
+                  </div>
                 </div>
-                <button
-                  onClick={handleLogout}
-                  className="w-full py-3 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/20 transition-all flex items-center justify-center gap-2 text-xs font-bold"
-                >
-                  <ArrowRightOnRectangleIcon className="h-4 w-4" />
-                  <span>Logout</span>
-                </button>
+
+                <div className="grid grid-cols-2 gap-2 pt-1">
+                  <Link
+                    href="/settings"
+                    className="py-2.5 text-center rounded-xl text-xs font-bold text-dark dark:text-light bg-tertiary/20 hover:bg-tertiary/30 border border-tertiary/30 transition-colors flex items-center justify-center gap-1.5"
+                  >
+                    <Cog6ToothIcon className="h-4 w-4 text-primary" />
+                    <span>Settings</span>
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="py-2.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/20 transition-all flex items-center justify-center gap-1.5 text-xs font-bold cursor-pointer"
+                  >
+                    <ArrowRightOnRectangleIcon className="h-4 w-4" />
+                    <span>Logout</span>
+                  </button>
+                </div>
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-2">

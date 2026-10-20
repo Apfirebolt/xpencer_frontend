@@ -5,15 +5,15 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-primary: #4F46E5;
-  --color-secondary: #6366F1;
+  --color-primary: #287A74;
+  --color-secondary: #55A9A0;
   --color-tertiary: #A5B4FC;
   --color-success: #10B981;
   --color-danger: #EF4444;
   --color-warning: #F59E0B;
   --color-info: #3B82F6;
-  --color-dark: #1F2937;
-  --color-light: #F9FAFB;
+  --color-dark: #5C7057;
+  --color-light: #FFEFC4;
 
   --font-heading: 'Fira Sans', sans-serif;
   --font-body: 'Lora', serif;

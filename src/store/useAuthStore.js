@@ -33,7 +33,7 @@ export const useAuthStore = create((set, get) => ({
   login: async (credentials) => {
     set({ loading: true, error: null });
     try {
-      const res = await httpClient.post('/api/auth/login', credentials);
+      const res = await httpClient.post('/auth/login', credentials);
       const data = res.data;
 
       // Set cookies
@@ -56,7 +56,7 @@ export const useAuthStore = create((set, get) => ({
   register: async (userData) => {
     set({ loading: true, error: null });
     try {
-      const res = await httpClient.post('/api/auth/register', userData);
+      const res = await httpClient.post('/auth/register', userData);
       const data = res.data;
 
       Cookie.set('token', data.token, { expires: 7 });
@@ -78,7 +78,7 @@ export const useAuthStore = create((set, get) => ({
   fetchProfile: async () => {
     set({ loading: true, error: null });
     try {
-      const res = await httpClient.get('/api/auth/profile', getAuthHeaders());
+      const res = await httpClient.get('/auth/profile', getAuthHeaders());
       const userData = res.data;
       
       Cookie.set('user', JSON.stringify(userData), { expires: 7 });
@@ -93,7 +93,7 @@ export const useAuthStore = create((set, get) => ({
   updateProfile: async (profileData) => {
     set({ loading: true, error: null });
     try {
-      const res = await httpClient.put('/api/auth/profile', profileData, getAuthHeaders());
+      const res = await httpClient.put('/auth/profile', profileData, getAuthHeaders());
       const updatedUser = res.data;
 
       Cookie.set('user', JSON.stringify(updatedUser), { expires: 7 });
@@ -118,7 +118,7 @@ export const useAuthStore = create((set, get) => ({
         'Content-Type': 'multipart/form-data',
       };
 
-      const res = await httpClient.put('/api/auth/profile/pic', formData, { headers });
+      const res = await httpClient.put('/auth/profile/pic', formData, { headers });
       const { profilePic } = res.data;
 
       // Update current user state with new profilePic object
@@ -140,7 +140,7 @@ export const useAuthStore = create((set, get) => ({
   changePassword: async (passwordData) => {
     set({ loading: true, error: null });
     try {
-      const res = await httpClient.put('/api/auth/change-password', passwordData, getAuthHeaders());
+      const res = await httpClient.put('/auth/change-password', passwordData, getAuthHeaders());
       set({ loading: false });
       return { success: true, message: res.data.message || "Password updated successfully." };
     } catch (err) {

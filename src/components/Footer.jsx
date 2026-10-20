@@ -59,7 +59,7 @@ const Footer = () => {
                   <WalletIcon className="h-5 w-5 text-primary" />
                 </div>
                 <span className="text-2xl font-extrabold tracking-wider font-heading text-dark dark:text-light">
-                  Xpencer<span className="text-primary">.</span>
+                  X <span className="text-primary"> Pencer</span>
                 </span>
               </Link>
               <p className="text-sm text-dark/60 dark:text-light/60 max-w-md leading-relaxed font-sans">
