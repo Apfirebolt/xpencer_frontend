@@ -18,7 +18,7 @@ export const useExpenseRoomStore = create((set, get) => ({
   fetchRooms: async () => {
     set({ fetching: true, error: null });
     try {
-      const res = await httpClient.get('/api/rooms', getAuthHeaders());
+      const res = await httpClient.get('/rooms', getAuthHeaders());
       const data = res.data.rooms || res.data;
       set({ rooms: Array.isArray(data) ? data : [], fetching: false });
     } catch (err) {
@@ -34,7 +34,7 @@ export const useExpenseRoomStore = create((set, get) => ({
   createRoom: async (roomData) => {
     set({ loading: true, error: null });
     try {
-      const res = await httpClient.post('/api/rooms', roomData, getAuthHeaders());
+      const res = await httpClient.post('/rooms', roomData, getAuthHeaders());
       const createdRoom = res.data.room || res.data;
 
       set((state) => ({
@@ -53,7 +53,7 @@ export const useExpenseRoomStore = create((set, get) => ({
   inviteUser: async (roomId, userId, notificationMessage) => {
     set({ loading: true, error: null });
     try {
-      await httpClient.post(`/api/rooms/${roomId}/invite`, { userId, notificationMessage }, getAuthHeaders());
+      await httpClient.post(`/rooms/${roomId}/invite`, { userId, notificationMessage }, getAuthHeaders());
       set({ loading: false });
       return { success: true };
     } catch (err) {
@@ -67,7 +67,7 @@ export const useExpenseRoomStore = create((set, get) => ({
   respondToJoinRequest: async (requestId, status) => {
     set({ loading: true, error: null });
     try {
-      await httpClient.put(`/api/rooms/requests/${requestId}`, { status }, getAuthHeaders());
+      await httpClient.put(`/rooms/requests/${requestId}`, { status }, getAuthHeaders());
       // Refresh rooms list after accepting/rejecting
       await get().fetchRooms();
       set({ loading: false });
@@ -83,7 +83,7 @@ export const useExpenseRoomStore = create((set, get) => ({
   addRoomExpense: async (roomId, expenseData) => {
     set({ loading: true, error: null });
     try {
-      await httpClient.post(`/api/rooms/${roomId}/expense`, expenseData, getAuthHeaders());
+      await httpClient.post(`/rooms/${roomId}/expense`, expenseData, getAuthHeaders());
       set({ loading: false });
       return { success: true };
     } catch (err) {
