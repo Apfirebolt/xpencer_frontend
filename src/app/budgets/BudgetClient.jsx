@@ -7,6 +7,7 @@ import BudgetForm from '@/components/BudgetForm';
 import BudgetComparisonChart from '@/components/BudgetComparisonChart';
 import ConfirmModal from '@/components/ConfirmModal';
 import { useBudgetStore } from '@/store/useBudgetStore';
+import { useTranslation } from '@/context/LanguageContext';
 import httpClient from '@/lib/api';
 import Cookie from 'js-cookie';
 import { ChartPieIcon, PlusCircleIcon, CurrencyDollarIcon, CalendarDaysIcon, XMarkIcon, TrashIcon, ScaleIcon } from '@heroicons/react/24/outline';
@@ -40,6 +41,8 @@ export default function BudgetClient() {
     getTotalBudgetSpent 
   } = useBudgetStore();
 
+  const { t } = useTranslation();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
@@ -65,7 +68,7 @@ export default function BudgetClient() {
     const result = await setBudget(budgetData);
 
     if (result.success) {
-      setSuccessMessage('Budget successfully saved!');
+      setSuccessMessage(t?.budget?.successSaved || 'Budget successfully saved!');
       setTimeout(() => {
         setSuccessMessage('');
         setIsModalOpen(false);
@@ -132,10 +135,10 @@ export default function BudgetClient() {
           <div>
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-wider uppercase border border-primary/20 mb-3">
               <ChartPieIcon className="h-4 w-4" />
-              <span>Budget Planner</span>
+              <span>{t("budget.badge") || "Budget Planner"}</span>
             </div>
             <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight font-heading">
-              Category Budgets
+              {t("budget.title") || "Category Budgets"}
             </h1>
           </div>
 
@@ -157,15 +160,15 @@ export default function BudgetClient() {
               className="px-5 py-3 rounded-2xl font-bold bg-tertiary/20 hover:bg-tertiary/30 text-dark dark:text-light border border-tertiary/30 transition-all flex items-center gap-2 cursor-pointer shrink-0 text-xs"
             >
               <ScaleIcon className="h-4 w-4 text-primary" />
-              <span>Compare Months</span>
+              <span>{t("budget.compareMonths") || "Compare Months"}</span>
             </button>
 
             <button
               onClick={() => setIsModalOpen(true)}
               className="px-6 py-3 rounded-2xl font-bold bg-primary hover:bg-secondary text-white transition-all shadow-lg shadow-primary/25 flex items-center gap-2 cursor-pointer shrink-0 text-xs"
             >
-              <PlusCircleIcon className="h-4 w-4" />
-              <span>Set Budget</span>
+              <PlusCircleIcon className="h-5 w-5" />
+              <span>{t("budget.setBudget") || "Set Budget"}</span>
             </button>
           </div>
         </div>
@@ -173,15 +176,15 @@ export default function BudgetClient() {
         {/* Overview Summary Banner */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6" data-aos="fade-up">
           <div className="p-6 rounded-3xl bg-white/80 dark:bg-dark/80 border border-tertiary/20 dark:border-tertiary/10 space-y-1 shadow-sm">
-            <p className="text-xs uppercase font-bold text-dark/50 dark:text-light/50 font-heading">Total Budgeted</p>
+            <p className="text-xs uppercase font-bold text-dark/50 dark:text-light/50 font-heading">{t("budget.totalBudgeted") || "Total Budgeted"}</p>
             <p className="text-2xl font-extrabold font-heading text-primary">${totalLimit.toFixed(2)}</p>
           </div>
           <div className="p-6 rounded-3xl bg-white/80 dark:bg-dark/80 border border-tertiary/20 dark:border-tertiary/10 space-y-1 shadow-sm">
-            <p className="text-xs uppercase font-bold text-dark/50 dark:text-light/50 font-heading">Total Spent</p>
+            <p className="text-xs uppercase font-bold text-dark/50 dark:text-light/50 font-heading">{t("budget.totalSpent") || "Total Spent"}</p>
             <p className="text-2xl font-extrabold font-heading text-dark dark:text-light">${totalSpent.toFixed(2)}</p>
           </div>
           <div className="p-6 rounded-3xl bg-white/80 dark:bg-dark/80 border border-tertiary/20 dark:border-tertiary/10 space-y-1 shadow-sm">
-            <p className="text-xs uppercase font-bold text-dark/50 dark:text-light/50 font-heading">Overall Usage</p>
+            <p className="text-xs uppercase font-bold text-dark/50 dark:text-light/50 font-heading">{t("budget.overallUsage") || "Overall Usage"}</p>
             <p className="text-2xl font-extrabold font-heading text-primary">{overallPercentage}%</p>
           </div>
         </div>
@@ -189,25 +192,25 @@ export default function BudgetClient() {
         {/* Budgets List Grid */}
         <div className="space-y-6" data-aos="fade-up" data-aos-delay="100">
           <h2 className="text-xl font-bold font-heading">
-            Allocations for {MONTH_NAMES[selectedMonth - 1]} {selectedYear}
+            {t("budget.allocationsFor") || "Allocations for"} {MONTH_NAMES[selectedMonth - 1]} {selectedYear}
           </h2>
 
           {fetching ? (
             <div className="p-12 text-center text-sm text-dark/50 dark:text-light/50 bg-white/50 dark:bg-dark/50 rounded-3xl border border-tertiary/20">
-              Loading budgets...
+              {t("budget.loadingBudgets") || "Loading budgets..."}
             </div>
           ) : budgets.length === 0 ? (
             <div className="p-16 text-center space-y-4 max-w-md mx-auto bg-white/50 dark:bg-dark/50 rounded-3xl border border-tertiary/20">
               <ChartPieIcon className="h-12 w-12 text-primary mx-auto opacity-50" />
               <div className="space-y-1">
-                <p className="text-sm font-semibold text-dark dark:text-light">No budgets set for this month</p>
-                <p className="text-xs text-dark/60 dark:text-light/60">Create category limits to track your monthly spending pace.</p>
+                <p className="text-sm font-semibold text-dark dark:text-light">{t("budget.noBudgets") || "No budgets set for this month"}</p>
+                <p className="text-xs text-dark/60 dark:text-light/60">{t("budget.noBudgetsDesc") || "Create category limits to track your monthly spending pace."}</p>
               </div>
               <button
                 onClick={() => setIsModalOpen(true)}
                 className="px-5 py-2.5 rounded-xl text-xs font-bold bg-primary/10 hover:bg-primary/20 text-primary transition-all border border-primary/20 cursor-pointer"
               >
-                Set First Budget
+                {t("budget.setFirstBudget") || "Set First Budget"}
               </button>
             </div>
           ) : (
@@ -227,7 +230,7 @@ export default function BudgetClient() {
                         <button
                           onClick={() => promptDeleteBudget(b._id)}
                           className="p-1.5 rounded-xl text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer"
-                          title="Delete Budget"
+                          title={t("budget.deleteModalTitle") || "Delete Budget"}
                         >
                           <TrashIcon className="h-4 w-4" />
                         </button>
@@ -235,13 +238,13 @@ export default function BudgetClient() {
 
                       <div className="flex justify-between items-baseline pt-2">
                         <div>
-                          <p className="text-[10px] uppercase font-bold text-dark/40 dark:text-light/40 font-heading">Spent</p>
+                          <p className="text-[10px] uppercase font-bold text-dark/40 dark:text-light/40 font-heading">{t("budget.spent") || "Spent"}</p>
                           <p className={`text-lg font-extrabold font-heading ${isOverBudget ? 'text-rose-500' : 'text-dark dark:text-light'}`}>
                             ${Number(b.spent || 0).toFixed(2)}
                           </p>
                         </div>
                         <div className="text-right">
-                          <p className="text-[10px] uppercase font-bold text-dark/40 dark:text-light/40 font-heading">Limit</p>
+                          <p className="text-[10px] uppercase font-bold text-dark/40 dark:text-light/40 font-heading">{t("budget.limit") || "Limit"}</p>
                           <p className="text-lg font-extrabold font-heading text-primary">
                             ${Number(b.limit).toFixed(2)}
                           </p>
@@ -257,15 +260,15 @@ export default function BudgetClient() {
                           />
                         </div>
                         <div className="flex justify-between text-[11px] font-mono text-dark/60 dark:text-light/60">
-                          <span>{b.percentage}% used</span>
-                          <span>Rem: ${Number(b.remaining).toFixed(2)}</span>
+                          <span>{b.percentage}% {t("budget.used") || "used"}</span>
+                          <span>{t("budget.rem") || "Rem"}: ${Number(b.remaining).toFixed(2)}</span>
                         </div>
                       </div>
                     </div>
 
                     {b.description && (
                       <p className="text-xs text-dark/60 dark:text-light/60 italic border-t border-tertiary/20 pt-3">
-                        "{b.description}"
+                        &quot;{b.description}&quot;
                       </p>
                     )}
                   </div>
@@ -293,7 +296,7 @@ export default function BudgetClient() {
                         <ChartPieIcon className="h-5 w-5 text-primary" />
                       </div>
                       <DialogTitle as="h3" className="text-lg font-bold font-heading text-dark dark:text-light">
-                        Set Monthly Budget
+                        {t("budget.modalTitle") || "Set Monthly Budget"}
                       </DialogTitle>
                     </div>
                     <button onClick={() => setIsModalOpen(false)} className="p-1.5 rounded-xl text-dark/50 hover:bg-primary/10 hover:text-primary cursor-pointer">
@@ -327,7 +330,7 @@ export default function BudgetClient() {
                         <ScaleIcon className="h-5 w-5 text-primary" />
                       </div>
                       <DialogTitle as="h3" className="text-lg font-bold font-heading text-dark dark:text-light">
-                        Compare Budget & Expenses Across Two Months
+                        {t("budget.compareModalTitle") || "Compare Budget & Expenses Across Two Months"}
                       </DialogTitle>
                     </div>
                     <button onClick={() => setIsCompareModalOpen(false)} className="p-1.5 rounded-xl text-dark/50 hover:bg-primary/10 hover:text-primary cursor-pointer">
@@ -338,13 +341,13 @@ export default function BudgetClient() {
                   {/* Comparison Month Pickers */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-2xl bg-tertiary/5 border border-tertiary/20">
                     <div className="space-y-1">
-                      <label className="text-xs font-bold uppercase font-heading">Primary Month</label>
+                      <label className="text-xs font-bold uppercase font-heading">{t("budget.primaryMonth") || "Primary Month"}</label>
                       <div className="px-4 py-3 rounded-xl bg-white dark:bg-dark border border-tertiary/30 text-sm font-bold">
                         {MONTH_NAMES[selectedMonth - 1]} {selectedYear}
                       </div>
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-bold uppercase font-heading">Comparison Month</label>
+                      <label className="text-xs font-bold uppercase font-heading">{t("budget.comparisonMonth") || "Comparison Month"}</label>
                       <select
                         value={compareMonth2}
                         onChange={(e) => setCompareMonth2(Number(e.target.value))}
@@ -362,7 +365,7 @@ export default function BudgetClient() {
                     disabled={comparingLoading}
                     className="w-full py-3 text-sm font-bold text-white bg-primary hover:bg-secondary rounded-xl transition-all shadow-lg cursor-pointer"
                   >
-                    {comparingLoading ? "Comparing..." : "Run Comparison"}
+                    {comparingLoading ? (t("budget.comparing") || "Comparing...") : (t("budget.runComparison") || "Run Comparison")}
                   </button>
 
                   {/* Comparison Results */}
@@ -371,13 +374,13 @@ export default function BudgetClient() {
                       <div className="grid grid-cols-2 gap-4 text-center">
                         <div className="p-4 rounded-2xl bg-primary/5 border border-primary/10 space-y-1">
                           <p className="text-xs font-bold text-dark/60">{MONTH_NAMES[comparisonData.month1.month - 1]} {comparisonData.month1.year}</p>
-                          <p className="text-sm font-semibold">Budget: <span className="text-primary font-bold">${totalLimit.toFixed(2)}</span></p>
-                          <p className="text-sm font-semibold">Spent: <span className="font-bold">${totalSpent.toFixed(2)}</span></p>
+                          <p className="text-sm font-semibold">{t("budget.budgetLabel") || "Budget"}: <span className="text-primary font-bold">${totalLimit.toFixed(2)}</span></p>
+                          <p className="text-sm font-semibold">{t("budget.spentLabel") || "Spent"}: <span className="font-bold">${totalSpent.toFixed(2)}</span></p>
                         </div>
                         <div className="p-4 rounded-2xl bg-secondary/5 border border-secondary/10 space-y-1">
                           <p className="text-xs font-bold text-dark/60">{MONTH_NAMES[comparisonData.month2.month - 1]} {comparisonData.month2.year}</p>
-                          <p className="text-sm font-semibold">Budget: <span className="text-primary font-bold">${month2Limit.toFixed(2)}</span></p>
-                          <p className="text-sm font-semibold">Spent: <span className="font-bold">${month2Spent.toFixed(2)}</span></p>
+                          <p className="text-sm font-semibold">{t("budget.budgetLabel") || "Budget"}: <span className="text-primary font-bold">${month2Limit.toFixed(2)}</span></p>
+                          <p className="text-sm font-semibold">{t("budget.spentLabel") || "Spent"}: <span className="font-bold">${month2Spent.toFixed(2)}</span></p>
                         </div>
                       </div>
 
@@ -386,7 +389,7 @@ export default function BudgetClient() {
 
                       {/* Variance summary */}
                       <div className="p-4 rounded-2xl bg-tertiary/5 border border-tertiary/20 flex justify-between items-center text-xs font-bold">
-                        <span>Spending Variance:</span>
+                        <span>{t("budget.spendingVariance") || "Spending Variance"}:</span>
                         <span className={totalSpent >= month2Spent ? 'text-rose-500' : 'text-emerald-500'}>
                           ${(totalSpent - month2Spent).toFixed(2)} ({((totalSpent - (month2Spent || 1)) / (month2Spent || 1) * 100).toFixed(1)}%)
                         </span>
@@ -406,9 +409,9 @@ export default function BudgetClient() {
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
-        title="Delete Budget Limit"
-        message="Are you sure you want to delete this category budget? This will remove your spending limits for the selected month."
-        confirmText="Yes, Delete"
+        title={t("budget.deleteModalTitle") || "Delete Budget Limit"}
+        message={t("budget.deleteModalMessage") || "Are you sure you want to delete this category budget? This will remove your spending limits for the selected month."}
+        confirmText={t("budget.deleteConfirmText") || "Yes, Delete"}
         loading={deleting}
       />
 

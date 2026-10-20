@@ -7,6 +7,7 @@ import ExpenseForm from '@/components/ExpenseForm';
 import ExpenseCalendar from '@/components/ExpenseCalendar';
 import { useExpenseStore } from '@/store/useExpenseStore';
 import { useBudgetStore } from '@/store/useBudgetStore';
+import { useTranslation } from '@/context/LanguageContext';
 import { 
   WalletIcon, 
   ChartPieIcon, 
@@ -26,6 +27,7 @@ import 'aos/dist/aos.css';
 export default function DashboardClient() {
   const { expenses, fetching: fetchingExpenses, fetchExpenses, createExpense, getTotalSpent } = useExpenseStore();
   const { budgets, fetchBudgets, getTotalBudgetLimit, getTotalBudgetSpent } = useBudgetStore();
+  const { t } = useTranslation();
 
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
   const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
@@ -47,7 +49,7 @@ export default function DashboardClient() {
     const result = await createExpense(newExpenseData);
 
     if (result.success) {
-      setSuccessMessage('Expense successfully recorded!');
+      setSuccessMessage(t?.dashboard?.successExpenseRecorded || 'Expense successfully recorded!');
       fetchBudgets(currentMonth, currentYear); // Refresh budgets to reflect new spend
       setTimeout(() => {
         setSuccessMessage('');
@@ -74,10 +76,10 @@ export default function DashboardClient() {
           <div>
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-wider uppercase border border-primary/20 mb-3">
               <WalletIcon className="h-4 w-4" />
-              <span>Overview Suite</span>
+              <span>{t?.dashboard?.badge || "Overview Suite"}</span>
             </div>
             <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight font-heading">
-              Financial Dashboard
+              {t?.dashboard?.title || "Financial Dashboard"}
             </h1>
           </div>
 
@@ -87,15 +89,15 @@ export default function DashboardClient() {
               className="px-5 py-3 rounded-2xl font-bold bg-tertiary/20 hover:bg-tertiary/30 text-dark dark:text-light border border-tertiary/30 transition-all flex items-center gap-2 cursor-pointer text-xs"
             >
               <CalendarDaysIcon className="h-4 w-4 text-primary" />
-              <span>Calendar View</span>
+              <span>{t?.dashboard?.calendarView || "Calendar View"}</span>
             </button>
 
             <button
               onClick={() => setIsExpenseModalOpen(true)}
               className="px-6 py-3 rounded-2xl font-bold bg-primary hover:bg-secondary text-white transition-all shadow-lg shadow-primary/25 flex items-center gap-2 cursor-pointer text-xs"
             >
-              <PlusCircleIcon className="h-4 w-4" />
-              <span>Add Expense</span>
+              <PlusCircleIcon className="h-5 w-5" />
+              <span>{t?.dashboard?.addExpense || "Add Expense"}</span>
             </button>
           </div>
         </div>
@@ -106,31 +108,31 @@ export default function DashboardClient() {
           {/* Card 1: Total Lifetime/Loaded Spend */}
           <div className="p-6 rounded-3xl bg-white/80 dark:bg-dark/80 border border-tertiary/20 dark:border-tertiary/10 space-y-2 shadow-sm">
             <div className="flex items-center justify-between">
-              <span className="text-xs uppercase font-bold text-dark/50 dark:text-light/50 font-heading">Total Expenses</span>
+              <span className="text-xs uppercase font-bold text-dark/50 dark:text-light/50 font-heading">{t?.dashboard?.totalExpenses || "Total Expenses"}</span>
               <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
                 <CurrencyDollarIcon className="h-4 w-4" />
               </div>
             </div>
             <p className="text-3xl font-extrabold font-heading text-primary">${totalSpent.toFixed(2)}</p>
-            <p className="text-[11px] text-dark/60 dark:text-light/60">Across all recorded transactions</p>
+            <p className="text-[11px] text-dark/60 dark:text-light/60">{t?.dashboard?.acrossAllTransactions || "Across all recorded transactions"}</p>
           </div>
 
           {/* Card 2: Current Month Budget Limit */}
           <div className="p-6 rounded-3xl bg-white/80 dark:bg-dark/80 border border-tertiary/20 dark:border-tertiary/10 space-y-2 shadow-sm">
             <div className="flex items-center justify-between">
-              <span className="text-xs uppercase font-bold text-dark/50 dark:text-light/50 font-heading">Monthly Budget</span>
+              <span className="text-xs uppercase font-bold text-dark/50 dark:text-light/50 font-heading">{t?.dashboard?.monthlyBudget || "Monthly Budget"}</span>
               <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
                 <ChartPieIcon className="h-4 w-4" />
               </div>
             </div>
             <p className="text-3xl font-extrabold font-heading text-dark dark:text-light">${totalBudgetLimit.toFixed(2)}</p>
-            <p className="text-[11px] text-dark/60 dark:text-light/60">Allocated for this month</p>
+            <p className="text-[11px] text-dark/60 dark:text-light/60">{t?.dashboard?.allocatedForMonth || "Allocated for this month"}</p>
           </div>
 
           {/* Card 3: Monthly Budget Usage */}
           <div className="p-6 rounded-3xl bg-white/80 dark:bg-dark/80 border border-tertiary/20 dark:border-tertiary/10 space-y-2 shadow-sm">
             <div className="flex items-center justify-between">
-              <span className="text-xs uppercase font-bold text-dark/50 dark:text-light/50 font-heading">Budget Usage</span>
+              <span className="text-xs uppercase font-bold text-dark/50 dark:text-light/50 font-heading">{t?.dashboard?.budgetUsage || "Budget Usage"}</span>
               <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
                 <ReceiptPercentIcon className="h-4 w-4" />
               </div>
@@ -155,16 +157,16 @@ export default function DashboardClient() {
               <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
                 <WalletIcon className="h-6 w-6" />
               </div>
-              <h3 className="text-xl font-bold font-heading">Expense Ledger</h3>
+              <h3 className="text-xl font-bold font-heading">{t?.dashboard?.expenseLedgerTitle || "Expense Ledger"}</h3>
               <p className="text-xs text-dark/70 dark:text-light/70 leading-relaxed font-sans">
-                Review your recent transactions, toggle between card and list views, or log new daily purchases.
+                {t?.dashboard?.expenseLedgerDesc || "Review your recent transactions, toggle between card and list views, or log new daily purchases."}
               </p>
             </div>
             <Link
               href="/expenses"
               className="inline-flex items-center gap-2 text-xs font-bold text-primary hover:text-secondary transition-colors group"
             >
-              <span>Manage Expenses</span>
+              <span>{t?.dashboard?.manageExpenses || "Manage Expenses"}</span>
               <ArrowRightIcon className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
@@ -175,16 +177,16 @@ export default function DashboardClient() {
               <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
                 <ChartPieIcon className="h-6 w-6" />
               </div>
-              <h3 className="text-xl font-bold font-heading">Budget Planner</h3>
+              <h3 className="text-xl font-bold font-heading">{t?.dashboard?.budgetPlannerTitle || "Budget Planner"}</h3>
               <p className="text-xs text-dark/70 dark:text-light/70 leading-relaxed font-sans">
-                Set category spending caps, check live progress meters, and avoid overspending before month-end.
+                {t?.dashboard?.budgetPlannerDesc || "Set category spending caps, check live progress meters, and avoid overspending before month-end."}
               </p>
             </div>
             <Link
               href="/budgets"
               className="inline-flex items-center gap-2 text-xs font-bold text-primary hover:text-secondary transition-colors group"
             >
-              <span>View Budgets</span>
+              <span>{t?.dashboard?.viewBudgets || "View Budgets"}</span>
               <ArrowRightIcon className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
@@ -194,25 +196,25 @@ export default function DashboardClient() {
         {/* Recent Transactions Preview */}
         <div className="space-y-6" data-aos="fade-up" data-aos-delay="200">
           <div className="flex justify-between items-center">
-            <h2 className="text-xl font-bold font-heading">Recent Transactions</h2>
+            <h2 className="text-xl font-bold font-heading">{t?.dashboard?.recentTransactions || "Recent Transactions"}</h2>
             <Link href="/expenses" className="text-xs font-bold text-primary hover:underline">
-              View All
+              {t?.dashboard?.viewAll || "View All"}
             </Link>
           </div>
 
           {fetchingExpenses ? (
             <div className="p-12 text-center text-sm text-dark/50 dark:text-light/50 bg-white/50 dark:bg-dark/50 rounded-3xl border border-tertiary/20">
-              Loading recent transactions...
+              {t?.dashboard?.loadingTransactions || "Loading recent transactions..."}
             </div>
           ) : expenses.length === 0 ? (
             <div className="p-12 text-center space-y-3 bg-white/50 dark:bg-dark/50 rounded-3xl border border-tertiary/20">
               <WalletIcon className="h-10 w-10 text-primary mx-auto opacity-50" />
-              <p className="text-sm font-semibold text-dark dark:text-light">No expenses recorded yet</p>
+              <p className="text-sm font-semibold text-dark dark:text-light">{t?.dashboard?.noExpenses || "No expenses recorded yet"}</p>
               <button
                 onClick={() => setIsExpenseModalOpen(true)}
                 className="px-4 py-2 rounded-xl text-xs font-bold bg-primary text-white"
               >
-                Add Expense
+                {t?.dashboard?.addExpense || "Add Expense"}
               </button>
             </div>
           ) : (
@@ -227,7 +229,7 @@ export default function DashboardClient() {
                       {exp.type}
                     </span>
                     <p className="text-sm font-medium text-dark dark:text-light pt-1">
-                      {exp.description || 'No description provided'}
+                      {exp.description || t?.dashboard?.noDescription || 'No description provided'}
                     </p>
                   </div>
                   <span className="text-lg font-extrabold font-heading text-primary">
@@ -275,7 +277,7 @@ export default function DashboardClient() {
                         <PlusCircleIcon className="h-5 w-5 text-primary" />
                       </div>
                       <DialogTitle as="h3" className="text-lg font-bold font-heading text-dark dark:text-light">
-                        New Expense Entry
+                        {t?.dashboard?.modalTitle || "New Expense Entry"}
                       </DialogTitle>
                     </div>
                     <button
@@ -341,7 +343,7 @@ export default function DashboardClient() {
                         <CalendarDaysIcon className="h-5 w-5 text-primary" />
                       </div>
                       <DialogTitle as="h3" className="text-lg font-bold font-heading text-dark dark:text-light">
-                        Monthly Expense Calendar
+                        {t?.dashboard?.calendarModalTitle || "Monthly Expense Calendar"}
                       </DialogTitle>
                     </div>
                     <button

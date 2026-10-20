@@ -103,11 +103,42 @@
     "signInText": "Sign in"
   },
   "settings": {
-  "badge": "Preferences",
-  "title": "Account Settings",
-  "subtitle": "Update your personal information, secure your password, and manage your avatar.",
-  "tabProfile": "Profile Details",
-  "tabAvatar": "Profile Picture",
-  "tabPassword": "Security & Password"
-}
+    "badge": "Preferences",
+    "title": "Account Settings",
+    "subtitle": "Update your personal information, secure your password, and manage your avatar.",
+    "tabProfile": "Profile Details",
+    "tabAvatar": "Profile Picture",
+    "tabPassword": "Security & Password"
+  },
+  "budget": {
+    "badge": "Budget Planner",
+    "title": "Category Budgets",
+    "compareMonths": "Compare Months",
+    "setBudget": "Set Budget",
+    "totalBudgeted": "Total Budgeted",
+    "totalSpent": "Total Spent",
+    "overallUsage": "Overall Usage",
+    "allocationsFor": "Allocations for",
+    "loadingBudgets": "Loading budgets...",
+    "noBudgets": "No budgets set for this month",
+    "noBudgetsDesc": "Create category limits to track your monthly spending pace.",
+    "setFirstBudget": "Set First Budget",
+    "spent": "Spent",
+    "limit": "Limit",
+    "used": "used",
+    "rem": "Rem",
+    "successSaved": "Budget successfully saved!",
+    "modalTitle": "Set Monthly Budget",
+    "compareModalTitle": "Compare Budget & Expenses Across Two Months",
+    "primaryMonth": "Primary Month",
+    "comparisonMonth": "Comparison Month",
+    "runComparison": "Run Comparison",
+    "comparing": "Comparing...",
+    "budgetLabel": "Budget",
+    "spentLabel": "Spent",
+    "spendingVariance": "Spending Variance",
+    "deleteModalTitle": "Delete Budget Limit",
+    "deleteModalMessage": "Are you sure you want to delete this category budget? This will remove your spending limits for the selected month.",
+    "deleteConfirmText": "Yes, Delete"
+  }
 }
