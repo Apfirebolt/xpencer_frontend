@@ -33,11 +33,9 @@ export default function LoginPage() {
     setLocalError("");
 
     if (!email || !password) {
-      setLocalError("Please enter your email and password.");
+      setLocalError(t?.login?.errorEmptyFields || "Please enter your email and password.");
       return;
     }
-
-    console.log("Submitting login with email:", email);
 
     const result = await login({ email, password });
 
@@ -64,7 +62,7 @@ export default function LoginPage() {
               X <span className="text-primary">Pencer</span>
             </h1>
             <p className="text-xs text-dark/60 dark:text-light/60 font-sans leading-relaxed">
-              Sign in to manage your financial ledger and budgets.
+              {t('login.subtitle') || "Sign in to manage your financial ledger and budgets."}
             </p>
           </div>
 
@@ -77,7 +75,7 @@ export default function LoginPage() {
 
             <div className="space-y-1.5">
               <label htmlFor="email" className="block text-xs font-bold text-dark dark:text-light uppercase tracking-wider font-heading">
-                Email Address
+                {t('login.emailLabel') || "Email Address"}
               </label>
               <div className="relative">
                 <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-dark/30 dark:text-light/30">
@@ -97,7 +95,7 @@ export default function LoginPage() {
 
             <div className="space-y-1.5">
               <label htmlFor="password" className="block text-xs font-bold text-dark dark:text-light uppercase tracking-wider font-heading">
-                Password
+                {t('login.passwordLabel') || "Password"}
               </label>
               <div className="relative">
                 <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-dark/30 dark:text-light/30">
@@ -120,16 +118,16 @@ export default function LoginPage() {
               disabled={loading}
               className="w-full py-3 text-sm font-bold text-white bg-primary hover:bg-secondary rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/25 disabled:opacity-50 cursor-pointer"
             >
-              <span>{loading ? "Signing in..." : "Sign in to Xpencer"}</span>
+              <span>{loading ? (t('login.signingIn') || "Signing in...") : (t('login.signInButton') || "Sign in to Xpence")}</span>
               <ArrowRightIcon className="h-4 w-4" />
             </button>
           </form>
 
           {/* Footer Link */}
           <div className="text-center text-xs text-dark/60 dark:text-light/60 font-sans pt-2 border-t border-tertiary/20 dark:border-tertiary/10" data-aos="fade-in" data-aos-delay="300">
-            Don't have an account?{" "}
+            {t('login.noAccountPrompt') || "Don't have an account?"}{" "}
             <Link href="/register" className="text-primary hover:underline font-bold">
-              Sign up
+              {t('login.signUpText') || "Sign up"}
             </Link>
           </div>
 

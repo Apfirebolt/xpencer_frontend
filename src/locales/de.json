@@ -75,5 +75,39 @@
     "feature2Desc": "Teilen Sie Abendessen, Gruppenreisen und Haushaltskosten sofort unter Freunden auf.",
     "feature3Title": "Sicheres Hauptbuch & Datenschutz",
     "feature3Desc": "Ihre Finanzdaten sind durch verschlüsselte Sitzungen und strenge Isolierung geschützt."
+  },
+  "login": {
+    "subtitle": "Melden Sie sich an, um Ihr Finanzhauptbuch und Ihre Budgets zu verwalten.",
+    "emailLabel": "E-Mail-Adresse",
+    "passwordLabel": "Passwort",
+    "signInButton": "Bei Xpencer anmelden",
+    "signingIn": "Anmeldung läuft...",
+    "errorEmptyFields": "Bitte geben Sie Ihre E-Mail-Adresse und Ihr Passwort ein.",
+    "noAccountPrompt": "Sie haben noch kein Konto?",
+    "signUpText": "Registrieren"
+  },
+  "register": {
+    "subtitle": "Erstellen Sie Ihr Finanzhauptbuch-Konto, um Budgets zu verwalten.",
+    "firstNameLabel": "Vorname",
+    "lastNameLabel": "Nachname",
+    "optional": "Optional",
+    "usernameLabel": "Benutzername",
+    "emailLabel": "E-Mail-Adresse",
+    "passwordLabel": "Passwort",
+    "confirmPasswordLabel": "Passwort bestätigen",
+    "createAccountButton": "Konto erstellen",
+    "creatingAccount": "Konto wird erstellt...",
+    "errorEmptyFields": "Bitte füllen Sie alle Pflichtfelder aus.",
+    "errorPasswordMismatch": "Die Passwörter stimmen nicht überein.",
+    "hasAccountPrompt": "Bereits ein Konto vorhanden?",
+    "signInText": "Anmelden"
+  },
+  "settings": {
+    "badge": "Präferenzen",
+    "title": "Kontoeinstellungen",
+    "subtitle": "Aktualisieren Sie Ihre persönlichen Daten, schützen Sie Ihr Passwort und verwalten Sie Ihren Avatar.",
+    "tabProfile": "Profildetails",
+    "tabAvatar": "Profilbild",
+    "tabPassword": "Sicherheit & Passwort"
   }
 }

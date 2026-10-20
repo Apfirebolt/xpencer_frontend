@@ -75,5 +75,39 @@
     "feature2Desc": "Split dinners, group trips, and shared household bills among friends using equal splits, percentages, or custom exact amounts instantly.",
     "feature3Title": "Secure Ledger & Privacy",
     "feature3Desc": "Your financial data is protected with encrypted sessions, secure database indexing, and strict user data isolation guarantees."
-  }
+  },
+  "login": {
+    "subtitle": "Sign in to manage your financial ledger and budgets.",
+    "emailLabel": "Email Address",
+    "passwordLabel": "Password",
+    "signInButton": "Sign in to Xpence",
+    "signingIn": "Signing in...",
+    "errorEmptyFields": "Please enter your email and password.",
+    "noAccountPrompt": "Don't have an account?",
+    "signUpText": "Sign up"
+  },
+  "register": {
+    "subtitle": "Create your financial ledger account to start tracking budgets.",
+    "firstNameLabel": "First Name",
+    "lastNameLabel": "Last Name",
+    "optional": "Optional",
+    "usernameLabel": "Username",
+    "emailLabel": "Email Address",
+    "passwordLabel": "Password",
+    "confirmPasswordLabel": "Confirm Password",
+    "createAccountButton": "Create Account",
+    "creatingAccount": "Creating Account...",
+    "errorEmptyFields": "Please fill in all required fields.",
+    "errorPasswordMismatch": "Passwords do not match.",
+    "hasAccountPrompt": "Already have an account?",
+    "signInText": "Sign in"
+  },
+  "settings": {
+  "badge": "Preferences",
+  "title": "Account Settings",
+  "subtitle": "Update your personal information, secure your password, and manage your avatar.",
+  "tabProfile": "Profile Details",
+  "tabAvatar": "Profile Picture",
+  "tabPassword": "Security & Password"
+}
 }

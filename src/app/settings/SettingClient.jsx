@@ -7,6 +7,7 @@ import ProfileUpdateForm from '@/components/ProfileUpdateForm';
 import PasswordChangeForm from '@/components/PasswordChangeForm';
 import ProfilePicForm from '@/components/ProfilePicForm';
 import { useAuthStore } from '@/store/useAuthStore';
+import { useTranslation } from '@/context/LanguageContext';
 import { 
   UserCircleIcon, 
   LockClosedIcon, 
@@ -18,6 +19,7 @@ import 'aos/dist/aos.css';
 
 export default function SettingClient() {
   const { user, fetchProfile } = useAuthStore();
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('profile');
 
   useEffect(() => {
@@ -35,13 +37,13 @@ export default function SettingClient() {
         <div className="border-b border-tertiary/25 pb-6" data-aos="fade-down">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-wider uppercase border border-primary/20 mb-3">
             <Cog6ToothIcon className="h-4 w-4" />
-            <span>Preferences</span>
+            <span>{t('settings.badge') || "Preferences"}</span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight font-heading">
-            Account Settings
+            {t('settings.title') || "Account Settings"}
           </h1>
           <p className="text-xs text-dark/60 dark:text-light/60 mt-1">
-            Update your personal information, secure your password, and manage your avatar.
+            {t('settings.subtitle') || "Update your personal information, secure your password, and manage your avatar."}
           </p>
         </div>
 
@@ -56,7 +58,7 @@ export default function SettingClient() {
             }`}
           >
             <UserCircleIcon className="h-4 w-4" />
-            <span>Profile Details</span>
+            <span>{t('settings.tabProfile') || "Profile Details"}</span>
           </button>
 
           <button
@@ -68,7 +70,7 @@ export default function SettingClient() {
             }`}
           >
             <PhotoIcon className="h-4 w-4" />
-            <span>Profile Picture</span>
+            <span>{t('settings.tabAvatar') || "Profile Picture"}</span>
           </button>
 
           <button
@@ -80,7 +82,7 @@ export default function SettingClient() {
             }`}
           >
             <LockClosedIcon className="h-4 w-4" />
-            <span>Security & Password</span>
+            <span>{t('settings.tabPassword') || "Security & Password"}</span>
           </button>
         </div>
 

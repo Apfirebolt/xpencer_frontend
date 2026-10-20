@@ -5,7 +5,14 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useTranslation } from "@/context/LanguageContext";
-import { WalletIcon, ArrowRightIcon, LockClosedIcon, EnvelopeIcon, UserIcon, IdentificationIcon } from "@heroicons/react/24/outline";
+import {
+  WalletIcon,
+  ArrowRightIcon,
+  LockClosedIcon,
+  EnvelopeIcon,
+  UserIcon,
+  IdentificationIcon,
+} from "@heroicons/react/24/outline";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import AOS from "aos";
@@ -37,12 +44,16 @@ export default function RegisterPage() {
     setLocalError("");
 
     if (!username || !email || !password || !confirmPassword) {
-      setLocalError("Please fill in all required fields.");
+      setLocalError(
+        t?.register?.errorEmptyFields || "Please fill in all required fields.",
+      );
       return;
     }
 
     if (password !== confirmPassword) {
-      setLocalError("Passwords do not match.");
+      setLocalError(
+        t?.register?.errorPasswordMismatch || "Passwords do not match.",
+      );
       return;
     }
 
@@ -63,13 +74,16 @@ export default function RegisterPage() {
     <Fragment>
       <Header />
       <main className="min-h-screen bg-light dark:bg-dark flex items-center justify-center p-6 transition-colors">
-        <div 
+        <div
           data-aos="fade-up"
           className="w-full max-w-lg bg-white dark:bg-tertiary/5 border border-tertiary/20 dark:border-tertiary/10 rounded-3xl shadow-sm p-8 space-y-8 my-10"
         >
-          
           {/* Brand Header */}
-          <div className="text-center space-y-3" data-aos="fade-down" data-aos-delay="100">
+          <div
+            className="text-center space-y-3"
+            data-aos="fade-down"
+            data-aos-delay="100"
+          >
             <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 mb-1">
               <WalletIcon className="h-6 w-6 text-primary animate-pulse" />
             </div>
@@ -77,22 +91,32 @@ export default function RegisterPage() {
               X <span className="text-primary">Pencer</span>
             </h1>
             <p className="text-xs text-dark/60 dark:text-light/60 font-sans leading-relaxed">
-              Create your financial ledger account to start tracking budgets.
+              {t('register.subtitle') ||
+                "Create your financial ledger account to start tracking budgets."}
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4 font-sans" data-aos="fade-up" data-aos-delay="200">
+          <form
+            onSubmit={handleSubmit}
+            className="space-y-4 font-sans"
+            data-aos="fade-up"
+            data-aos-delay="200"
+          >
             {(error || localError) && (
               <div className="text-xs text-rose-600 dark:text-rose-400 bg-rose-500/10 border border-rose-500/20 p-3 rounded-xl font-medium">
                 {localError || error}
               </div>
             )}
-
-            {/* First Name & Last Name Row */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label htmlFor="firstName" className="block text-xs font-bold text-dark dark:text-light uppercase tracking-wider font-heading">
-                  First Name <span className="text-dark/40 dark:text-light/40 font-normal">(Optional)</span>
+                <label
+                  htmlFor="firstName"
+                  className="block text-xs font-bold text-dark dark:text-light uppercase tracking-wider font-heading"
+                >
+                  {t('register.firstNameLabel') || "First Name"}{" "}
+                  <span className="text-dark/40 dark:text-light/40 font-normal">
+                    ({t('register.optional') || "Optional"})
+                  </span>
                 </label>
                 <div className="relative">
                   <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-dark/30 dark:text-light/30">
@@ -110,8 +134,14 @@ export default function RegisterPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label htmlFor="lastName" className="block text-xs font-bold text-dark dark:text-light uppercase tracking-wider font-heading">
-                  Last Name <span className="text-dark/40 dark:text-light/40 font-normal">(Optional)</span>
+                <label
+                  htmlFor="lastName"
+                  className="block text-xs font-bold text-dark dark:text-light uppercase tracking-wider font-heading"
+                >
+                  {t("register.lastNameLabel") || "Last Name"}{" "}
+                  <span className="text-dark/40 dark:text-light/40 font-normal">
+                    ({t("register.optional") || "Optional"})
+                  </span>
                 </label>
                 <div className="relative">
                   <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-dark/30 dark:text-light/30">
@@ -128,10 +158,12 @@ export default function RegisterPage() {
                 </div>
               </div>
             </div>
-
             <div className="space-y-1.5">
-              <label htmlFor="username" className="block text-xs font-bold text-dark dark:text-light uppercase tracking-wider font-heading">
-                Username *
+              <label
+                htmlFor="username"
+                className="block text-xs font-bold text-dark dark:text-light uppercase tracking-wider font-heading"
+              >
+                {t("register.usernameLabel") || "Username"} *
               </label>
               <div className="relative">
                 <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-dark/30 dark:text-light/30">
@@ -148,10 +180,12 @@ export default function RegisterPage() {
                 />
               </div>
             </div>
-
             <div className="space-y-1.5">
-              <label htmlFor="email" className="block text-xs font-bold text-dark dark:text-light uppercase tracking-wider font-heading">
-                Email Address *
+              <label
+                htmlFor="email"
+                className="block text-xs font-bold text-dark dark:text-light uppercase tracking-wider font-heading"
+              >
+                {t("register.emailLabel") || "Email Address"} *
               </label>
               <div className="relative">
                 <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-dark/30 dark:text-light/30">
@@ -168,11 +202,13 @@ export default function RegisterPage() {
                 />
               </div>
             </div>
-
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label htmlFor="password" className="block text-xs font-bold text-dark dark:text-light uppercase tracking-wider font-heading">
-                  Password *
+                <label
+                  htmlFor="password"
+                  className="block text-xs font-bold text-dark dark:text-light uppercase tracking-wider font-heading"
+                >
+                  {t("register.passwordLabel") || "Password"} *
                 </label>
                 <div className="relative">
                   <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-dark/30 dark:text-light/30">
@@ -191,8 +227,11 @@ export default function RegisterPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label htmlFor="confirmPassword" className="block text-xs font-bold text-dark dark:text-light uppercase tracking-wider font-heading">
-                  Confirm Password *
+                <label
+                  htmlFor="confirmPassword"
+                  className="block text-xs font-bold text-dark dark:text-light uppercase tracking-wider font-heading"
+                >
+                  {t("register.confirmPasswordLabel") || "Confirm Password"} *
                 </label>
                 <div className="relative">
                   <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-dark/30 dark:text-light/30">
@@ -210,25 +249,34 @@ export default function RegisterPage() {
                 </div>
               </div>
             </div>
-
             <button
               type="submit"
               disabled={loading}
               className="w-full py-3 text-sm font-bold text-white bg-primary hover:bg-secondary rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/25 disabled:opacity-50 cursor-pointer mt-2"
             >
-              <span>{loading ? "Creating Account..." : "Create Account"}</span>
+              <span>
+                {loading
+                  ? t("register.creatingAccount") || "Creating Account..."
+                  : t("register.createAccountButton") || "Create Account"}
+              </span>
               <ArrowRightIcon className="h-4 w-4" />
             </button>
           </form>
 
           {/* Footer Link */}
-          <div className="text-center text-xs text-dark/60 dark:text-light/60 font-sans pt-2 border-t border-tertiary/20 dark:border-tertiary/10" data-aos="fade-in" data-aos-delay="300">
-            Already have an account?{" "}
-            <Link href="/login" className="text-primary hover:underline font-bold">
-              Sign in
+          <div
+            className="text-center text-xs text-dark/60 dark:text-light/60 font-sans pt-2 border-t border-tertiary/20 dark:border-tertiary/10"
+            data-aos="fade-in"
+            data-aos-delay="300"
+          >
+            {t("register.hasAccountPrompt") || "Already have an account?"}{" "}
+            <Link
+              href="/login"
+              className="text-primary hover:underline font-bold"
+            >
+              {t("register.signInText") || "Sign in"}
             </Link>
           </div>
-
         </div>
       </main>
       <Footer />
