@@ -3,23 +3,26 @@
 import { useState, Fragment, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { RadioIcon, ArrowRightIcon, LockClosedIcon, EnvelopeIcon, UserIcon, IdentificationIcon } from "@heroicons/react/24/outline";
+import { useAuthStore } from "@/store/useAuthStore";
+import { useTranslation } from "@/context/LanguageContext";
+import { WalletIcon, ArrowRightIcon, LockClosedIcon, EnvelopeIcon, UserIcon, IdentificationIcon } from "@heroicons/react/24/outline";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
-import httpClient from "../../lib/api";
 import AOS from "aos";
 import "aos/dist/aos.css";
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { register, loading, error } = useAuthStore();
+  const { t } = useTranslation();
+
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [localError, setLocalError] = useState("");
 
   useEffect(() => {
     AOS.init({
@@ -31,36 +34,28 @@ export default function RegisterPage() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    setError("");
+    setLocalError("");
 
     if (!username || !email || !password || !confirmPassword) {
-      setError("Please fill in all required fields.");
+      setLocalError("Please fill in all required fields.");
       return;
     }
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match.");
+      setLocalError("Passwords do not match.");
       return;
     }
 
-    setLoading(true);
-    try {
-      // Sending all fields to /auth/register
-      const res = await httpClient.post("/auth/register", { 
-        firstName,
-        lastName,
-        username, 
-        email, 
-        password 
-      });
+    const result = await register({
+      firstName,
+      lastName,
+      username,
+      email,
+      password,
+    });
 
-      // Redirect on success (e.g. to login or dashboard)
-      router.push("/login");
-    } catch (err) {
-      const errorMessage = err.response?.data?.message || err.message || "An error occurred during registration.";
-      setError(errorMessage);
-    } finally {
-      setLoading(false);
+    if (result.success) {
+      router.push("/dashboard");
     }
   }
 
@@ -76,20 +71,20 @@ export default function RegisterPage() {
           {/* Brand Header */}
           <div className="text-center space-y-3" data-aos="fade-down" data-aos-delay="100">
             <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 mb-1">
-              <RadioIcon className="h-6 w-6 text-primary animate-pulse" />
+              <WalletIcon className="h-6 w-6 text-primary animate-pulse" />
             </div>
             <h1 className="text-2xl font-extrabold tracking-wider font-heading text-dark dark:text-light">
-              SoftGenie <span className="text-primary">Beats</span>
+              X <span className="text-primary">Pencer</span>
             </h1>
             <p className="text-xs text-dark/60 dark:text-light/60 font-sans leading-relaxed">
-              Create your studio account to start producing tracks.
+              Create your financial ledger account to start tracking budgets.
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4 font-sans" data-aos="fade-up" data-aos-delay="200">
-            {error && (
+            {(error || localError) && (
               <div className="text-xs text-rose-600 dark:text-rose-400 bg-rose-500/10 border border-rose-500/20 p-3 rounded-xl font-medium">
-                {error}
+                {localError || error}
               </div>
             )}
 
@@ -136,7 +131,7 @@ export default function RegisterPage() {
 
             <div className="space-y-1.5">
               <label htmlFor="username" className="block text-xs font-bold text-dark dark:text-light uppercase tracking-wider font-heading">
-                Producer Handle *
+                Username *
               </label>
               <div className="relative">
                 <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-dark/30 dark:text-light/30">
@@ -148,7 +143,7 @@ export default function RegisterPage() {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   className="w-full pl-10 pr-4 py-3 text-sm bg-white dark:bg-dark border border-tertiary/30 rounded-xl focus:outline-none focus:border-primary text-dark dark:text-light placeholder-dark/30 dark:placeholder-light/30 shadow-inner"
-                  placeholder="beatmaker_99"
+                  placeholder="amit_prafulla"
                   required
                 />
               </div>
@@ -156,7 +151,7 @@ export default function RegisterPage() {
 
             <div className="space-y-1.5">
               <label htmlFor="email" className="block text-xs font-bold text-dark dark:text-light uppercase tracking-wider font-heading">
-                Producer Email *
+                Email Address *
               </label>
               <div className="relative">
                 <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-dark/30 dark:text-light/30">
@@ -168,7 +163,7 @@ export default function RegisterPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full pl-10 pr-4 py-3 text-sm bg-white dark:bg-dark border border-tertiary/30 rounded-xl focus:outline-none focus:border-primary text-dark dark:text-light placeholder-dark/30 dark:placeholder-light/30 shadow-inner"
-                  placeholder="producer@softgenie.org"
+                  placeholder="user@xpencer.org"
                   required
                 />
               </div>
@@ -221,14 +216,14 @@ export default function RegisterPage() {
               disabled={loading}
               className="w-full py-3 text-sm font-bold text-white bg-primary hover:bg-secondary rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/25 disabled:opacity-50 cursor-pointer mt-2"
             >
-              <span>{loading ? "Initializing Studio..." : "Create Studio Account"}</span>
+              <span>{loading ? "Creating Account..." : "Create Account"}</span>
               <ArrowRightIcon className="h-4 w-4" />
             </button>
           </form>
 
           {/* Footer Link */}
           <div className="text-center text-xs text-dark/60 dark:text-light/60 font-sans pt-2 border-t border-tertiary/20 dark:border-tertiary/10" data-aos="fade-in" data-aos-delay="300">
-            Already have a studio account?{" "}
+            Already have an account?{" "}
             <Link href="/login" className="text-primary hover:underline font-bold">
               Sign in
             </Link>

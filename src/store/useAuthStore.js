@@ -33,6 +33,7 @@ export const useAuthStore = create((set, get) => ({
   login: async (credentials) => {
     set({ loading: true, error: null });
     try {
+        console.log("Logging in with credentials:", credentials);
       const res = await httpClient.post('/auth/login', credentials);
       const data = res.data;
 
