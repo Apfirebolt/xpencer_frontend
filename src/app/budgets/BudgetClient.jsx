@@ -5,6 +5,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BudgetForm from '@/components/BudgetForm';
 import BudgetComparisonChart from '@/components/BudgetComparisonChart';
+import ConfirmModal from '@/components/ConfirmModal';
 import { useBudgetStore } from '@/store/useBudgetStore';
 import httpClient from '@/lib/api';
 import Cookie from 'js-cookie';
@@ -43,6 +44,11 @@ export default function BudgetClient() {
   const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
 
+  // Delete Confirmation Modal State
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [budgetToDeleteId, setBudgetToDeleteId] = useState(null);
+  const [deleting, setDeleting] = useState(false);
+
   // Comparison State
   const [compareMonth2, setCompareMonth2] = useState(selectedMonth === 1 ? 12 : selectedMonth - 1);
   const [compareYear2, setCompareYear2] = useState(selectedMonth === 1 ? selectedYear - 1 : selectedYear);
@@ -67,11 +73,27 @@ export default function BudgetClient() {
     }
   }
 
-  async function handleDelete(id) {
-    if (confirm("Are you sure you want to delete this budget limit?")) {
-      await deleteBudget(id);
+  // Prompt confirmation modal for budget deletion
+  const promptDeleteBudget = (id) => {
+    setBudgetToDeleteId(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  // Execute deletion upon confirmation
+  const handleConfirmDelete = async () => {
+    if (!budgetToDeleteId) return;
+    setDeleting(true);
+
+    try {
+      await deleteBudget(budgetToDeleteId);
+      setIsDeleteModalOpen(false);
+      setBudgetToDeleteId(null);
+    } catch (err) {
+      console.error("Failed to delete budget:", err);
+    } finally {
+      setDeleting(false);
     }
-  }
+  };
 
   // Fetch comparison data between Month 1 (selected) and Month 2
   async function handleRunComparison() {
@@ -203,7 +225,7 @@ export default function BudgetClient() {
                           {b.category}
                         </span>
                         <button
-                          onClick={() => handleDelete(b._id)}
+                          onClick={() => promptDeleteBudget(b._id)}
                           className="p-1.5 rounded-xl text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer"
                           title="Delete Budget"
                         >
@@ -267,7 +289,7 @@ export default function BudgetClient() {
                 <DialogPanel className="w-full max-w-md transform overflow-hidden rounded-3xl bg-white dark:bg-dark border border-tertiary/20 p-8 text-left align-middle shadow-2xl transition-all space-y-6">
                   <div className="flex items-center justify-between border-b border-tertiary/20 pb-4">
                     <div className="flex items-center gap-2">
-                      <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
+                      <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20">
                         <ChartPieIcon className="h-5 w-5 text-primary" />
                       </div>
                       <DialogTitle as="h3" className="text-lg font-bold font-heading text-dark dark:text-light">
@@ -301,7 +323,7 @@ export default function BudgetClient() {
                   
                   <div className="flex items-center justify-between border-b border-tertiary/20 pb-4">
                     <div className="flex items-center gap-2">
-                      <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
+                      <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20">
                         <ScaleIcon className="h-5 w-5 text-primary" />
                       </div>
                       <DialogTitle as="h3" className="text-lg font-bold font-heading text-dark dark:text-light">
@@ -378,6 +400,17 @@ export default function BudgetClient() {
           </div>
         </Dialog>
       </Transition>
+
+      {/* 3. Confirm Delete Modal */}
+      <ConfirmModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        title="Delete Budget Limit"
+        message="Are you sure you want to delete this category budget? This will remove your spending limits for the selected month."
+        confirmText="Yes, Delete"
+        loading={deleting}
+      />
 
       <Footer />
     </div>
