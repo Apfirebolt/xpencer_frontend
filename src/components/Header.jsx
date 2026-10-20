@@ -78,7 +78,7 @@ const Header = () => {
     { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
     { name: "Budgets", href: "/budgets", icon: ChartPieIcon },
     { name: "Expenses", href: "/expenses", icon: RectangleStackIcon },
-    { name: "Splits", href: "/splits", icon: UserGroupIcon },
+    { name: "Rooms", href: "/rooms", icon: UserGroupIcon },
     { name: "About", href: "/about", icon: InformationCircleIcon },
   ];
 
