@@ -140,5 +140,30 @@
     "deleteModalTitle": "Budgetlimit löschen",
     "deleteModalMessage": "Sind Sie sicher, dass Sie dieses Kategoriebudget löschen möchten? Dadurch werden Ihre Ausgabenlimits für den ausgewählten Monat entfernt.",
     "deleteConfirmText": "Ja, löschen"
+  },
+  "dashboard": {
+    "badge": "Übersichtssuite",
+    "title": "Finanz-Dashboard",
+    "calendarView": "Kalenderansicht",
+    "addExpense": "Ausgabe hinzufügen",
+    "totalExpenses": "Gesamtausgaben",
+    "acrossAllTransactions": "Über alle erfassten Transaktionen",
+    "monthlyBudget": "Monatsbudget",
+    "allocatedForMonth": "Für diesen Monat zugewiesen",
+    "budgetUsage": "Budgetnutzung",
+    "expenseLedgerTitle": "Ausgabenhauptbuch",
+    "expenseLedgerDesc": "Überprüfen Sie Ihre letzten Transaktionen, wechseln Sie zwischen Ansichten oder erfassen Sie neue Einkäufe.",
+    "manageExpenses": "Ausgaben verwalten",
+    "budgetPlannerTitle": "Budgetplaner",
+    "budgetPlannerDesc": "Legen Sie Ausgabenlimits fest, prüfen Sie Live-Fortschrittsanzeigen und vermeiden Sie Mehrausgaben.",
+    "viewBudgets": "Budgets anzeigen",
+    "recentTransactions": "Letzte Transaktionen",
+    "viewAll": "Alle anzeigen",
+    "loadingTransactions": "Letzte Transaktionen werden geladen...",
+    "noExpenses": "Noch keine Ausgaben erfasst",
+    "noDescription": "Keine Beschreibung angegeben",
+    "modalTitle": "Neuer Ausgabeneintrag",
+    "calendarModalTitle": "Monatlicher Ausgabenkalender",
+    "successExpenseRecorded": "Ausgabe erfolgreich erfasst!"
   }
 }

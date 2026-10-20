@@ -140,5 +140,30 @@
     "deleteModalTitle": "Delete Budget Limit",
     "deleteModalMessage": "Are you sure you want to delete this category budget? This will remove your spending limits for the selected month.",
     "deleteConfirmText": "Yes, Delete"
+  },
+  "dashboard": {
+    "badge": "Overview Suite",
+    "title": "Financial Dashboard",
+    "calendarView": "Calendar View",
+    "addExpense": "Add Expense",
+    "totalExpenses": "Total Expenses",
+    "acrossAllTransactions": "Across all recorded transactions",
+    "monthlyBudget": "Monthly Budget",
+    "allocatedForMonth": "Allocated for this month",
+    "budgetUsage": "Budget Usage",
+    "expenseLedgerTitle": "Expense Ledger",
+    "expenseLedgerDesc": "Review your recent transactions, toggle between card and list views, or log new daily purchases.",
+    "manageExpenses": "Manage Expenses",
+    "budgetPlannerTitle": "Budget Planner",
+    "budgetPlannerDesc": "Set category spending caps, check live progress meters, and avoid overspending before month-end.",
+    "viewBudgets": "View Budgets",
+    "recentTransactions": "Recent Transactions",
+    "viewAll": "View All",
+    "loadingTransactions": "Loading recent transactions...",
+    "noExpenses": "No expenses recorded yet",
+    "noDescription": "No description provided",
+    "modalTitle": "New Expense Entry",
+    "calendarModalTitle": "Monthly Expense Calendar",
+    "successExpenseRecorded": "Expense successfully recorded!"
   }
 }

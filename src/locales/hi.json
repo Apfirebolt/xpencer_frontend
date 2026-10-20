@@ -140,5 +140,30 @@
     "deleteModalTitle": "बजट सीमा हटाएं",
     "deleteModalMessage": "क्या आप वाकई इस श्रेणी बजट को हटाना चाहते हैं? इससे चयनित महीने के लिए आपकी खर्च सीमाएं हट जाएंगी।",
     "deleteConfirmText": "हाँ, हटाएं"
+  },
+  "dashboard": {
+    "badge": "अवलोकन सुइट",
+    "title": "वित्तीय डैशबोर्ड",
+    "calendarView": "कैलेंडर दृश्य",
+    "addExpense": "खर्च जोड़ें",
+    "totalExpenses": "कुल खर्च",
+    "acrossAllTransactions": "सभी दर्ज किए गए लेन-देन में",
+    "monthlyBudget": "मासिक बजट",
+    "allocatedForMonth": "इस महीने کے लिए आवंटित",
+    "budgetUsage": "बजट उपयोग",
+    "expenseLedgerTitle": "व्यय लेज़र",
+    "expenseLedgerDesc": "अपने हाल के लेन-देन की समीक्षा करें, कार्ड और सूची दृश्यों के बीच स्विच करें, या नई खरीदारी दर्ज करें।",
+    "manageExpenses": "खर्च प्रबंधित करें",
+    "budgetPlannerTitle": "बजट प्लानर",
+    "budgetPlannerDesc": "श्रेणी खर्च सीमाएं निर्धारित करें, लाइव प्रगति मीटर जांचें, और महीने के अंत से पहले अधिक खर्च करने से बचें।",
+    "viewBudgets": "बजट देखें",
+    "recentTransactions": "हाल के लेन-देन",
+    "viewAll": "सभी देखें",
+    "loadingTransactions": "हाल के लेन-देन लोड हो रहे हैं...",
+    "noExpenses": "अभी तक कोई खर्च दर्ज नहीं किया गया है",
+    "noDescription": "कोई विवरण प्रदान नहीं किया गया",
+    "modalTitle": "नया खर्च प्रविष्टि",
+    "calendarModalTitle": "मासिक व्यय कैलेंडर",
+    "successExpenseRecorded": "खर्च सफलतापूर्वक दर्ज किया गया!"
   }
 }
