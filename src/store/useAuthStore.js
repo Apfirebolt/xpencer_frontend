@@ -151,6 +151,20 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
+  // Get joining room requests
+  getJoiningRoomRequests: async () => {
+    set({ loading: true, error: null });
+    try {
+      const res = await httpClient.get('/auth/room-requests', getAuthHeaders());
+      set({ loading: false });
+      return { success: true, data: res.data };
+    } catch (err) {
+      const errorMsg = err.response?.data?.message || err.message || "Failed to fetch joining room requests.";
+      set({ error: errorMsg, loading: false });
+      return { success: false, error: errorMsg };
+    }
+  },
+
   // Logout action
   logout: () => {
     Cookie.remove('token');

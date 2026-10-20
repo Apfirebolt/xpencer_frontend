@@ -4,18 +4,32 @@ import { useState, useEffect, Fragment } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ExpenseRoomModal from '@/components/ExpenseRoomModal';
+import { useAuthStore } from '@/store/useAuthStore';
 import { useExpenseRoomStore } from '@/store/useRoomStore';
-import { UserGroupIcon, PlusCircleIcon, XMarkIcon, CurrencyDollarIcon, UserPlusIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
+import httpClient from '@/lib/api';
+import Cookie from 'js-cookie';
+import { UserGroupIcon, PlusCircleIcon, XMarkIcon, CurrencyDollarIcon, UserPlusIcon, CheckCircleIcon, XCircleIcon, BellAlertIcon } from '@heroicons/react/24/outline';
 import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
+// Helper for auth headers
+const getAuthHeaders = () => {
+  const token = Cookie.get('token');
+  return token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+};
+
 export default function RoomClient() {
   const { rooms, fetching, loading, error, fetchRooms, inviteUser, respondToJoinRequest, addRoomExpense } = useExpenseRoomStore();
+  const { getJoiningRoomRequests } = useAuthStore();
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState(null);
   
+  // Join Requests State
+  const [joinRequests, setJoinRequests] = useState([]);
+  const [fetchingRequests, setFetchingRequests] = useState(true);
+
   // Invite Member Modal State
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [inviteUserEmail, setInviteUserEmail] = useState('');
@@ -26,13 +40,28 @@ export default function RoomClient() {
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('Food & Dining');
   const [description, setDescription] = useState('');
-  const [splitBetween, setSplitBetween] = useState([]); // Array of member IDs to split with
+  const [splitBetween, setSplitBetween] = useState([]); 
 
   const [feedbackMessage, setFeedbackMessage] = useState('');
+
+  // Fetch pending room join requests
+  const fetchJoinRequests = async () => {
+    setFetchingRequests(true);
+    try {
+      const result = await getJoiningRoomRequests();
+      if (result.success) {
+        const data = result.data.requests || result.data;
+        setJoinRequests(Array.isArray(data) ? data : []);
+      }
+    } finally {
+      setFetchingRequests(false);
+    }
+  };
 
   useEffect(() => {
     AOS.init({ duration: 800, once: true, easing: "ease-out-cubic" });
     fetchRooms();
+    fetchJoinRequests();
   }, [fetchRooms]);
 
   async function handleInviteSubmit(e) {
@@ -76,6 +105,14 @@ export default function RoomClient() {
     }
   }
 
+  const handleRequestResponse = async (requestId, status) => {
+    const result = await respondToJoinRequest(requestId, status);
+    if (result.success) {
+      // Refresh requests list after updating
+      fetchJoinRequests();
+    }
+  };
+
   const toggleSplitMember = (memberId) => {
     setSplitBetween(prev => 
       prev.includes(memberId) ? prev.filter(id => id !== memberId) : [...prev, memberId]
@@ -107,6 +144,64 @@ export default function RoomClient() {
             <PlusCircleIcon className="h-5 w-5" />
             <span>Create Expense Room</span>
           </button>
+        </div>
+
+        {/* Pending Room Joining Requests Section */}
+        <div className="w-full bg-white dark:bg-tertiary/5 border border-tertiary/20 dark:border-tertiary/10 rounded-3xl p-6 shadow-sm space-y-4" data-aos="fade-up">
+          <div className="flex items-center justify-between border-b border-tertiary/20 pb-3">
+            <div className="flex items-center gap-2">
+              <BellAlertIcon className="h-5 w-5 text-primary" />
+              <h2 className="text-lg font-bold font-heading">Pending Room Join Requests</h2>
+            </div>
+            <span className="px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-bold">
+              {joinRequests.length}
+            </span>
+          </div>
+
+          {fetchingRequests ? (
+            <div className="text-center py-6 text-xs text-dark/50 dark:text-light/50">Loading requests...</div>
+          ) : joinRequests.length === 0 ? (
+            <div className="text-center py-6 text-xs text-dark/50 dark:text-light/50">
+              No pending room join requests at the moment.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {joinRequests.map((req) => (
+                <div key={req._id} className="flex items-center justify-between p-4 rounded-2xl bg-tertiary/10 border border-tertiary/20">
+                  <div className="space-y-1">
+                    <p className="text-sm font-bold">{req.room?.title || req.roomTitle || "Expense Room"}</p>
+                    <p className="text-xs text-dark/70 dark:text-light/70">
+                      From: <span className="font-semibold">{req.user?.name || req.user?.email || req.senderEmail}</span>
+                    </p>
+                    {req.notificationMessage && (
+                      <p className="text-xs italic text-dark/60 dark:text-light/60">&quot;{req.notificationMessage}&quot;</p>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      onClick={() => handleRequestResponse(req._id, 'accepted')}
+                      disabled={loading}
+                      className="p-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 transition-all cursor-pointer flex items-center gap-1 text-xs font-bold"
+                      title="Accept Request"
+                    >
+                      <CheckCircleIcon className="h-5 w-5" />
+                      <span className="hidden sm:inline">Accept</span>
+                    </button>
+                    <button
+                      onClick={() => handleRequestResponse(req._id, 'rejected')}
+                      disabled={loading}
+                      className="p-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 transition-all cursor-pointer flex items-center gap-1 text-xs font-bold"
+                      title="Reject Request"
+                    >
+                      <XCircleIcon className="h-5 w-5" />
+                      <span className="hidden sm:inline">Reject</span>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Rooms Grid */}
