@@ -1,30 +1,56 @@
-'use client';
+"use client";
 
-import { useState, useEffect, Fragment } from 'react';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import ExpenseForm from '@/components/ExpenseForm';
-import ExpenseCalendar from '@/components/ExpenseCalendar';
-import ExpenseCardView from '@/components/ExpenseCard';
-import ExpenseListView from '@/components/ExpenseList';
-import ExpenseAgGrid from '@/components/ExpenseAgGrid';
-import ExpenseChart from '@/components/ExpenseChart';
-import MockExpenseModal from '@/components/MockExpenseModal';
-import { useExpenseStore } from '@/store/useExpenseStore';
-import { WalletIcon, PlusCircleIcon, XMarkIcon, CurrencyDollarIcon, CalendarDaysIcon, Squares2X2Icon, ListBulletIcon, TableCellsIcon, SparklesIcon } from '@heroicons/react/24/outline';
-import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react';
-import AOS from 'aos';
-import 'aos/dist/aos.css';
+import { useState, useEffect, Fragment } from "react";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import ExpenseForm from "@/components/ExpenseForm";
+import ExpenseCalendar from "@/components/ExpenseCalendar";
+import ExpenseCardView from "@/components/ExpenseCard";
+import ExpenseListView from "@/components/ExpenseList";
+import ExpenseAgGrid from "@/components/ExpenseAgGrid";
+import ExpenseChart from "@/components/ExpenseChart";
+import MockExpenseModal from "@/components/MockExpenseModal";
+import { useExpenseStore } from "@/store/useExpenseStore";
+import {
+  WalletIcon,
+  PlusCircleIcon,
+  XMarkIcon,
+  CurrencyDollarIcon,
+  ChartBarIcon,
+  CalendarDaysIcon,
+  Squares2X2Icon,
+  ListBulletIcon,
+  TableCellsIcon,
+  SparklesIcon,
+} from "@heroicons/react/24/outline";
+import {
+  Dialog,
+  DialogPanel,
+  DialogTitle,
+  Transition,
+  TransitionChild,
+} from "@headlessui/react";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 export default function ExpenseClient() {
-  const { expenses, fetching, loading, error, fetchExpenses, createExpense, getTotalSpent } = useExpenseStore();
-  
+  const {
+    expenses,
+    fetching,
+    loading,
+    error,
+    fetchExpenses,
+    createExpense,
+    getTotalSpent,
+  } = useExpenseStore();
+
   // Modals & View toggle state ('card' | 'list' | 'grid')
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+  const [isAnalyticsOpen, setIsAnalyticsOpen] = useState(false);
   const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
   const [isMockModalOpen, setIsMockModalOpen] = useState(false);
-  const [viewMode, setViewMode] = useState('card'); 
-  const [successMessage, setSuccessMessage] = useState('');
+  const [viewMode, setViewMode] = useState("card");
+  const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
     AOS.init({ duration: 800, once: true, easing: "ease-out-cubic" });
@@ -32,13 +58,13 @@ export default function ExpenseClient() {
   }, [fetchExpenses]);
 
   async function handleCreateExpense(newExpenseData) {
-    setSuccessMessage('');
+    setSuccessMessage("");
     const result = await createExpense(newExpenseData);
 
     if (result.success) {
-      setSuccessMessage('Expense successfully recorded!');
+      setSuccessMessage("Expense successfully recorded!");
       setTimeout(() => {
-        setSuccessMessage('');
+        setSuccessMessage("");
         setIsFormModalOpen(false);
       }, 1500);
     }
@@ -49,9 +75,11 @@ export default function ExpenseClient() {
       <Header />
 
       <main className="flex-grow max-w-7xl mx-auto w-full px-6 py-16 space-y-12">
-        
         {/* Page Header & Actions */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-tertiary/20 pb-6" data-aos="fade-down">
+        <div
+          className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-tertiary/20 pb-6"
+          data-aos="fade-down"
+        >
           <div>
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-wider uppercase border border-primary/20 mb-3">
               <WalletIcon className="h-4 w-4" />
@@ -69,8 +97,12 @@ export default function ExpenseClient() {
                 <CurrencyDollarIcon className="h-4 w-4" />
               </div>
               <div>
-                <p className="text-[10px] uppercase font-bold text-dark/50 dark:text-light/50 font-heading">Total Tracked</p>
-                <p className="text-sm font-extrabold font-heading text-primary">${getTotalSpent().toFixed(2)}</p>
+                <p className="text-[10px] uppercase font-bold text-dark/50 dark:text-light/50 font-heading">
+                  Total Tracked
+                </p>
+                <p className="text-sm font-extrabold font-heading text-primary">
+                  ${getTotalSpent().toFixed(2)}
+                </p>
               </div>
             </div>
 
@@ -92,6 +124,15 @@ export default function ExpenseClient() {
               <span>Calendar</span>
             </button>
 
+            {/* Toggle Analytics */}
+            <button
+              onClick={() => setIsAnalyticsOpen((prev) => !prev)}
+              className="px-5 py-3.5 rounded-2xl font-bold bg-tertiary/20 hover:bg-tertiary/30 text-dark dark:text-light border border-tertiary/30 transition-all flex items-center gap-2 cursor-pointer shrink-0"
+            >
+              <ChartBarIcon className="h-5 w-5 text-primary" />
+              <span>Analytics</span>
+            </button>
+
             {/* Add Expense Button */}
             <button
               onClick={() => setIsFormModalOpen(true)}
@@ -104,46 +145,51 @@ export default function ExpenseClient() {
         </div>
 
         {/* Expense Charts Section (Rendered if expenses exist) */}
-        {!fetching && expenses.length > 0 && (
+        {!fetching && isAnalyticsOpen && expenses.length > 0 && (
           <div className="grid grid-cols-1 gap-8" data-aos="fade-up">
             <ExpenseChart expenses={expenses} type="line" />
           </div>
         )}
 
         {/* Transactions Section Controls (View Mode Toggles) */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-4" data-aos="fade-up">
-          <h2 className="text-xl font-bold font-heading">Recent Transactions</h2>
+        <div
+          className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-4"
+          data-aos="fade-up"
+        >
+          <h2 className="text-xl font-bold font-heading">
+            Recent Transactions
+          </h2>
 
           {/* Card, List & AG Grid View Toggle Switches */}
           <div className="flex items-center p-1.5 rounded-2xl bg-white dark:bg-tertiary/5 border border-tertiary/20 shadow-sm">
             <button
-              onClick={() => setViewMode('card')}
+              onClick={() => setViewMode("card")}
               className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                viewMode === 'card' 
-                  ? 'bg-primary text-white shadow-md shadow-primary/20' 
-                  : 'text-dark/70 dark:text-light/70 hover:text-primary'
+                viewMode === "card"
+                  ? "bg-primary text-white shadow-md shadow-primary/20"
+                  : "text-dark/70 dark:text-light/70 hover:text-primary"
               }`}
             >
               <Squares2X2Icon className="h-4 w-4" />
               <span>Card View</span>
             </button>
             <button
-              onClick={() => setViewMode('list')}
+              onClick={() => setViewMode("list")}
               className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                viewMode === 'list' 
-                  ? 'bg-primary text-white shadow-md shadow-primary/20' 
-                  : 'text-dark/70 dark:text-light/70 hover:text-primary'
+                viewMode === "list"
+                  ? "bg-primary text-white shadow-md shadow-primary/20"
+                  : "text-dark/70 dark:text-light/70 hover:text-primary"
               }`}
             >
               <ListBulletIcon className="h-4 w-4" />
               <span>List View</span>
             </button>
             <button
-              onClick={() => setViewMode('grid')}
+              onClick={() => setViewMode("grid")}
               className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                viewMode === 'grid' 
-                  ? 'bg-primary text-white shadow-md shadow-primary/20' 
-                  : 'text-dark/70 dark:text-light/70 hover:text-primary'
+                viewMode === "grid"
+                  ? "bg-primary text-white shadow-md shadow-primary/20"
+                  : "text-dark/70 dark:text-light/70 hover:text-primary"
               }`}
             >
               <TableCellsIcon className="h-4 w-4" />
@@ -162,8 +208,12 @@ export default function ExpenseClient() {
             <div className="p-16 text-center space-y-4 max-w-md mx-auto bg-white/50 dark:bg-dark/50 rounded-3xl border border-tertiary/20">
               <WalletIcon className="h-12 w-12 text-primary mx-auto opacity-50" />
               <div className="space-y-1">
-                <p className="text-sm font-semibold text-dark dark:text-light">No expenses logged yet</p>
-                <p className="text-xs text-dark/60 dark:text-light/60">Click the button above to add your first transaction.</p>
+                <p className="text-sm font-semibold text-dark dark:text-light">
+                  No expenses logged yet
+                </p>
+                <p className="text-xs text-dark/60 dark:text-light/60">
+                  Click the button above to add your first transaction.
+                </p>
               </div>
               <button
                 onClick={() => setIsFormModalOpen(true)}
@@ -174,18 +224,21 @@ export default function ExpenseClient() {
             </div>
           ) : (
             <>
-              {viewMode === 'card' && <ExpenseCardView expenses={expenses} />}
-              {viewMode === 'list' && <ExpenseListView expenses={expenses} />}
-              {viewMode === 'grid' && <ExpenseAgGrid expenses={expenses} />}
+              {viewMode === "card" && <ExpenseCardView expenses={expenses} />}
+              {viewMode === "list" && <ExpenseListView expenses={expenses} />}
+              {viewMode === "grid" && <ExpenseAgGrid expenses={expenses} />}
             </>
           )}
         </div>
-
       </main>
 
       {/* 1. Add Expense Form Modal */}
       <Transition appear show={isFormModalOpen} as={Fragment}>
-        <Dialog as="div" className="relative z-50" onClose={() => setIsFormModalOpen(false)}>
+        <Dialog
+          as="div"
+          className="relative z-50"
+          onClose={() => setIsFormModalOpen(false)}
+        >
           <TransitionChild
             as={Fragment}
             enter="ease-out duration-300"
@@ -210,13 +263,15 @@ export default function ExpenseClient() {
                 leaveTo="opacity-0 scale-95"
               >
                 <DialogPanel className="w-full max-w-md transform overflow-hidden rounded-3xl bg-white dark:bg-dark border border-tertiary/20 dark:border-tertiary/10 p-8 text-left align-middle shadow-2xl transition-all space-y-6">
-                  
                   <div className="flex items-center justify-between border-b border-tertiary/20 pb-4">
                     <div className="flex items-center gap-2">
                       <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20">
                         <PlusCircleIcon className="h-5 w-5 text-primary" />
                       </div>
-                      <DialogTitle as="h3" className="text-lg font-bold font-heading text-dark dark:text-light">
+                      <DialogTitle
+                        as="h3"
+                        className="text-lg font-bold font-heading text-dark dark:text-light"
+                      >
                         New Expense Entry
                       </DialogTitle>
                     </div>
@@ -240,8 +295,10 @@ export default function ExpenseClient() {
                     </div>
                   )}
 
-                  <ExpenseForm onSubmitExpense={handleCreateExpense} loading={loading} />
-
+                  <ExpenseForm
+                    onSubmitExpense={handleCreateExpense}
+                    loading={loading}
+                  />
                 </DialogPanel>
               </TransitionChild>
             </div>
@@ -251,7 +308,11 @@ export default function ExpenseClient() {
 
       {/* 2. Expense Calendar Modal */}
       <Transition appear show={isCalendarModalOpen} as={Fragment}>
-        <Dialog as="div" className="relative z-50" onClose={() => setIsCalendarModalOpen(false)}>
+        <Dialog
+          as="div"
+          className="relative z-50"
+          onClose={() => setIsCalendarModalOpen(false)}
+        >
           <TransitionChild
             as={Fragment}
             enter="ease-out duration-300"
@@ -276,13 +337,15 @@ export default function ExpenseClient() {
                 leaveTo="opacity-0 scale-95"
               >
                 <DialogPanel className="w-full max-w-4xl transform overflow-hidden rounded-3xl bg-white dark:bg-dark border border-tertiary/20 dark:border-tertiary/10 p-8 text-left align-middle shadow-2xl transition-all space-y-6">
-                  
                   <div className="flex items-center justify-between border-b border-tertiary/20 pb-4">
                     <div className="flex items-center gap-2">
                       <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20">
                         <CalendarDaysIcon className="h-5 w-5 text-primary" />
                       </div>
-                      <DialogTitle as="h3" className="text-lg font-bold font-heading text-dark dark:text-light">
+                      <DialogTitle
+                        as="h3"
+                        className="text-lg font-bold font-heading text-dark dark:text-light"
+                      >
                         Monthly Expense Calendar
                       </DialogTitle>
                     </div>
@@ -295,7 +358,6 @@ export default function ExpenseClient() {
                   </div>
 
                   <ExpenseCalendar expenses={expenses} />
-
                 </DialogPanel>
               </TransitionChild>
             </div>
@@ -304,7 +366,10 @@ export default function ExpenseClient() {
       </Transition>
 
       {/* 3. Mock Data Generator Modal */}
-      <MockExpenseModal isOpen={isMockModalOpen} onClose={() => setIsMockModalOpen(false)} />
+      <MockExpenseModal
+        isOpen={isMockModalOpen}
+        onClose={() => setIsMockModalOpen(false)}
+      />
 
       <Footer />
     </div>
