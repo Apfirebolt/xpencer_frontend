@@ -1,0 +1,22 @@
+{
+  "nav": {
+    "dashboard": "Übersicht",
+    "budgets": "Budgets",
+    "expenses": "Ausgaben",
+    "rooms": "Räume",
+    "about": "Über uns",
+    "settings": "Einstellungen",
+    "notifications": "Benachrichtigungen",
+    "logout": "Abmelden"
+  },
+  "expenses": {
+    "title": "Verwalten Sie Ihre Ausgaben",
+    "totalTracked": "Gesamt erfasst",
+    "addExpense": "Ausgabe hinzufügen",
+    "cardView": "Kartenansicht",
+    "listView": "Listenansicht",
+    "gridView": "Tabellenansicht",
+    "searchPlaceholder": "Kategorie oder Beschreibung suchen...",
+    "noExpenses": "Noch keine Ausgaben erfasst"
+  }
+}

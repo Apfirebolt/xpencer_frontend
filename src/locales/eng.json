@@ -1,0 +1,22 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "budgets": "Budgets",
+    "expenses": "Expenses",
+    "rooms": "Rooms",
+    "about": "About",
+    "settings": "Settings",
+    "notifications": "Notifications",
+    "logout": "Logout"
+  },
+  "expenses": {
+    "title": "Manage Your Expenses",
+    "totalTracked": "Total Tracked",
+    "addExpense": "Add Expense",
+    "cardView": "Card View",
+    "listView": "List View",
+    "gridView": "Grid View",
+    "searchPlaceholder": "Search category or description...",
+    "noExpenses": "No expenses logged yet"
+  }
+}

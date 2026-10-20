@@ -1,0 +1,22 @@
+{
+  "nav": {
+    "dashboard": "डैशबोर्ड",
+    "budgets": "बजट",
+    "expenses": "खर्च",
+    "rooms": "कमरे",
+    "about": "परिचय",
+    "settings": "सेटिंग्स",
+    "notifications": "सूचनाएं",
+    "logout": "लॉग आउट"
+  },
+  "expenses": {
+    "title": "अपने खर्चों का प्रबंधन करें",
+    "totalTracked": "कुल ट्रैक किया गया",
+    "addExpense": "खर्च जोड़ें",
+    "cardView": "कार्ड दृश्य",
+    "listView": "सूची दृश्य",
+    "gridView": "ग्रिड दृश्य",
+    "searchPlaceholder": "श्रेणी या विवरण खोजें...",
+    "noExpenses": "अभी तक कोई खर्च दर्ज नहीं किया गया है"
+  }
+}
