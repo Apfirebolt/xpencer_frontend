@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Fragment } from "react";
+import { useState, useEffect, useMemo, Fragment } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ExpenseForm from "@/components/ExpenseForm";
@@ -23,6 +23,7 @@ import {
   ListBulletIcon,
   TableCellsIcon,
   SparklesIcon,
+  MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
 import {
   Dialog,
@@ -56,6 +57,9 @@ export default function ExpenseClient() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [expenseToDeleteId, setExpenseToDeleteId] = useState(null);
   const [deleting, setDeleting] = useState(false);
+
+  // Search Query State for Fuzzy Search
+  const [searchQuery, setSearchQuery] = useState("");
 
   const [viewMode, setViewMode] = useState("card");
   const [successMessage, setSuccessMessage] = useState("");
@@ -99,6 +103,22 @@ export default function ExpenseClient() {
       setDeleting(false);
     }
   };
+
+  // Client-side fuzzy search / filtering logic on category (title) and description
+  const filteredExpenses = useMemo(() => {
+    if (!searchQuery.trim()) return expenses;
+
+    const queryTokens = searchQuery.toLowerCase().trim().split(/\s+/);
+
+    return expenses.filter((exp) => {
+      const categoryText = (exp.category || "").toLowerCase();
+      const descriptionText = (exp.description || "").toLowerCase();
+      const combinedText = `${categoryText} ${descriptionText}`;
+
+      // Check if all search tokens loosely match either category or description
+      return queryTokens.every((token) => combinedText.includes(token));
+    });
+  }, [expenses, searchQuery]);
 
   return (
     <div className="min-h-screen bg-light dark:bg-dark text-dark dark:text-light flex flex-col font-sans selection:bg-primary selection:text-white transition-colors duration-200">
@@ -181,50 +201,79 @@ export default function ExpenseClient() {
           </div>
         )}
 
-        {/* Transactions Section Controls (View Mode Toggles) */}
+        {/* Transactions Section Controls (Search & View Mode Toggles) */}
         <div
-          className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-4"
+          className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pt-4"
           data-aos="fade-up"
         >
-          <h2 className="text-xl font-bold font-heading">
-            Recent Transactions
-          </h2>
+          <div className="flex items-center gap-4 w-full md:w-auto">
+            <h2 className="text-xl font-bold font-heading whitespace-nowrap">
+              Recent Transactions
+            </h2>
+            <span className="text-xs font-mono px-2.5 py-1 rounded-full bg-tertiary/20 text-dark/70 dark:text-light/70">
+              {filteredExpenses.length} of {expenses.length}
+            </span>
+          </div>
 
-          {/* Card, List & AG Grid View Toggle Switches */}
-          <div className="flex items-center p-1.5 rounded-2xl bg-white dark:bg-tertiary/5 border border-tertiary/20 shadow-sm">
-            <button
-              onClick={() => setViewMode("card")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                viewMode === "card"
-                  ? "bg-primary text-white shadow-md shadow-primary/20"
-                  : "text-dark/70 dark:text-light/70 hover:text-primary"
-              }`}
-            >
-              <Squares2X2Icon className="h-4 w-4" />
-              <span>Card View</span>
-            </button>
-            <button
-              onClick={() => setViewMode("list")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                viewMode === "list"
-                  ? "bg-primary text-white shadow-md shadow-primary/20"
-                  : "text-dark/70 dark:text-light/70 hover:text-primary"
-              }`}
-            >
-              <ListBulletIcon className="h-4 w-4" />
-              <span>List View</span>
-            </button>
-            <button
-              onClick={() => setViewMode("grid")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                viewMode === "grid"
-                  ? "bg-primary text-white shadow-md shadow-primary/20"
-                  : "text-dark/70 dark:text-light/70 hover:text-primary"
-              }`}
-            >
-              <TableCellsIcon className="h-4 w-4" />
-              <span>Grid View</span>
-            </button>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
+            {/* Fuzzy Search Input Bar */}
+            <div className="relative flex-grow sm:w-72">
+              <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-dark/40 dark:text-light/40">
+                <MagnifyingGlassIcon className="h-4 w-4" />
+              </span>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search category or description..."
+                className="w-full pl-10 pr-10 py-2.5 rounded-2xl bg-white dark:bg-tertiary/5 border border-tertiary/20 text-xs font-semibold focus:outline-none focus:border-primary shadow-sm"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-dark/40 hover:text-primary cursor-pointer"
+                >
+                  <XMarkIcon className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+
+            {/* Card, List & AG Grid View Toggle Switches */}
+            <div className="flex items-center p-1.5 rounded-2xl bg-white dark:bg-tertiary/5 border border-tertiary/20 shadow-sm self-end">
+              <button
+                onClick={() => setViewMode("card")}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                  viewMode === "card"
+                    ? "bg-primary text-white shadow-md shadow-primary/20"
+                    : "text-dark/70 dark:text-light/70 hover:text-primary"
+                }`}
+              >
+                <Squares2X2Icon className="h-4 w-4" />
+                <span>Card View</span>
+              </button>
+              <button
+                onClick={() => setViewMode("list")}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                  viewMode === "list"
+                    ? "bg-primary text-white shadow-md shadow-primary/20"
+                    : "text-dark/70 dark:text-light/70 hover:text-primary"
+                }`}
+              >
+                <ListBulletIcon className="h-4 w-4" />
+                <span>List View</span>
+              </button>
+              <button
+                onClick={() => setViewMode("grid")}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                  viewMode === "grid"
+                    ? "bg-primary text-white shadow-md shadow-primary/20"
+                    : "text-dark/70 dark:text-light/70 hover:text-primary"
+                }`}
+              >
+                <TableCellsIcon className="h-4 w-4" />
+                <span>Grid View</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -252,15 +301,31 @@ export default function ExpenseClient() {
                 Add First Expense
               </button>
             </div>
+          ) : filteredExpenses.length === 0 ? (
+            <div className="p-16 text-center space-y-3 max-w-md mx-auto bg-white/50 dark:bg-dark/50 rounded-3xl border border-tertiary/20">
+              <MagnifyingGlassIcon className="h-10 w-10 text-primary mx-auto opacity-50" />
+              <p className="text-sm font-semibold text-dark dark:text-light">
+                No matching transactions found
+              </p>
+              <p className="text-xs text-dark/60 dark:text-light/60">
+                Try searching for a different category or description keyword.
+              </p>
+              <button
+                onClick={() => setSearchQuery("")}
+                className="px-4 py-2 rounded-xl text-xs font-bold bg-primary/10 hover:bg-primary/20 text-primary transition-all border border-primary/20 cursor-pointer"
+              >
+                Clear Search
+              </button>
+            </div>
           ) : (
             <>
               {viewMode === "card" && (
-                <ExpenseCardView expenses={expenses} onDelete={promptDeleteExpense} />
+                <ExpenseCardView expenses={filteredExpenses} onDelete={promptDeleteExpense} />
               )}
               {viewMode === "list" && (
-                <ExpenseListView expenses={expenses} onDelete={promptDeleteExpense} />
+                <ExpenseListView expenses={filteredExpenses} onDelete={promptDeleteExpense} />
               )}
-              {viewMode === "grid" && <ExpenseAgGrid expenses={expenses} />}
+              {viewMode === "grid" && <ExpenseAgGrid expenses={filteredExpenses} />}
             </>
           )}
         </div>
