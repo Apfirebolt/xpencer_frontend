@@ -50,10 +50,10 @@ export const useExpenseRoomStore = create((set, get) => ({
   },
 
   // Send a room join request to another user
-  inviteUser: async (roomId, userId, notificationMessage) => {
+  inviteUser: async (roomId, userEmail, notificationMessage) => {
     set({ loading: true, error: null });
     try {
-      await httpClient.post(`/rooms/${roomId}/invite`, { userId, notificationMessage }, getAuthHeaders());
+      await httpClient.post(`/rooms/${roomId}/invite`, { userEmail, notificationMessage }, getAuthHeaders());
       set({ loading: false });
       return { success: true };
     } catch (err) {

@@ -18,7 +18,7 @@ export default function RoomClient() {
   
   // Invite Member Modal State
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
-  const [inviteUserId, setInviteUserId] = useState('');
+  const [inviteUserEmail, setInviteUserEmail] = useState('');
   const [inviteMessage, setInviteMessage] = useState('');
 
   // Add Expense to Room Modal State
@@ -37,13 +37,13 @@ export default function RoomClient() {
 
   async function handleInviteSubmit(e) {
     e.preventDefault();
-    if (!inviteUserId || !selectedRoom) return;
+    if (!inviteUserEmail || !selectedRoom) return;
 
     setFeedbackMessage('');
-    const result = await inviteUser(selectedRoom._id, inviteUserId.trim(), inviteMessage.trim());
+    const result = await inviteUser(selectedRoom._id, inviteUserEmail.trim(), inviteMessage.trim());
     if (result.success) {
       setFeedbackMessage('Invitation sent successfully!');
-      setInviteUserId('');
+      setInviteUserEmail('');
       setInviteMessage('');
       setTimeout(() => {
         setFeedbackMessage('');
@@ -202,13 +202,13 @@ export default function RoomClient() {
 
                   <form onSubmit={handleInviteSubmit} className="space-y-4">
                     <div className="space-y-1.5">
-                      <label className="block text-xs font-bold uppercase tracking-wider font-heading">User ID *</label>
+                      <label className="block text-xs font-bold uppercase tracking-wider font-heading">User Email *</label>
                       <input
-                        type="text"
-                        value={inviteUserId}
-                        onChange={(e) => setInviteUserId(e.target.value)}
+                        type="email"
+                        value={inviteUserEmail}
+                        onChange={(e) => setInviteUserEmail(e.target.value)}
                         className="w-full px-4 py-3 text-sm bg-white dark:bg-dark border border-tertiary/30 rounded-xl focus:outline-none focus:border-primary shadow-inner"
-                        placeholder="Enter recipient User ID..."
+                        placeholder="Enter recipient User Email..."
                         required
                       />
                     </div>
