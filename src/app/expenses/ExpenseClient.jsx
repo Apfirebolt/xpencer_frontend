@@ -32,10 +32,12 @@ import {
   Transition,
   TransitionChild,
 } from "@headlessui/react";
+import { useTranslation } from "@/context/LanguageContext";
 import AOS from "aos";
 import "aos/dist/aos.css";
 
 export default function ExpenseClient() {
+  const { t } = useTranslation();
   const {
     expenses,
     fetching,
@@ -136,7 +138,7 @@ export default function ExpenseClient() {
               <span>Expense Ledger</span>
             </div>
             <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight font-heading">
-              Manage Your Expenses
+              {t("expenses.title")}
             </h1>
           </div>
 
@@ -148,7 +150,7 @@ export default function ExpenseClient() {
               </div>
               <div>
                 <p className="text-[10px] uppercase font-bold text-dark/50 dark:text-light/50 font-heading">
-                  Total Tracked
+                  {t("expenses.totalTracked")}
                 </p>
                 <p className="text-sm font-extrabold font-heading text-primary">
                   ${getTotalSpent().toFixed(2)}
@@ -189,7 +191,7 @@ export default function ExpenseClient() {
               className="px-6 py-3.5 rounded-2xl font-bold bg-primary hover:bg-secondary text-white transition-all shadow-lg shadow-primary/25 flex items-center gap-2 cursor-pointer shrink-0"
             >
               <PlusCircleIcon className="h-5 w-5" />
-              <span>Add Expense</span>
+              <span>{t("expenses.addExpense")}</span>
             </button>
           </div>
         </div>
@@ -225,7 +227,7 @@ export default function ExpenseClient() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search category or description..."
+                placeholder={t("expenses.searchPlaceholder")}
                 className="w-full pl-10 pr-10 py-2.5 rounded-2xl bg-white dark:bg-tertiary/5 border border-tertiary/20 text-xs font-semibold focus:outline-none focus:border-primary shadow-sm"
               />
               {searchQuery && (
@@ -249,7 +251,7 @@ export default function ExpenseClient() {
                 }`}
               >
                 <Squares2X2Icon className="h-4 w-4" />
-                <span>Card View</span>
+                <span>{t("expenses.cardView")}</span>
               </button>
               <button
                 onClick={() => setViewMode("list")}
@@ -260,7 +262,7 @@ export default function ExpenseClient() {
                 }`}
               >
                 <ListBulletIcon className="h-4 w-4" />
-                <span>List View</span>
+                <span>{t("expenses.listView")}</span>
               </button>
               <button
                 onClick={() => setViewMode("grid")}
@@ -271,7 +273,7 @@ export default function ExpenseClient() {
                 }`}
               >
                 <TableCellsIcon className="h-4 w-4" />
-                <span>Grid View</span>
+                <span>{t("expenses.gridView")}</span>
               </button>
             </div>
           </div>
@@ -288,7 +290,7 @@ export default function ExpenseClient() {
               <WalletIcon className="h-12 w-12 text-primary mx-auto opacity-50" />
               <div className="space-y-1">
                 <p className="text-sm font-semibold text-dark dark:text-light">
-                  No expenses logged yet
+                  {t("expenses.noExpenses")}
                 </p>
                 <p className="text-xs text-dark/60 dark:text-light/60">
                   Click the button above to add your first transaction.

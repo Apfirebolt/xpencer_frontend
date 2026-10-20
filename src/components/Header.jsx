@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import Cookie from "js-cookie";
 import { useNotificationStore } from "@/store/useNotificationStore";
+import { useTranslation } from "@/context/LanguageContext";
 import { 
   HomeIcon, 
   WalletIcon,
@@ -38,6 +39,7 @@ const Header = () => {
   const [user, setUser] = useState(null);
 
   const { unreadCount, fetchNotifications } = useNotificationStore();
+  const { locale, changeLanguage, t } = useTranslation();
 
   const closeTimeoutRef = useRef(null);
   const userDropdownRef = useRef(null);
@@ -58,7 +60,6 @@ const Header = () => {
       try {
         const parsedUser = JSON.parse(userCookie);
         setUser(parsedUser);
-        // Fetch unread notification count on load if logged in
         fetchNotifications();
       } catch (err) {
         console.error("Failed to parse user cookie:", err);
@@ -115,17 +116,17 @@ const Header = () => {
   };
 
   const navLinks = [
-    { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
-    { name: "Budgets", href: "/budgets", icon: ChartPieIcon },
-    { name: "Expenses", href: "/expenses", icon: RectangleStackIcon },
-    { name: "Rooms", href: "/rooms", icon: UserGroupIcon },
+    { name: t("nav.dashboard"), href: "/dashboard", icon: HomeIcon },
+    { name: t("nav.budgets"), href: "/budgets", icon: ChartPieIcon },
+    { name: t("nav.expenses"), href: "/expenses", icon: RectangleStackIcon },
+    { name: t("nav.rooms"), href: "/rooms", icon: UserGroupIcon },
   ];
 
   const aboutSubLinks = [
-    { name: "About Xpencer", href: "/about", description: "Our mission, vision, and core financial tracking philosophy.", icon: SparklesIcon },
-    { name: "Tech Stack", href: "/about/tech", description: "Built with Next.js, Mongoose, AG Grid, and Chart.js analytics.", icon: CodeBracketIcon },
-    { name: "Security & Privacy", href: "/about/security", description: "JWT authentication, encrypted data, and secure cookie storage.", icon: ShieldCheckIcon },
-    { name: "API & Swagger Docs", href: "/api-docs", description: "Explore full-stack OpenAPI documentation and backend routes.", icon: CpuChipIcon },
+    { name: t("nav.aboutXpencer"), href: "/about", description: t("nav.aboutXpencerDesc"), icon: SparklesIcon },
+    { name: t("nav.techStack"), href: "/about/tech", description: t("nav.techStackDesc"), icon: CodeBracketIcon },
+    { name: t("nav.securityPrivacy"), href: "/about/security", description: t("nav.securityPrivacyDesc"), icon: ShieldCheckIcon },
+    { name: t("nav.apiDocs"), href: "/api-docs", description: t("nav.apiDocsDesc"), icon: CpuChipIcon },
   ];
 
   const currentAvatar = user?.profilePic?.url || null;
@@ -134,7 +135,7 @@ const Header = () => {
     <header className="relative sticky top-0 z-50 bg-white/80 dark:bg-dark/90 backdrop-blur-xl border-b border-tertiary/20 dark:border-tertiary/10 transition-colors shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         
-        {/* Brand / Logo & Theme Toggle */}
+        {/* Brand / Logo, Theme Toggle & Language Switcher */}
         <div className="flex items-center gap-3">
           <Link href="/" className="flex items-center gap-2 group">
             <div className="w-9 h-9 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:scale-105 transition-transform">
@@ -156,6 +157,40 @@ const Header = () => {
               <MoonIcon className="h-4 w-4 text-dark" />
             )}
           </button>
+
+          {/* Header Language Switcher */}
+          <div className="flex items-center p-1 rounded-xl bg-tertiary/20 border border-tertiary/30 text-[11px] font-bold">
+            <button
+              onClick={() => changeLanguage('en')}
+              className={`px-2 py-1 rounded-lg transition-all cursor-pointer ${
+                locale === 'en'
+                  ? 'bg-primary text-white shadow-sm'
+                  : 'text-dark/70 dark:text-light/70 hover:text-primary'
+              }`}
+            >
+              EN
+            </button>
+            <button
+              onClick={() => changeLanguage('hi')}
+              className={`px-2 py-1 rounded-lg transition-all cursor-pointer ${
+                locale === 'hi'
+                  ? 'bg-primary text-white shadow-sm'
+                  : 'text-dark/70 dark:text-light/70 hover:text-primary'
+              }`}
+            >
+              HI
+            </button>
+            <button
+              onClick={() => changeLanguage('de')}
+              className={`px-2 py-1 rounded-lg transition-all cursor-pointer ${
+                locale === 'de'
+                  ? 'bg-primary text-white shadow-sm'
+                  : 'text-dark/70 dark:text-light/70 hover:text-primary'
+              }`}
+            >
+              DE
+            </button>
+          </div>
         </div>
 
         {/* Desktop Navigation Links & Auth Actions */}
@@ -197,7 +232,7 @@ const Header = () => {
                   }`}
                 >
                   <InformationCircleIcon className="h-4 w-4" />
-                  <span>About</span>
+                  <span>{t("nav.about")}</span>
                   <ChevronDownIcon className={`h-3 w-3 transition-transform duration-200 ${isAboutMegaMenuOpen ? 'rotate-180' : ''}`} />
                 </button>
               </li>
@@ -230,7 +265,7 @@ const Header = () => {
                 {isUserDropdownOpen && (
                   <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white dark:bg-dark border border-tertiary/20 shadow-xl py-2 z-50 animate-fadeIn">
                     <div className="px-4 py-2 border-b border-tertiary/20">
-                      <p className="text-[10px] uppercase font-bold text-dark/40 dark:text-light/40">Signed in as</p>
+                      <p className="text-[10px] uppercase font-bold text-dark/40 dark:text-light/40">{t("nav.signedInAs")}</p>
                       <p className="text-xs font-bold truncate text-dark dark:text-light">{user.email}</p>
                     </div>
 
@@ -242,7 +277,7 @@ const Header = () => {
                       >
                         <div className="flex items-center gap-2.5">
                           <Cog6ToothIcon className="h-4 w-4 text-primary" />
-                          <span>Settings</span>
+                          <span>{t("nav.settings")}</span>
                         </div>
                       </Link>
 
@@ -253,7 +288,7 @@ const Header = () => {
                       >
                         <div className="flex items-center gap-2.5">
                           <BellIcon className="h-4 w-4 text-primary" />
-                          <span>Notifications</span>
+                          <span>{t("nav.notifications")}</span>
                         </div>
                         {unreadCount > 0 && (
                           <span className="px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 text-[10px] font-mono font-bold border border-rose-500/20">
@@ -269,7 +304,7 @@ const Header = () => {
                         className="w-full flex items-center gap-2.5 px-4 py-2.5 text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 transition-colors text-left cursor-pointer"
                       >
                         <ArrowRightOnRectangleIcon className="h-4 w-4" />
-                        <span>Logout</span>
+                        <span>{t("nav.logout")}</span>
                       </button>
                     </div>
                   </div>
@@ -281,13 +316,13 @@ const Header = () => {
                   href="/login"
                   className="px-4 py-2 rounded-xl text-xs font-bold text-dark dark:text-light hover:bg-primary/10 transition-colors border border-tertiary/30"
                 >
-                  Sign in
+                  {t("nav.signIn")}
                 </Link>
                 <Link
                   href="/register"
                   className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-primary hover:bg-secondary transition-all shadow-md shadow-primary/20 flex items-center gap-1.5"
                 >
-                  <span>Sign up</span>
+                  <span>{t("nav.signUp")}</span>
                   <ArrowRightIcon className="h-3 w-3" />
                 </Link>
               </div>
@@ -323,13 +358,13 @@ const Header = () => {
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="space-y-3 md:col-span-1 border-r border-tertiary/20 pr-6">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider">
-              Explore Xpencer
+              {t("nav.explore")}
             </div>
             <h3 className="text-2xl font-extrabold font-heading text-dark dark:text-light">
-              Platform Insights & Architecture
+              {t("nav.platformInsights")}
             </h3>
             <p className="text-xs text-dark/60 dark:text-light/60">
-              Discover the engineering principles, security standards, and advanced toolsets powering Xpencer.
+              {t("nav.platformDesc")}
             </p>
           </div>
 
@@ -363,7 +398,38 @@ const Header = () => {
 
       {/* Mobile Dropdown Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-light/95 dark:bg-dark/95 backdrop-blur-2xl border-b border-tertiary/20 px-4 py-4 space-y-3 shadow-2xl animate-fadeIn">
+        <div className="md:hidden bg-light/95 dark:bg-dark/95 backdrop-blur-2xl border-b border-tertiary/20 px-4 py-4 space-y-4 shadow-2xl animate-fadeIn">
+          {/* Mobile Language Switcher Bar */}
+          <div className="flex items-center justify-between p-2 rounded-xl bg-tertiary/10 border border-tertiary/20">
+            <span className="text-xs font-bold text-dark/60 dark:text-light/60">{t("nav.language")}:</span>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => changeLanguage('en')}
+                className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  locale === 'en' ? 'bg-primary text-white shadow-sm' : 'text-dark/70 dark:text-light/70'
+                }`}
+              >
+                EN
+              </button>
+              <button
+                onClick={() => changeLanguage('hi')}
+                className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  locale === 'hi' ? 'bg-primary text-white shadow-sm' : 'text-dark/70 dark:text-light/70'
+                }`}
+              >
+                HI
+              </button>
+              <button
+                onClick={() => changeLanguage('de')}
+                className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  locale === 'de' ? 'bg-primary text-white shadow-sm' : 'text-dark/70 dark:text-light/70'
+                }`}
+              >
+                DE
+              </button>
+            </div>
+          </div>
+
           {navLinks.map((link) => {
             const Icon = link.icon;
             const isActive = pathname === link.href;
@@ -387,7 +453,7 @@ const Header = () => {
           {/* Mobile About Accordion Section */}
           <div className="space-y-2 pt-2 border-t border-tertiary/20">
             <p className="px-4 text-[10px] uppercase font-bold tracking-wider text-dark/40 dark:text-light/40 font-heading">
-              About & Architecture
+              {t("nav.aboutAndArchitecture")}
             </p>
             {aboutSubLinks.map((sub) => {
               const SubIcon = sub.icon;
@@ -427,7 +493,7 @@ const Header = () => {
                     className="py-2.5 px-4 rounded-xl text-xs font-bold text-dark dark:text-light bg-tertiary/20 hover:bg-tertiary/30 border border-tertiary/30 transition-colors flex items-center gap-2"
                   >
                     <Cog6ToothIcon className="h-4 w-4 text-primary" />
-                    <span>Settings</span>
+                    <span>{t("nav.settings")}</span>
                   </Link>
 
                   <Link
@@ -436,11 +502,11 @@ const Header = () => {
                   >
                     <div className="flex items-center gap-2">
                       <BellIcon className="h-4 w-4 text-primary" />
-                      <span>Notifications</span>
+                      <span>{t("nav.notifications")}</span>
                     </div>
                     {unreadCount > 0 && (
                       <span className="px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 text-[10px] font-mono font-bold border border-rose-500/20">
-                        {unreadCount} new
+                        {unreadCount} {t("nav.new")}
                       </span>
                     )}
                   </Link>
@@ -450,7 +516,7 @@ const Header = () => {
                     className="w-full py-2.5 px-4 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/20 transition-all flex items-center gap-2 text-xs font-bold cursor-pointer"
                   >
                     <ArrowRightOnRectangleIcon className="h-4 w-4" />
-                    <span>Logout</span>
+                    <span>{t("nav.logout")}</span>
                   </button>
                 </div>
               </div>
@@ -460,13 +526,13 @@ const Header = () => {
                   href="/login"
                   className="py-3 text-center rounded-xl text-xs font-bold text-dark dark:text-light hover:bg-primary/10 border border-tertiary/30 transition-colors"
                 >
-                  Sign in
+                  {t("nav.signIn")}
                 </Link>
                 <Link
                   href="/register"
                   className="py-3 text-center rounded-xl text-xs font-bold text-white bg-primary hover:bg-secondary transition-all shadow-md shadow-primary/20"
                 >
-                  Sign up
+                  {t("nav.signUp")}
                 </Link>
               </div>
             )}

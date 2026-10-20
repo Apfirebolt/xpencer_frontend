@@ -2,16 +2,18 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useTranslation } from '@/context/LanguageContext';
 import { 
   WalletIcon, 
   ArrowRightIcon, 
   ShieldCheckIcon, 
   ChartPieIcon, 
-  UserGroupIcon, 
-  CurrencyDollarIcon 
+  UserGroupIcon 
 } from "@heroicons/react/24/outline";
 
 const Footer = () => {
+  const { t } = useTranslation();
+  
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState('idle'); // 'idle' | 'loading' | 'success' | 'error'
   const [message, setMessage] = useState('');
@@ -34,15 +36,15 @@ const Footer = () => {
 
       if (res.ok) {
         setStatus('success');
-        setMessage(data.message || "You're on the early access list!");
+        setMessage(data.message || t('footer.defaultSuccess'));
         setEmail('');
       } else {
         setStatus('error');
-        setMessage(data.error || 'Something went wrong. Please try again.');
+        setMessage(data.error || t('footer.defaultError'));
       }
     } catch (error) {
       setStatus('error');
-      setMessage('Network error. Please check your connection.');
+      setMessage(t('footer.networkError'));
     }
   };
 
@@ -63,7 +65,7 @@ const Footer = () => {
                 </span>
               </Link>
               <p className="text-sm text-dark/60 dark:text-light/60 max-w-md leading-relaxed font-sans">
-                The intelligent expense management suite built for individuals and teams. Track budgets, categorize spending automatically, and split bills effortlessly.
+                {t('footer.description')}
               </p>
             </div>
 
@@ -71,27 +73,27 @@ const Footer = () => {
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 pt-2">
               <div className="space-y-3">
                 <h3 className="text-xs font-bold text-dark dark:text-light uppercase tracking-wider font-heading">
-                  Platform
+                  {t('footer.platform')}
                 </h3>
                 <ul className="space-y-2 text-sm font-sans">
                   <li>
                     <Link href="/dashboard" className="hover:text-primary transition-colors">
-                      Dashboard
+                      {t('footer.dashboard')}
                     </Link>
                   </li>
                   <li>
                     <Link href="/budgets" className="hover:text-primary transition-colors">
-                      Budget Planner
+                      {t('footer.budgetPlanner')}
                     </Link>
                   </li>
                   <li>
                     <Link href="/expenses" className="hover:text-primary transition-colors">
-                      Expense Tracker
+                      {t('footer.expenseTracker')}
                     </Link>
                   </li>
                   <li>
-                    <Link href="/splits" className="hover:text-primary transition-colors">
-                      Bill Splits
+                    <Link href="/rooms" className="hover:text-primary transition-colors">
+                      {t('footer.billSplits')}
                     </Link>
                   </li>
                 </ul>
@@ -99,20 +101,20 @@ const Footer = () => {
 
               <div className="space-y-3">
                 <h3 className="text-xs font-bold text-dark dark:text-light uppercase tracking-wider font-heading">
-                  Capabilities
+                  {t('footer.capabilities')}
                 </h3>
                 <ul className="space-y-2 text-sm font-sans">
                   <li className="flex items-center gap-1.5 text-dark/50 dark:text-light/50">
                     <ChartPieIcon className="h-4 w-4 text-primary" />
-                    <span>Smart Categories</span>
+                    <span>{t('footer.smartCategories')}</span>
                   </li>
                   <li className="flex items-center gap-1.5 text-dark/50 dark:text-light/50">
                     <UserGroupIcon className="h-4 w-4 text-secondary" />
-                    <span>Group Splitting</span>
+                    <span>{t('footer.groupSplitting')}</span>
                   </li>
                   <li className="flex items-center gap-1.5 text-dark/50 dark:text-light/50">
                     <ShieldCheckIcon className="h-4 w-4 text-success" />
-                    <span>Secure Encrypted Ledger</span>
+                    <span>{t('footer.secureLedger')}</span>
                   </li>
                 </ul>
               </div>
@@ -123,10 +125,10 @@ const Footer = () => {
           <div className="lg:col-span-5 p-8 rounded-3xl bg-tertiary/10 dark:bg-tertiary/5 border border-tertiary/20 dark:border-tertiary/10 flex flex-col justify-between space-y-6 shadow-sm">
             <div className="space-y-2">
               <h3 className="text-lg font-bold text-dark dark:text-light font-heading">
-                Take Control of Your Finances
+                {t('footer.newsletterTitle')}
               </h3>
               <p className="text-xs text-dark/60 dark:text-light/60 font-sans leading-relaxed">
-                Join our waitlist to get notified about new budgeting insights, automated categorization updates, and mobile app releases.
+                {t('footer.newsletterSubtitle')}
               </p>
             </div>
 
@@ -136,7 +138,7 @@ const Footer = () => {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email address"
+                  placeholder={t('footer.emailPlaceholder')}
                   required
                   disabled={status === 'loading'}
                   className="w-full px-4 py-3 text-sm bg-white dark:bg-dark border border-tertiary/30 rounded-xl focus:outline-none focus:border-primary text-dark dark:text-light placeholder-dark/30 dark:placeholder-light/30 shadow-inner disabled:opacity-60"
@@ -158,7 +160,7 @@ const Footer = () => {
                 disabled={status === 'loading'}
                 className="w-full py-3 text-sm font-bold text-white bg-primary hover:bg-secondary rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/25 disabled:opacity-50 cursor-pointer"
               >
-                <span>{status === 'loading' ? 'Joining...' : 'Get Early Access'}</span>
+                <span>{status === 'loading' ? t('footer.joining') : t('footer.getEarlyAccess')}</span>
                 <ArrowRightIcon className="h-4 w-4" />
               </button>
             </form>
@@ -168,17 +170,17 @@ const Footer = () => {
 
         {/* Divider & Copyright */}
         <div className="border-t border-tertiary/20 dark:border-tertiary/10 pt-8 mt-8 flex flex-col sm:flex-row justify-between items-center text-xs text-dark/50 dark:text-light/50 font-sans gap-4">
-          <p>&copy; {new Date().getFullYear()} Xpencer. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} {t('footer.rights')}</p>
           
           <div className="flex space-x-6">
             <Link href="/privacy" className="hover:text-primary transition-colors">
-              Privacy Policy
+              {t('footer.privacy')}
             </Link>
             <Link href="/terms" className="hover:text-primary transition-colors">
-              Terms of Service
+              {t('footer.terms')}
             </Link>
             <Link href="/security" className="hover:text-primary transition-colors">
-              Security & Data
+              {t('footer.security')}
             </Link>
           </div>
         </div>
