@@ -17,7 +17,8 @@ import {
   CheckCircleIcon,
   ClockIcon,
   UserGroupIcon,
-  UserIcon
+  UserIcon,
+  CreditCardIcon
 } from '@heroicons/react/24/outline';
 import { Dialog, Transition, TransitionChild } from '@headlessui/react';
 import AOS from 'aos';
@@ -52,7 +53,7 @@ export default function RoomDetailClient() {
     try {
       const res = await httpClient.get(`/rooms/${roomId}`, getAuthHeaders());
       const roomData = res.data.room || res.data;
-      const expenseData = res.data.expenses || res.data.roomExpenses || [];
+      const expenseData = res.data.expenses || [];
 
       setRoom(roomData);
       setExpenses(Array.isArray(expenseData) ? expenseData : []);
@@ -91,16 +92,15 @@ export default function RoomDetailClient() {
     }
   };
 
-  // Two-step settlement action triggers
-  const handleMarkPaid = async (expenseId) => {
-    const result = await markSplitPaymentPaid(expenseId);
+  const handleMarkPaid = async (shareId) => {
+    const result = await markSplitPaymentPaid(shareId);
     if (result.success) {
       fetchRoomDetails();
     }
   };
 
-  const handleConfirm = async (expenseId) => {
-    const result = await confirmSplitPayment(expenseId);
+  const handleConfirm = async (shareId) => {
+    const result = await confirmSplitPayment(shareId);
     if (result.success) {
       fetchRoomDetails();
     }
@@ -152,7 +152,7 @@ export default function RoomDetailClient() {
           <div className="bg-white dark:bg-tertiary/5 border border-tertiary/20 dark:border-tertiary/10 rounded-3xl p-6 shadow-sm space-y-1">
             <p className="text-xs font-bold uppercase tracking-wider text-dark/60 dark:text-light/60">Total Room Expenses</p>
             <p className="text-2xl font-extrabold font-heading text-primary">
-              ${expenses.reduce((acc, curr) => acc + (curr.amount || 0), 0).toFixed(2)}
+              ${expenses.reduce((acc, curr) => acc + (curr.totalAmount || curr.amount || 0), 0).toFixed(2)}
             </p>
           </div>
           <div className="bg-white dark:bg-tertiary/5 border border-tertiary/20 dark:border-tertiary/10 rounded-3xl p-6 shadow-sm space-y-1">
@@ -168,7 +168,7 @@ export default function RoomDetailClient() {
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-bold font-heading">Room Expenses & Settlements</h2>
             <span className="text-xs font-bold px-3 py-1 rounded-full bg-primary/10 text-primary">
-              {expenses.length} Recorded
+              {expenses.length} Unified Bills
             </span>
           </div>
 
@@ -185,123 +185,127 @@ export default function RoomDetailClient() {
               </div>
             </div>
           ) : (
-            <div className="space-y-4">
-              {expenses.map((expense) => {
-                const debtorId = expense.user?._id?.toString() || expense.user?.toString();
-                const creditorId = expense.paidBy?._id?.toString() || expense.paidBy?.toString();
-                
-                const isUserDebtor = debtorId === currentUserId?.toString();
-                const isUserCreditor = creditorId === currentUserId?.toString();
-                const status = expense.settlementStatus || 'unpaid';
+            <div className="space-y-6">
+              {expenses.map((item, idx) => {
+                if (item.type === 'single') {
+                  return (
+                    <div key={item._id} className="bg-white dark:bg-tertiary/5 border border-tertiary/20 dark:border-tertiary/10 rounded-3xl p-6 flex justify-between items-center shadow-sm">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="px-3 py-1 rounded-xl bg-primary/10 text-primary text-xs font-bold uppercase font-mono border border-primary/20">
+                            {item.category || 'General'}
+                          </span>
+                          <span className="text-xs text-dark/50 dark:text-light/50 flex items-center gap-1 font-mono">
+                            <CreditCardIcon className="h-3.5 w-3.5" /> {item.mode || 'Cash'}
+                          </span>
+                        </div>
+                        <h3 className="text-base font-bold text-dark dark:text-light pt-2">{item.description}</h3>
+                      </div>
+                      <p className="text-xl font-extrabold font-heading text-primary">${item.amount?.toFixed(2)}</p>
+                    </div>
+                  );
+                }
 
-                const debtorName = expense.user 
-                  ? `${expense.user.firstName || ''} ${expense.user.lastName || ''}`.trim() || expense.user.email 
-                  : 'Member';
-
-                const creditorName = expense.paidBy 
-                  ? `${expense.paidBy.firstName || ''} ${expense.paidBy.lastName || ''}`.trim() || expense.paidBy.email 
+                const creditor = item.paidBy;
+                const creditorName = creditor 
+                  ? `${creditor.firstName || ''} ${creditor.lastName || ''}`.trim() || creditor.email 
                   : 'Member';
 
                 return (
-                  <div 
-                    key={expense._id} 
-                    className="bg-white dark:bg-tertiary/5 border border-tertiary/20 dark:border-tertiary/10 rounded-3xl p-6 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 shadow-sm"
-                  >
-                    <div className="space-y-3 w-full lg:w-3/4">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="px-3 py-1 rounded-xl bg-primary/10 text-primary text-xs font-bold uppercase font-mono border border-primary/20">
-                          {expense.category || 'General'}
-                        </span>
-                        {expense.isSplit && (
-                          <span className="px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[10px] font-bold font-mono border border-amber-500/20 flex items-center gap-1">
-                            <UserGroupIcon className="h-3 w-3" /> Split Share
+                  <div key={idx} className="bg-white dark:bg-tertiary/5 border border-primary/30 rounded-3xl p-6 shadow-sm space-y-5">
+                    {/* Unified Bill Header (Shown only once) */}
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-tertiary/10 pb-4">
+                      <div className="space-y-1.5">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="px-3 py-1 rounded-xl bg-primary/10 text-primary text-xs font-bold uppercase font-mono border border-primary/20">
+                            {item.category || 'General'}
                           </span>
-                        )}
-                        <span className="text-xs text-dark/50 dark:text-light/50 flex items-center gap-1 font-mono">
-                          <CalendarIcon className="h-3.5 w-3.5" />
-                          {new Date(expense.createdAt || expense.date).toLocaleDateString()}
-                        </span>
+                          <span className="px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[10px] font-bold font-mono border border-amber-500/20 flex items-center gap-1">
+                            <UserGroupIcon className="h-3 w-3" /> Split Bill
+                          </span>
+                          <span className="px-2.5 py-1 rounded-lg bg-tertiary/10 text-dark/70 dark:text-light/70 text-[10px] font-bold font-mono border border-tertiary/20 flex items-center gap-1">
+                            <CreditCardIcon className="h-3 w-3" /> {item.mode}
+                          </span>
+                          <span className="text-xs text-dark/50 dark:text-light/50 flex items-center gap-1 font-mono">
+                            <CalendarIcon className="h-3.5 w-3.5" />
+                            {new Date(item.createdAt).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <h3 className="text-lg font-bold text-dark dark:text-light">{item.description}</h3>
                       </div>
 
-                      <h3 className="text-base font-bold text-dark dark:text-light">{expense.description}</h3>
-                      
-                      {/* Detailed Metadata: Payer & Split Participants */}
-                      <div className="space-y-1 text-xs text-dark/70 dark:text-light/70 pt-1 border-t border-tertiary/10">
-                        <div className="flex items-center gap-1.5 font-medium">
-                          <UserIcon className="h-3.5 w-3.5 text-primary shrink-0" />
-                          <span>Paid in full by: <strong className="text-dark dark:text-light">{creditorName}</strong></span>
-                        </div>
-
-                        {expense.isSplit && (
-                          <div className="flex items-center gap-1.5">
-                            <UserGroupIcon className="h-3.5 w-3.5 text-dark/40 shrink-0" />
-                            <span>Assigned Share Debtor: <strong className="text-dark dark:text-light">{debtorName}</strong></span>
-                          </div>
-                        )}
-
-                        {/* Split Between List */}
-                        {expense.splitBetween && expense.splitBetween.length > 0 && (
-                          <div className="pt-1 flex flex-wrap items-center gap-1.5">
-                            <span className="text-[11px] font-bold text-dark/50 dark:text-light/50">Split among:</span>
-                            {expense.splitBetween.map((member, idx) => {
-                              const memberName = typeof member === 'object' 
-                                ? `${member.firstName || ''} ${member.lastName || ''}`.trim() || member.email 
-                                : 'Member';
-                              return (
-                                <span key={member._id || idx} className="px-2 py-0.5 rounded-md bg-tertiary/20 text-dark dark:text-light text-[10px] font-mono">
-                                  {memberName}
-                                </span>
-                              );
-                            })}
-                          </div>
-                        )}
+                      <div className="text-right">
+                        <p className="text-2xl font-extrabold font-heading text-primary">${item.totalAmount.toFixed(2)}</p>
+                        <p className="text-[10px] text-dark/50 dark:text-light/50 font-bold uppercase tracking-wider">
+                          Paid by <strong className="text-dark dark:text-light">{creditorName}</strong>
+                        </p>
                       </div>
-
-                      {/* Two-Step Settlement Action Bar */}
-                      {expense.isSplit && (
-                        <div className="pt-2 flex items-center gap-2 flex-wrap">
-                          {/* Debtor Action: Mark Payment Done */}
-                          {isUserDebtor && status === 'unpaid' && (
-                            <button
-                              onClick={() => handleMarkPaid(expense._id)}
-                              className="px-4 py-2 rounded-xl text-xs font-bold bg-amber-500/10 text-amber-600 hover:bg-amber-500/20 transition-all cursor-pointer flex items-center gap-1.5 border border-amber-500/20 shadow-sm"
-                            >
-                              <ClockIcon className="h-4 w-4" /> Mark as Paid
-                            </button>
-                          )}
-
-                          {/* Awaiting Confirmation Status for Debtor */}
-                          {status === 'pending_confirmation' && isUserDebtor && (
-                            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-3 py-1.5 rounded-xl border border-amber-500/20">
-                              <ClockIcon className="h-4 w-4 animate-spin" /> Awaiting confirmation from {creditorName}
-                            </span>
-                          )}
-
-                          {/* Creditor Action: Confirm Received */}
-                          {isUserCreditor && status === 'pending_confirmation' && (
-                            <button
-                              onClick={() => handleConfirm(expense._id)}
-                              className="px-4 py-2 rounded-xl text-xs font-bold bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 transition-all cursor-pointer flex items-center gap-1.5 border border-emerald-500/20 shadow-sm animate-pulse"
-                            >
-                              <CheckCircleIcon className="h-4 w-4" /> Confirm Payment Received
-                            </button>
-                          )}
-
-                          {/* Fully Settled Badge */}
-                          {status === 'settled' && (
-                            <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-xl border border-emerald-500/20">
-                              <CheckCircleIcon className="h-4 w-4" /> Settled & Verified (`isPaid: true`)
-                            </span>
-                          )}
-                        </div>
-                      )}
                     </div>
 
-                    <div className="text-right shrink-0 bg-tertiary/5 p-4 rounded-2xl border border-tertiary/10 self-stretch flex flex-col justify-center">
-                      <p className="text-xl font-extrabold font-heading text-primary">${expense.amount?.toFixed(2)}</p>
-                      <p className="text-[10px] text-dark/50 dark:text-light/50 font-bold uppercase tracking-wider">
-                        {expense.isSplit ? 'Your Split Share' : 'Total Amount'}
+                    {/* Participant Breakdown Section */}
+                    <div className="space-y-3">
+                      <p className="text-xs font-bold uppercase tracking-wider text-dark/60 dark:text-light/60 font-heading">
+                        Participant Breakdown & Settlement Status
                       </p>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {item.shares.map((share) => {
+                          const debtorId = share.user?._id?.toString() || share.user?.toString();
+                          const isUserDebtor = debtorId === currentUserId?.toString();
+                          const isUserCreditor = (creditor?._id?.toString() || creditor?.toString()) === currentUserId?.toString();
+                          const status = share.settlementStatus || 'unpaid';
+
+                          const debtorName = share.user 
+                            ? `${share.user.firstName || ''} ${share.user.lastName || ''}`.trim() || share.user.email 
+                            : 'Member';
+
+                          return (
+                            <div key={share._id} className="p-4 rounded-2xl bg-tertiary/10 border border-tertiary/20 flex flex-col justify-between space-y-3">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  <UserIcon className="h-4 w-4 text-primary" />
+                                  <span className="text-xs font-bold">{debtorName} {isUserDebtor && "(You)"}</span>
+                                </div>
+                                <span className="text-xs font-extrabold font-mono text-primary">${share.amount?.toFixed(2)}</span>
+                              </div>
+
+                              <div className="flex items-center justify-between pt-2 border-t border-tertiary/10">
+                                {status === 'settled' ? (
+                                  <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                                    <CheckCircleIcon className="h-4 w-4" /> Settled
+                                  </span>
+                                ) : status === 'pending_confirmation' ? (
+                                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-600 dark:text-amber-400">
+                                    <ClockIcon className="h-4 w-4 animate-spin" /> Awaiting Confirmation
+                                  </span>
+                                ) : (
+                                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-600 dark:text-amber-400">
+                                    <ClockIcon className="h-4 w-4" /> Pending Payment
+                                  </span>
+                                )}
+
+                                {isUserDebtor && status === 'unpaid' && (
+                                  <button
+                                    onClick={() => handleMarkPaid(share._id)}
+                                    className="px-3 py-1.5 rounded-xl text-[11px] font-bold bg-amber-500/10 text-amber-600 hover:bg-amber-500/20 transition-all cursor-pointer border border-amber-500/20 shadow-sm"
+                                  >
+                                    Mark as Paid
+                                  </button>
+                                )}
+
+                                {isUserCreditor && status === 'pending_confirmation' && (
+                                  <button
+                                    onClick={() => handleConfirm(share._id)}
+                                    className="px-3 py-1.5 rounded-xl text-[11px] font-bold bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 transition-all cursor-pointer border border-emerald-500/20 shadow-sm animate-pulse"
+                                  >
+                                    Confirm Receipt
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
                   </div>
                 );
