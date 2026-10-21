@@ -7,6 +7,7 @@ import ExpenseForm from '@/components/ExpenseForm';
 import ExpenseCalendar from '@/components/ExpenseCalendar';
 import { useExpenseStore } from '@/store/useExpenseStore';
 import { useBudgetStore } from '@/store/useBudgetStore';
+import { useAuthStore } from '@/store/useAuthStore';
 import { useTranslation } from '@/context/LanguageContext';
 import { 
   WalletIcon, 
@@ -17,7 +18,10 @@ import {
   ArrowRightIcon, 
   XMarkIcon,
   CheckCircleIcon,
-  ReceiptPercentIcon
+  ReceiptPercentIcon,
+  UserCircleIcon,
+  SparklesIcon,
+  TrendingUpIcon
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react';
@@ -27,6 +31,7 @@ import 'aos/dist/aos.css';
 export default function DashboardClient() {
   const { expenses, fetching: fetchingExpenses, fetchExpenses, createExpense, getTotalSpent } = useExpenseStore();
   const { budgets, fetchBudgets, getTotalBudgetLimit, getTotalBudgetSpent } = useBudgetStore();
+  const { user } = useAuthStore();
   const { t } = useTranslation();
 
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
@@ -50,7 +55,7 @@ export default function DashboardClient() {
 
     if (result.success) {
       setSuccessMessage(t('dashboard.successExpenseRecorded') || 'Expense successfully recorded!');
-      fetchBudgets(currentMonth, currentYear); // Refresh budgets to reflect new spend
+      fetchBudgets(currentMonth, currentYear);
       setTimeout(() => {
         setSuccessMessage('');
         setIsExpenseModalOpen(false);
@@ -64,6 +69,12 @@ export default function DashboardClient() {
   const totalBudgetLimit = getTotalBudgetLimit();
   const totalBudgetSpent = getTotalBudgetSpent();
   const budgetUsagePercent = totalBudgetLimit > 0 ? Math.min(Math.round((totalBudgetSpent / totalBudgetLimit) * 100), 100) : 0;
+  const remainingBudget = totalBudgetLimit - totalBudgetSpent;
+
+  // Resolve user display name or fallback to email
+  const displayName = user 
+    ? (user.firstName || user.lastName ? `${user.firstName || ''} ${user.lastName || ''}`.trim() : user.email)
+    : 'Guest';
 
   return (
     <div className="min-h-screen bg-light dark:bg-dark text-dark dark:text-light flex flex-col font-sans selection:bg-primary selection:text-white transition-colors duration-200">
@@ -71,22 +82,25 @@ export default function DashboardClient() {
 
       <main className="flex-grow max-w-7xl mx-auto w-full px-6 py-16 space-y-12">
         
-        {/* Dashboard Welcome Header */}
+        {/* Professional Dashboard Welcome Header with Greeting */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-tertiary/20 pb-6" data-aos="fade-down">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-wider uppercase border border-primary/20 mb-3">
-              <WalletIcon className="h-4 w-4" />
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-wider uppercase border border-primary/20">
+              <SparklesIcon className="h-4 w-4" />
               <span>{t('dashboard.badge') || "Overview Suite"}</span>
             </div>
-            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight font-heading">
-              {t('dashboard.title') || "Financial Dashboard"}
+            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight font-heading flex items-center gap-2">
+              Hello, <span className="text-primary">{displayName}</span> 👋
             </h1>
+            <p className="text-xs text-dark/60 dark:text-light/60 font-sans">
+              Here is your financial pulse and monthly ledger summary.
+            </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
             <button
               onClick={() => setIsCalendarModalOpen(true)}
-              className="px-5 py-3 rounded-2xl font-bold bg-tertiary/20 hover:bg-tertiary/30 text-dark dark:text-light border border-tertiary/30 transition-all flex items-center gap-2 cursor-pointer text-xs"
+              className="px-5 py-3.5 rounded-2xl font-bold bg-tertiary/20 hover:bg-tertiary/30 text-dark dark:text-light border border-tertiary/30 transition-all flex items-center gap-2 cursor-pointer text-xs"
             >
               <CalendarDaysIcon className="h-4 w-4 text-primary" />
               <span>{t('dashboard.calendarView') || "Calendar View"}</span>
@@ -94,7 +108,7 @@ export default function DashboardClient() {
 
             <button
               onClick={() => setIsExpenseModalOpen(true)}
-              className="px-6 py-3 rounded-2xl font-bold bg-primary hover:bg-secondary text-white transition-all shadow-lg shadow-primary/25 flex items-center gap-2 cursor-pointer text-xs"
+              className="px-6 py-3.5 rounded-2xl font-bold bg-primary hover:bg-secondary text-white transition-all shadow-lg shadow-primary/25 flex items-center gap-2 cursor-pointer text-xs"
             >
               <PlusCircleIcon className="h-5 w-5" />
               <span>{t('dashboard.addExpense') || "Add Expense"}</span>
@@ -102,47 +116,76 @@ export default function DashboardClient() {
           </div>
         </div>
 
-        {/* Analytics Summary Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6" data-aos="fade-up">
+        {/* Detailed Analytics Summary Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" data-aos="fade-up">
           
-          {/* Card 1: Total Lifetime/Loaded Spend */}
-          <div className="p-6 rounded-3xl bg-white/80 dark:bg-dark/80 border border-tertiary/20 dark:border-tertiary/10 space-y-2 shadow-sm">
+          {/* Card 1: Total Lifetime Spend */}
+          <div className="p-6 rounded-3xl bg-white/80 dark:bg-dark/80 border border-tertiary/20 dark:border-tertiary/10 space-y-3 shadow-sm hover:border-primary/40 transition-all">
             <div className="flex items-center justify-between">
               <span className="text-xs uppercase font-bold text-dark/50 dark:text-light/50 font-heading">{t('dashboard.totalExpenses') || "Total Expenses"}</span>
-              <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                <CurrencyDollarIcon className="h-4 w-4" />
+              <div className="w-9 h-9 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
+                <CurrencyDollarIcon className="h-5 w-5" />
               </div>
             </div>
-            <p className="text-3xl font-extrabold font-heading text-primary">${totalSpent.toFixed(2)}</p>
-            <p className="text-[11px] text-dark/60 dark:text-light/60">{t('dashboard.acrossAllTransactions') || "Across all recorded transactions"}</p>
+            <div>
+              <p className="text-3xl font-extrabold font-heading text-primary">${totalSpent.toFixed(2)}</p>
+              <p className="text-[11px] text-dark/60 dark:text-light/60 pt-1">{t('dashboard.acrossAllTransactions') || "Across all recorded transactions"}</p>
+            </div>
           </div>
 
           {/* Card 2: Current Month Budget Limit */}
-          <div className="p-6 rounded-3xl bg-white/80 dark:bg-dark/80 border border-tertiary/20 dark:border-tertiary/10 space-y-2 shadow-sm">
+          <div className="p-6 rounded-3xl bg-white/80 dark:bg-dark/80 border border-tertiary/20 dark:border-tertiary/10 space-y-3 shadow-sm hover:border-primary/40 transition-all">
             <div className="flex items-center justify-between">
               <span className="text-xs uppercase font-bold text-dark/50 dark:text-light/50 font-heading">{t('dashboard.monthlyBudget') || "Monthly Budget"}</span>
-              <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                <ChartPieIcon className="h-4 w-4" />
+              <div className="w-9 h-9 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
+                <ChartPieIcon className="h-5 w-5" />
               </div>
             </div>
-            <p className="text-3xl font-extrabold font-heading text-dark dark:text-light">${totalBudgetLimit.toFixed(2)}</p>
-            <p className="text-[11px] text-dark/60 dark:text-light/60">{t('dashboard.allocatedForMonth') || "Allocated for this month"}</p>
+            <div>
+              <p className="text-3xl font-extrabold font-heading text-dark dark:text-light">${totalBudgetLimit.toFixed(2)}</p>
+              <p className="text-[11px] text-dark/60 dark:text-light/60 pt-1">{t('dashboard.allocatedForMonth') || "Allocated for this month"}</p>
+            </div>
           </div>
 
-          {/* Card 3: Monthly Budget Usage */}
-          <div className="p-6 rounded-3xl bg-white/80 dark:bg-dark/80 border border-tertiary/20 dark:border-tertiary/10 space-y-2 shadow-sm">
+          {/* Card 3: Remaining Budget */}
+          <div className="p-6 rounded-3xl bg-white/80 dark:bg-dark/80 border border-tertiary/20 dark:border-tertiary/10 space-y-3 shadow-sm hover:border-primary/40 transition-all">
             <div className="flex items-center justify-between">
-              <span className="text-xs uppercase font-bold text-dark/50 dark:text-light/50 font-heading">{t('dashboard.budgetUsage') || "Budget Usage"}</span>
-              <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                <ReceiptPercentIcon className="h-4 w-4" />
+              <span className="text-xs uppercase font-bold text-dark/50 dark:text-light/50 font-heading">Remaining Budget</span>
+              <div className="w-9 h-9 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-600 border border-emerald-500/20">
+                <WalletIcon className="h-5 w-5" />
               </div>
             </div>
-            <p className="text-3xl font-extrabold font-heading text-primary">{budgetUsagePercent}%</p>
-            <div className="w-full bg-tertiary/20 rounded-full h-2 overflow-hidden mt-2">
-              <div 
-                className="bg-primary h-full rounded-full transition-all duration-500" 
-                style={{ width: `${budgetUsagePercent}%` }}
-              />
+            <div>
+              <p className={`text-3xl font-extrabold font-heading ${remainingBudget < 0 ? 'text-rose-500' : 'text-emerald-600'}`}>
+                ${remainingBudget.toFixed(2)}
+              </p>
+              <p className="text-[11px] text-dark/60 dark:text-light/60 pt-1">Available to spend this month</p>
+            </div>
+          </div>
+
+          {/* Card 4: Monthly Budget Usage Meter */}
+          <div className="p-6 rounded-3xl bg-white/80 dark:bg-dark/80 border border-tertiary/20 dark:border-tertiary/10 space-y-3 shadow-sm hover:border-primary/40 transition-all">
+            <div className="flex items-center justify-between">
+              <span className="text-xs uppercase font-bold text-dark/50 dark:text-light/50 font-heading">{t('dashboard.budgetUsage') || "Budget Usage"}</span>
+              <div className="w-9 h-9 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
+                <ReceiptPercentIcon className="h-5 w-5" />
+              </div>
+            </div>
+            <div>
+              <div className="flex justify-between items-center">
+                <p className="text-3xl font-extrabold font-heading text-primary">{budgetUsagePercent}%</p>
+                <span className={`text-[10px] font-bold font-mono px-2 py-0.5 rounded-full ${
+                  budgetUsagePercent > 90 ? 'bg-rose-500/10 text-rose-600' : 'bg-emerald-500/10 text-emerald-600'
+                }`}>
+                  {budgetUsagePercent > 90 ? 'Near Limit' : 'On Track'}
+                </span>
+              </div>
+              <div className="w-full bg-tertiary/20 rounded-full h-2 overflow-hidden mt-2">
+                <div 
+                  className={`h-full rounded-full transition-all duration-500 ${budgetUsagePercent > 90 ? 'bg-rose-500' : 'bg-primary'}`} 
+                  style={{ width: `${budgetUsagePercent}%` }}
+                />
+              </div>
             </div>
           </div>
 
@@ -152,9 +195,9 @@ export default function DashboardClient() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8" data-aos="fade-up" data-aos-delay="100">
           
           {/* Expenses Quick Link */}
-          <div className="p-8 rounded-3xl bg-white/70 dark:bg-dark/70 border border-tertiary/20 dark:border-tertiary/10 flex flex-col justify-between space-y-6 shadow-sm hover:border-primary/50 transition-all">
+          <div className="p-8 rounded-3xl bg-white/70 dark:bg-dark/70 border border-tertiary/20 dark:border-tertiary/10 flex flex-col justify-between space-y-6 shadow-sm hover:border-primary/50 transition-all group">
             <div className="space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
+              <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20 group-hover:scale-105 transition-transform">
                 <WalletIcon className="h-6 w-6" />
               </div>
               <h3 className="text-xl font-bold font-heading">{t('dashboard.expenseLedgerTitle') || "Expense Ledger"}</h3>
@@ -172,9 +215,9 @@ export default function DashboardClient() {
           </div>
 
           {/* Budgets Quick Link */}
-          <div className="p-8 rounded-3xl bg-white/70 dark:bg-dark/70 border border-tertiary/20 dark:border-tertiary/10 flex flex-col justify-between space-y-6 shadow-sm hover:border-primary/50 transition-all">
+          <div className="p-8 rounded-3xl bg-white/70 dark:bg-dark/70 border border-tertiary/20 dark:border-tertiary/10 flex flex-col justify-between space-y-6 shadow-sm hover:border-primary/50 transition-all group">
             <div className="space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
+              <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20 group-hover:scale-105 transition-transform">
                 <ChartPieIcon className="h-6 w-6" />
               </div>
               <h3 className="text-xl font-bold font-heading">{t('dashboard.budgetPlannerTitle') || "Budget Planner"}</h3>
@@ -193,11 +236,14 @@ export default function DashboardClient() {
 
         </div>
 
-        {/* Recent Transactions Preview */}
+        {/* Recent Transactions Preview Section */}
         <div className="space-y-6" data-aos="fade-up" data-aos-delay="200">
-          <div className="flex justify-between items-center">
-            <h2 className="text-xl font-bold font-heading">{t('dashboard.recentTransactions') || "Recent Transactions"}</h2>
-            <Link href="/expenses" className="text-xs font-bold text-primary hover:underline">
+          <div className="flex justify-between items-center border-b border-tertiary/20 pb-4">
+            <div>
+              <h2 className="text-xl font-bold font-heading">{t('dashboard.recentTransactions') || "Recent Transactions"}</h2>
+              <p className="text-xs text-dark/50 dark:text-light/50">Latest recorded purchases across your ledger</p>
+            </div>
+            <Link href="/expenses" className="px-4 py-2 rounded-xl text-xs font-bold bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 transition-all">
               {t('dashboard.viewAll') || "View All"}
             </Link>
           </div>
@@ -207,12 +253,12 @@ export default function DashboardClient() {
               {t('dashboard.loadingTransactions') || "Loading recent transactions..."}
             </div>
           ) : expenses.length === 0 ? (
-            <div className="p-12 text-center space-y-3 bg-white/50 dark:bg-dark/50 rounded-3xl border border-tertiary/20">
-              <WalletIcon className="h-10 w-10 text-primary mx-auto opacity-50" />
+            <div className="p-16 text-center space-y-4 bg-white/50 dark:bg-dark/50 rounded-3xl border border-tertiary/20 max-w-md mx-auto">
+              <WalletIcon className="h-12 w-12 text-primary mx-auto opacity-50" />
               <p className="text-sm font-semibold text-dark dark:text-light">{t('dashboard.noExpenses') || "No expenses recorded yet"}</p>
               <button
                 onClick={() => setIsExpenseModalOpen(true)}
-                className="px-4 py-2 rounded-xl text-xs font-bold bg-primary text-white"
+                className="px-5 py-2.5 rounded-xl text-xs font-bold bg-primary text-white"
               >
                 {t('dashboard.addExpense') || "Add Expense"}
               </button>
@@ -222,15 +268,27 @@ export default function DashboardClient() {
               {expenses.slice(0, 5).map((exp) => (
                 <div 
                   key={exp._id} 
-                  className="p-5 rounded-2xl bg-white/80 dark:bg-dark/80 border border-tertiary/20 dark:border-tertiary/10 flex justify-between items-center shadow-sm"
+                  className="p-5 rounded-2xl bg-white/80 dark:bg-dark/80 border border-tertiary/20 dark:border-tertiary/10 flex justify-between items-center shadow-sm hover:border-primary/40 transition-all"
                 >
-                  <div className="space-y-1">
-                    <span className="px-2.5 py-0.5 rounded-lg bg-primary/10 text-primary text-xs font-bold font-mono">
-                      {exp.type}
-                    </span>
-                    <p className="text-sm font-medium text-dark dark:text-light pt-1">
-                      {exp.description || t('dashboard.noDescription') || 'No description provided'}
-                    </p>
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary font-bold font-mono flex items-center justify-center border border-primary/20 text-xs">
+                      ${Number(exp.amount).toFixed(0)}
+                    </div>
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="px-2.5 py-0.5 rounded-lg bg-primary/10 text-primary text-[10px] font-bold font-mono">
+                          {exp.category || exp.type || "General"}
+                        </span>
+                        {exp.isSplit && (
+                          <span className="px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-600 text-[9px] font-bold font-mono">
+                            Split
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-sm font-medium text-dark dark:text-light">
+                        {exp.description || t('dashboard.noDescription') || 'No description provided'}
+                      </p>
+                    </div>
                   </div>
                   <span className="text-lg font-extrabold font-heading text-primary">
                     ${Number(exp.amount).toFixed(2)}

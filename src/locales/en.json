@@ -194,5 +194,17 @@
     "successMessage": "Profile successfully updated!",
     "saveButton": "Save Changes",
     "saving": "Saving..."
+  },
+  "expenseCard": {
+    "splitShare": "Split Share",
+    "justNow": "Just now",
+    "deleteExpense": "Delete Expense",
+    "noDescription": "No description provided",
+    "room": "Room",
+    "paidBy": "Paid by",
+    "settled": "Settled / Paid",
+    "pending": "Pending Share",
+    "yourShare": "Your Share",
+    "amount": "Amount"
   }
 }

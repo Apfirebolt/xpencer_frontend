@@ -1,4 +1,5 @@
 import ExpenseClient from "./ExpenseClient";
+import AuthGuard from "@/components/AuthGuard";
 
 export const metadata = {
   title: "Xpencer | Expense Ledger & Transaction Tracker",
@@ -12,5 +13,9 @@ export const metadata = {
 };
 
 export default function ExpensesPage() {
-  return <ExpenseClient />;
+  return (
+    <AuthGuard>
+      <ExpenseClient />
+    </AuthGuard>
+  );
 }

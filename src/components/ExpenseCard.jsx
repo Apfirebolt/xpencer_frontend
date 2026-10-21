@@ -1,8 +1,11 @@
 'use client';
 
+import { useTranslation } from '@/context/LanguageContext';
 import { CalendarIcon, TrashIcon, UserGroupIcon, UserIcon, CheckCircleIcon, ClockIcon } from '@heroicons/react/24/outline';
 
 export default function ExpenseCardView({ expenses, onDelete }) {
+  const { t } = useTranslation();
+
   if (!expenses || expenses.length === 0) return null;
 
   return (
@@ -32,7 +35,7 @@ export default function ExpenseCardView({ expenses, onDelete }) {
                   {isSplit && (
                     <span className="px-2.5 py-0.5 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[10px] font-bold font-mono border border-amber-500/20 flex items-center gap-1">
                       <UserGroupIcon className="h-3 w-3" />
-                      Split Share
+                      {t('expenseCard.splitShare') || 'Split Share'}
                     </span>
                   )}
                 </div>
@@ -40,7 +43,7 @@ export default function ExpenseCardView({ expenses, onDelete }) {
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-dark/40 dark:text-light/40 flex items-center gap-1 font-mono">
                     <CalendarIcon className="h-3.5 w-3.5" />
-                    {exp.createdAt ? new Date(exp.createdAt).toLocaleDateString() : 'Just now'}
+                    {exp.createdAt ? new Date(exp.createdAt).toLocaleDateString() : (t('expenseCard.justNow') || 'Just now')}
                   </span>
 
                   {/* Delete Button Trigger */}
@@ -48,7 +51,7 @@ export default function ExpenseCardView({ expenses, onDelete }) {
                     <button
                       onClick={() => onDelete(exp._id)}
                       className="p-1.5 rounded-xl text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer opacity-0 group-hover:opacity-100"
-                      title="Delete Expense"
+                      title={t('expenseCard.deleteExpense') || 'Delete Expense'}
                     >
                       <TrashIcon className="h-4 w-4" />
                     </button>
@@ -57,7 +60,7 @@ export default function ExpenseCardView({ expenses, onDelete }) {
               </div>
 
               <p className="text-sm font-medium text-dark dark:text-light leading-relaxed">
-                {exp.description || 'No description provided'}
+                {exp.description || (t('expenseCard.noDescription') || 'No description provided')}
               </p>
 
               {/* Split & Room Metadata Footer Info */}
@@ -66,25 +69,25 @@ export default function ExpenseCardView({ expenses, onDelete }) {
                   {roomTitle && (
                     <div className="flex items-center gap-1.5 font-medium text-primary">
                       <UserGroupIcon className="h-3.5 w-3.5 shrink-0" />
-                      <span className="truncate">Room: {roomTitle}</span>
+                      <span className="truncate">{t('expenseCard.room') || 'Room'}: {roomTitle}</span>
                     </div>
                   )}
 
                   {payerName && (
                     <div className="flex items-center gap-1.5">
                       <UserIcon className="h-3.5 w-3.5 shrink-0 text-dark/40" />
-                      <span className="truncate">Paid by: <strong className="text-dark dark:text-light">{payerName}</strong></span>
+                      <span className="truncate">{t('expenseCard.paidBy') || 'Paid by'}: <strong className="text-dark dark:text-light">{payerName}</strong></span>
                     </div>
                   )}
 
                   <div className="flex items-center gap-1.5">
                     {exp.isPaid ? (
                       <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-semibold">
-                        <CheckCircleIcon className="h-3.5 w-3.5" /> Settled / Paid
+                        <CheckCircleIcon className="h-3.5 w-3.5" /> {t('expenseCard.settled') || 'Settled / Paid'}
                       </span>
                     ) : (
                       <span className="inline-flex items-center gap-1 text-amber-600 dark:text-amber-400 font-semibold">
-                        <ClockIcon className="h-3.5 w-3.5" /> Pending Share
+                        <ClockIcon className="h-3.5 w-3.5" /> {t('expenseCard.pending') || 'Pending Share'}
                       </span>
                     )}
                   </div>
@@ -94,7 +97,7 @@ export default function ExpenseCardView({ expenses, onDelete }) {
 
             <div className="pt-4 border-t border-tertiary/20 dark:border-tertiary/10 flex items-center justify-between">
               <span className="text-xs uppercase font-bold text-dark/40 dark:text-light/40 font-heading">
-                {isSplit ? 'Your Share' : 'Amount'}
+                {isSplit ? (t('expenseCard.yourShare') || 'Your Share') : (t('expenseCard.amount') || 'Amount')}
               </span>
               <span className="text-xl font-extrabold font-heading text-primary">
                 ${Number(exp.amount).toFixed(2)}

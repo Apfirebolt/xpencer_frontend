@@ -24,6 +24,9 @@ import {
   TableCellsIcon,
   SparklesIcon,
   MagnifyingGlassIcon,
+  FunnelIcon,
+  UserGroupIcon,
+  UserIcon,
 } from "@heroicons/react/24/outline";
 import {
   Dialog,
@@ -60,8 +63,9 @@ export default function ExpenseClient() {
   const [expenseToDeleteId, setExpenseToDeleteId] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
-  // Search Query State for Fuzzy Search
+  // Search Query & Filter Type State ("all" | "personal" | "split")
   const [searchQuery, setSearchQuery] = useState("");
+  const [filterType, setFilterType] = useState("all");
 
   const [viewMode, setViewMode] = useState("card");
   const [successMessage, setSuccessMessage] = useState("");
@@ -76,7 +80,7 @@ export default function ExpenseClient() {
     const result = await createExpense(newExpenseData);
 
     if (result.success) {
-      setSuccessMessage("Expense successfully recorded!");
+      setSuccessMessage(t("expenses.successExpenseRecorded") || "Expense successfully recorded!");
       setTimeout(() => {
         setSuccessMessage("");
         setIsFormModalOpen(false);
@@ -106,27 +110,37 @@ export default function ExpenseClient() {
     }
   };
 
-  // Client-side fuzzy search / filtering logic on category (title) and description
+  // Client-side fuzzy search and split filtering logic
   const filteredExpenses = useMemo(() => {
-    if (!searchQuery.trim()) return expenses;
+    let result = expenses;
+
+    // 1. Filter by Type (All / Personal / Split Shares)
+    if (filterType === "personal") {
+      result = result.filter((exp) => !exp.isSplit);
+    } else if (filterType === "split") {
+      result = result.filter((exp) => exp.isSplit);
+    }
+
+    // 2. Filter by Search Query Tokens
+    if (!searchQuery.trim()) return result;
 
     const queryTokens = searchQuery.toLowerCase().trim().split(/\s+/);
 
-    return expenses.filter((exp) => {
+    return result.filter((exp) => {
       const categoryText = (exp.category || "").toLowerCase();
       const descriptionText = (exp.description || "").toLowerCase();
-      const combinedText = `${categoryText} ${descriptionText}`;
+      const roomTitle = (exp.roomId?.title || "").toLowerCase();
+      const combinedText = `${categoryText} ${descriptionText} ${roomTitle}`;
 
-      // Check if all search tokens loosely match either category or description
       return queryTokens.every((token) => combinedText.includes(token));
     });
-  }, [expenses, searchQuery]);
+  }, [expenses, searchQuery, filterType]);
 
   return (
     <div className="min-h-screen bg-light dark:bg-dark text-dark dark:text-light flex flex-col font-sans selection:bg-primary selection:text-white transition-colors duration-200">
       <Header />
 
-      <main className="flex-grow max-w-7xl mx-auto w-full px-6 py-16 space-y-12">
+      <main className="flex-grow max-w-7xl mx-auto w-full px-6 py-16 space-y-10">
         {/* Page Header & Actions */}
         <div
           className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-tertiary/20 pb-6"
@@ -135,10 +149,10 @@ export default function ExpenseClient() {
           <div>
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-wider uppercase border border-primary/20 mb-3">
               <WalletIcon className="h-4 w-4" />
-              <span>Expense Ledger</span>
+              <span>Expense Ledger Suite</span>
             </div>
             <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight font-heading">
-              {t("expenses.title")}
+              {t("expenses.title") || "Manage Your Expenses"}
             </h1>
           </div>
 
@@ -150,7 +164,7 @@ export default function ExpenseClient() {
               </div>
               <div>
                 <p className="text-[10px] uppercase font-bold text-dark/50 dark:text-light/50 font-heading">
-                  {t("expenses.totalTracked")}
+                  {t("expenses.totalTracked") || "Total Tracked"}
                 </p>
                 <p className="text-sm font-extrabold font-heading text-primary">
                   ${getTotalSpent().toFixed(2)}
@@ -161,121 +175,184 @@ export default function ExpenseClient() {
             {/* Mock Data Generator Modal Button */}
             <button
               onClick={() => setIsMockModalOpen(true)}
-              className="px-5 py-3.5 rounded-2xl font-bold bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 transition-all flex items-center gap-2 cursor-pointer shrink-0 text-xs"
+              className="px-4 py-3 rounded-2xl font-bold bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 transition-all flex items-center gap-2 cursor-pointer shrink-0 text-xs"
+              title="Generate Mock Data"
             >
               <SparklesIcon className="h-4 w-4" />
-              <span>Mock Data</span>
+              <span className="hidden sm:inline">Mock Data</span>
             </button>
 
             {/* Open Calendar Modal Button */}
             <button
               onClick={() => setIsCalendarModalOpen(true)}
-              className="px-5 py-3.5 rounded-2xl font-bold bg-tertiary/20 hover:bg-tertiary/30 text-dark dark:text-light border border-tertiary/30 transition-all flex items-center gap-2 cursor-pointer shrink-0"
+              className="px-4 py-3 rounded-2xl font-bold bg-tertiary/20 hover:bg-tertiary/30 text-dark dark:text-light border border-tertiary/30 transition-all flex items-center gap-2 cursor-pointer shrink-0 text-xs"
             >
-              <CalendarDaysIcon className="h-5 w-5 text-primary" />
+              <CalendarDaysIcon className="h-4 w-4 text-primary" />
               <span>Calendar</span>
             </button>
 
             {/* Toggle Analytics */}
             <button
               onClick={() => setIsAnalyticsOpen((prev) => !prev)}
-              className="px-5 py-3.5 rounded-2xl font-bold bg-tertiary/20 hover:bg-tertiary/30 text-dark dark:text-light border border-tertiary/30 transition-all flex items-center gap-2 cursor-pointer shrink-0"
+              className="px-4 py-3 rounded-2xl font-bold bg-tertiary/20 hover:bg-tertiary/30 text-dark dark:text-light border border-tertiary/30 transition-all flex items-center gap-2 cursor-pointer shrink-0 text-xs"
             >
-              <ChartBarIcon className="h-5 w-5 text-primary" />
+              <ChartBarIcon className="h-4 w-4 text-primary" />
               <span>Analytics</span>
             </button>
 
             {/* Add Expense Button */}
             <button
               onClick={() => setIsFormModalOpen(true)}
-              className="px-6 py-3.5 rounded-2xl font-bold bg-primary hover:bg-secondary text-white transition-all shadow-lg shadow-primary/25 flex items-center gap-2 cursor-pointer shrink-0"
+              className="px-5 py-3 rounded-2xl font-bold bg-primary hover:bg-secondary text-white transition-all shadow-lg shadow-primary/25 flex items-center gap-2 cursor-pointer shrink-0 text-xs"
             >
-              <PlusCircleIcon className="h-5 w-5" />
-              <span>{t("expenses.addExpense")}</span>
+              <PlusCircleIcon className="h-4 w-4" />
+              <span>{t("expenses.addExpense") || "Add Expense"}</span>
             </button>
           </div>
         </div>
 
-        {/* Expense Charts Section (Rendered if expenses exist) */}
+        {/* Expense Charts Section (Rendered if analytics toggled) */}
         {!fetching && isAnalyticsOpen && expenses.length > 0 && (
-          <div className="grid grid-cols-1 gap-8" data-aos="fade-up">
+          <div className="grid grid-cols-1 gap-8 p-6 rounded-3xl bg-white dark:bg-tertiary/5 border border-tertiary/20 shadow-sm" data-aos="fade-up">
+            <div className="flex items-center justify-between border-b border-tertiary/20 pb-4">
+              <h3 className="text-lg font-bold font-heading">Spending Analytics & Trends</h3>
+              <span className="text-xs font-mono px-2.5 py-1 rounded-lg bg-primary/10 text-primary">Monthly Overview</span>
+            </div>
             <ExpenseChart expenses={expenses} type="line" />
           </div>
         )}
 
-        {/* Transactions Section Controls (Search & View Mode Toggles) */}
+        {/* Transactions Section Header & Controls */}
         <div
-          className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pt-4"
+          className="flex flex-col space-y-4 pt-2 border-b border-tertiary/20 pb-4"
           data-aos="fade-up"
         >
-          <div className="flex items-center gap-4 w-full md:w-auto">
-            <h2 className="text-xl font-bold font-heading whitespace-nowrap">
-              Recent Transactions
-            </h2>
-            <span className="text-xs font-mono px-2.5 py-1 rounded-full bg-tertiary/20 text-dark/70 dark:text-light/70">
-              {filteredExpenses.length} of {expenses.length}
-            </span>
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-inner">
+                <ListBulletIcon className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-xl sm:text-2xl font-extrabold font-heading text-dark dark:text-light tracking-tight">
+                    {t("dashboard.recentTransactions") || "Recent Transactions"}
+                  </h2>
+                  <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+                    {filteredExpenses.length} / {expenses.length}
+                  </span>
+                </div>
+                <p className="text-xs text-dark/50 dark:text-light/50 font-sans">
+                  Manage personal purchases and collaborative room split shares.
+                </p>
+              </div>
+            </div>
+
+            {/* Search Bar & View Mode Toggles */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
+              <div className="relative flex-grow sm:w-72">
+                <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-dark/40 dark:text-light/40">
+                  <MagnifyingGlassIcon className="h-4 w-4" />
+                </span>
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder={t("expenses.searchPlaceholder") || "Search category, description, room..."}
+                  className="w-full pl-10 pr-10 py-2.5 rounded-2xl bg-white dark:bg-tertiary/5 border border-tertiary/20 text-xs font-semibold focus:outline-none focus:border-primary shadow-sm"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-dark/40 hover:text-primary cursor-pointer"
+                  >
+                    <XMarkIcon className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+
+              {/* View Switches */}
+              <div className="flex items-center p-1.5 rounded-2xl bg-white dark:bg-tertiary/5 border border-tertiary/20 shadow-sm self-end">
+                <button
+                  onClick={() => setViewMode("card")}
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    viewMode === "card"
+                      ? "bg-primary text-white shadow-md shadow-primary/20"
+                      : "text-dark/70 dark:text-light/70 hover:text-primary"
+                  }`}
+                  title="Card View"
+                >
+                  <Squares2X2Icon className="h-4 w-4" />
+                  <span className="hidden sm:inline">{t("expenses.cardView") || "Card"}</span>
+                </button>
+                <button
+                  onClick={() => setViewMode("list")}
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    viewMode === "list"
+                      ? "bg-primary text-white shadow-md shadow-primary/20"
+                      : "text-dark/70 dark:text-light/70 hover:text-primary"
+                  }`}
+                  title="List View"
+                >
+                  <ListBulletIcon className="h-4 w-4" />
+                  <span className="hidden sm:inline">{t("expenses.listView") || "List"}</span>
+                </button>
+                <button
+                  onClick={() => setViewMode("grid")}
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    viewMode === "grid"
+                      ? "bg-primary text-white shadow-md shadow-primary/20"
+                      : "text-dark/70 dark:text-light/70 hover:text-primary"
+                  }`}
+                  title="Grid View"
+                >
+                  <TableCellsIcon className="h-4 w-4" />
+                  <span className="hidden sm:inline">{t("expenses.gridView") || "Grid"}</span>
+                </button>
+              </div>
+            </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
-            {/* Fuzzy Search Input Bar */}
-            <div className="relative flex-grow sm:w-72">
-              <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-dark/40 dark:text-light/40">
-                <MagnifyingGlassIcon className="h-4 w-4" />
-              </span>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={t("expenses.searchPlaceholder")}
-                className="w-full pl-10 pr-10 py-2.5 rounded-2xl bg-white dark:bg-tertiary/5 border border-tertiary/20 text-xs font-semibold focus:outline-none focus:border-primary shadow-sm"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery("")}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-dark/40 hover:text-primary cursor-pointer"
-                >
-                  <XMarkIcon className="h-4 w-4" />
-                </button>
-              )}
+          {/* Quick Filter Pills */}
+          <div className="flex items-center gap-2 overflow-x-auto pt-1 pb-1 scrollbar-none">
+            <div className="flex items-center gap-1 text-xs text-dark/40 dark:text-light/40 font-bold mr-1 shrink-0">
+              <FunnelIcon className="h-3.5 w-3.5" />
+              <span>Filter:</span>
             </div>
 
-            {/* Card, List & AG Grid View Toggle Switches */}
-            <div className="flex items-center p-1.5 rounded-2xl bg-white dark:bg-tertiary/5 border border-tertiary/20 shadow-sm self-end">
-              <button
-                onClick={() => setViewMode("card")}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                  viewMode === "card"
-                    ? "bg-primary text-white shadow-md shadow-primary/20"
-                    : "text-dark/70 dark:text-light/70 hover:text-primary"
-                }`}
-              >
-                <Squares2X2Icon className="h-4 w-4" />
-                <span>{t("expenses.cardView")}</span>
-              </button>
-              <button
-                onClick={() => setViewMode("list")}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                  viewMode === "list"
-                    ? "bg-primary text-white shadow-md shadow-primary/20"
-                    : "text-dark/70 dark:text-light/70 hover:text-primary"
-                }`}
-              >
-                <ListBulletIcon className="h-4 w-4" />
-                <span>{t("expenses.listView")}</span>
-              </button>
-              <button
-                onClick={() => setViewMode("grid")}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                  viewMode === "grid"
-                    ? "bg-primary text-white shadow-md shadow-primary/20"
-                    : "text-dark/70 dark:text-light/70 hover:text-primary"
-                }`}
-              >
-                <TableCellsIcon className="h-4 w-4" />
-                <span>{t("expenses.gridView")}</span>
-              </button>
-            </div>
+            <button
+              onClick={() => setFilterType("all")}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 ${
+                filterType === "all"
+                  ? "bg-primary text-white shadow-sm"
+                  : "bg-tertiary/10 hover:bg-tertiary/20 text-dark/70 dark:text-light/70 border border-tertiary/20"
+              }`}
+            >
+              All Transactions ({expenses.length})
+            </button>
+
+            <button
+              onClick={() => setFilterType("personal")}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 flex items-center gap-1.5 ${
+                filterType === "personal"
+                  ? "bg-primary text-white shadow-sm"
+                  : "bg-tertiary/10 hover:bg-tertiary/20 text-dark/70 dark:text-light/70 border border-tertiary/20"
+              }`}
+            >
+              <UserIcon className="h-3.5 w-3.5" />
+              <span>Personal Expenses</span>
+            </button>
+
+            <button
+              onClick={() => setFilterType("split")}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 flex items-center gap-1.5 ${
+                filterType === "split"
+                  ? "bg-primary text-white shadow-sm"
+                  : "bg-tertiary/10 hover:bg-tertiary/20 text-dark/70 dark:text-light/70 border border-tertiary/20"
+              }`}
+            >
+              <UserGroupIcon className="h-3.5 w-3.5" />
+              <span>Room Split Shares</span>
+            </button>
           </div>
         </div>
 
@@ -283,14 +360,14 @@ export default function ExpenseClient() {
         <div className="w-full" data-aos="fade-up" data-aos-delay="100">
           {fetching ? (
             <div className="p-12 text-center text-sm text-dark/50 dark:text-light/50 bg-white/50 dark:bg-dark/50 rounded-3xl border border-tertiary/20">
-              Loading expenses...
+              Loading expenses ledger...
             </div>
           ) : expenses.length === 0 ? (
             <div className="p-16 text-center space-y-4 max-w-md mx-auto bg-white/50 dark:bg-dark/50 rounded-3xl border border-tertiary/20">
               <WalletIcon className="h-12 w-12 text-primary mx-auto opacity-50" />
               <div className="space-y-1">
                 <p className="text-sm font-semibold text-dark dark:text-light">
-                  {t("expenses.noExpenses")}
+                  {t("expenses.noExpenses") || "No expenses logged yet"}
                 </p>
                 <p className="text-xs text-dark/60 dark:text-light/60">
                   Click the button above to add your first transaction.
@@ -310,13 +387,13 @@ export default function ExpenseClient() {
                 No matching transactions found
               </p>
               <p className="text-xs text-dark/60 dark:text-light/60">
-                Try searching for a different category or description keyword.
+                Try clearing your search query or switching filter categories.
               </p>
               <button
-                onClick={() => setSearchQuery("")}
+                onClick={() => { setSearchQuery(""); setFilterType("all"); }}
                 className="px-4 py-2 rounded-xl text-xs font-bold bg-primary/10 hover:bg-primary/20 text-primary transition-all border border-primary/20 cursor-pointer"
               >
-                Clear Search
+                Reset Filters
               </button>
             </div>
           ) : (
@@ -373,7 +450,7 @@ export default function ExpenseClient() {
                         as="h3"
                         className="text-lg font-bold font-heading text-dark dark:text-light"
                       >
-                        New Expense Entry
+                        {t("dashboard.modalTitle") || "New Expense Entry"}
                       </DialogTitle>
                     </div>
                     <button
@@ -447,7 +524,7 @@ export default function ExpenseClient() {
                         as="h3"
                         className="text-lg font-bold font-heading text-dark dark:text-light"
                       >
-                        Monthly Expense Calendar
+                        {t("dashboard.calendarModalTitle") || "Monthly Expense Calendar"}
                       </DialogTitle>
                     </div>
                     <button

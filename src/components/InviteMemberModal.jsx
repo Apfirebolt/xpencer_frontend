@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, forwardRef } from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { DialogPanel, DialogTitle } from "@headlessui/react";
 
-export default function InviteMemberModal({ room, onClose, onSubmit, loading, error, feedbackMessage }) {
+const InviteMemberModal = forwardRef(function InviteMemberModal({ room, onClose, onSubmit, loading, error, feedbackMessage }, ref) {
   const [inviteUserEmail, setInviteUserEmail] = useState("");
   const [inviteMessage, setInviteMessage] = useState("");
 
@@ -17,7 +17,7 @@ export default function InviteMemberModal({ room, onClose, onSubmit, loading, er
   };
 
   return (
-    <DialogPanel className="w-full max-w-md transform overflow-hidden rounded-3xl bg-white dark:bg-dark border border-tertiary/20 p-8 text-left align-middle shadow-2xl transition-all space-y-6">
+    <DialogPanel ref={ref} className="w-full max-w-md transform overflow-hidden rounded-3xl bg-white dark:bg-dark border border-tertiary/20 p-8 text-left align-middle shadow-2xl transition-all space-y-6">
       <div className="flex items-center justify-between border-b border-tertiary/20 pb-4">
         <DialogTitle as="h3" className="text-lg font-bold font-heading text-dark dark:text-light">
           Invite Member to {room?.title}
@@ -58,4 +58,6 @@ export default function InviteMemberModal({ room, onClose, onSubmit, loading, er
       </form>
     </DialogPanel>
   );
-}
+});
+
+export default InviteMemberModal;

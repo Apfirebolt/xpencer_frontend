@@ -115,12 +115,16 @@ const Header = () => {
     }, 200);
   };
 
-  const navLinks = [
-    { name: t("nav.dashboard"), href: "/dashboard", icon: HomeIcon },
-    { name: t("nav.budgets"), href: "/budgets", icon: ChartPieIcon },
-    { name: t("nav.expenses"), href: "/expenses", icon: RectangleStackIcon },
-    { name: t("nav.rooms"), href: "/rooms", icon: UserGroupIcon },
+  // Define navigation links with authentication requirements
+  const allNavLinks = [
+    { name: t("nav.dashboard"), href: "/dashboard", icon: HomeIcon, requiresAuth: true },
+    { name: t("nav.budgets"), href: "/budgets", icon: ChartPieIcon, requiresAuth: true },
+    { name: t("nav.expenses"), href: "/expenses", icon: RectangleStackIcon, requiresAuth: true },
+    { name: t("nav.rooms"), href: "/rooms", icon: UserGroupIcon, requiresAuth: true }, // Rooms can remain accessible or require auth based on preference
   ];
+
+  // Filter links dynamically based on user authentication status
+  const navLinks = allNavLinks.filter((link) => (link.requiresAuth ? user : true));
 
   const aboutSubLinks = [
     { name: t("nav.aboutXpencer"), href: "/about", description: t("nav.aboutXpencerDesc"), icon: SparklesIcon },
@@ -187,6 +191,16 @@ const Header = () => {
               }`}
             >
               DE
+            </button>
+            <button
+              onClick={() => changeLanguage('ja')}
+              className={`px-2 py-1 rounded-lg transition-all cursor-pointer ${
+                locale === 'ja'
+                  ? 'bg-primary text-white shadow-sm'
+                  : 'text-dark/70 dark:text-light/70 hover:text-primary'
+              }`}
+            >
+              JA
             </button>
           </div>
         </div>
@@ -424,6 +438,14 @@ const Header = () => {
                 }`}
               >
                 DE
+              </button>
+              <button
+                onClick={() => changeLanguage('ja')}
+                className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  locale === 'ja' ? 'bg-primary text-white shadow-sm' : 'text-dark/70 dark:text-light/70'
+                }`}
+              >
+                JA
               </button>
             </div>
           </div>

@@ -194,5 +194,17 @@
     "successMessage": "Profil erfolgreich aktualisiert!",
     "saveButton": "Änderungen speichern",
     "saving": "Wird gespeichert..."
+  },
+  "expenseCard": {
+    "splitShare": "Geteilter Anteil",
+    "justNow": "Gerade eben",
+    "deleteExpense": "Ausgabe löschen",
+    "noDescription": "Keine Beschreibung angegeben",
+    "room": "Raum",
+    "paidBy": "Bezahlt von",
+    "settled": "Beglichen / Bezahlt",
+    "pending": "Ausstehender Anteil",
+    "yourShare": "Ihr Anteil",
+    "amount": "Betrag"
   }
 }
