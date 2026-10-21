@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, Fragment } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ExpenseForm from "@/components/ExpenseForm";
+import RecurringExpenseForm from "@/components/RecurringExpenseForm";
 import ExpenseCalendar from "@/components/ExpenseCalendar";
 import ExpenseCardView from "@/components/ExpenseCard";
 import ExpenseListView from "@/components/ExpenseList";
@@ -12,6 +13,7 @@ import ExpenseChart from "@/components/ExpenseChart";
 import MockExpenseModal from "@/components/MockExpenseModal";
 import ConfirmModal from "@/components/ConfirmModal";
 import { useExpenseStore } from "@/store/useExpenseStore";
+import { useRecurringStore } from "@/store/useRecurringExpenseStore";
 import {
   WalletIcon,
   PlusCircleIcon,
@@ -27,6 +29,7 @@ import {
   FunnelIcon,
   UserGroupIcon,
   UserIcon,
+  ArrowPathIcon,
 } from "@heroicons/react/24/outline";
 import {
   Dialog,
@@ -52,8 +55,11 @@ export default function ExpenseClient() {
     getTotalSpent,
   } = useExpenseStore();
 
+  const { createRecurring, loading: recurringLoading } = useRecurringStore();
+
   // Modals & View toggle state ('card' | 'list' | 'grid')
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+  const [isRecurringModalOpen, setIsRecurringModalOpen] = useState(false);
   const [isAnalyticsOpen, setIsAnalyticsOpen] = useState(false);
   const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
   const [isMockModalOpen, setIsMockModalOpen] = useState(false);
@@ -87,6 +93,29 @@ export default function ExpenseClient() {
       }, 1500);
     }
   }
+
+  // Handle batch creation of recurring expenses
+  const handleBatchRecurringSubmit = async (batchPayload) => {
+    setSuccessMessage("");
+    let allSuccess = true;
+
+    for (const item of batchPayload) {
+      const res = await createRecurring(item);
+      if (!res.success) {
+        allSuccess = false;
+        break;
+      }
+    }
+
+    if (allSuccess) {
+      setSuccessMessage("Recurring commitments successfully created!");
+      setTimeout(() => {
+        setSuccessMessage("");
+        setIsRecurringModalOpen(false);
+        fetchExpenses(); // Refresh to catch auto-generated ones
+      }, 1500);
+    }
+  };
 
   // Prompt confirmation modal for deletion
   const promptDeleteExpense = (id) => {
@@ -172,6 +201,16 @@ export default function ExpenseClient() {
               </div>
             </div>
 
+            {/* Recurring Expenses Button */}
+            <button
+              onClick={() => setIsRecurringModalOpen(true)}
+              className="px-4 py-3 rounded-2xl font-bold bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 transition-all flex items-center gap-2 cursor-pointer shrink-0 text-xs"
+              title="Add Recurring Expenses"
+            >
+              <ArrowPathIcon className="h-4 w-4" />
+              <span className="hidden sm:inline">Recurring</span>
+            </button>
+
             {/* Mock Data Generator Modal Button */}
             <button
               onClick={() => setIsMockModalOpen(true)}
@@ -241,9 +280,6 @@ export default function ExpenseClient() {
                     {filteredExpenses.length} / {expenses.length}
                   </span>
                 </div>
-                <p className="text-xs text-dark/50 dark:text-light/50 font-sans">
-                  Manage personal purchases and collaborative room split shares.
-                </p>
               </div>
             </div>
 
@@ -484,7 +520,75 @@ export default function ExpenseClient() {
         </Dialog>
       </Transition>
 
-      {/* 2. Expense Calendar Modal */}
+      {/* 2. Recurring Expenses Modal */}
+      <Transition appear show={isRecurringModalOpen} as={Fragment}>
+        <Dialog
+          as="div"
+          className="relative z-50"
+          onClose={() => setIsRecurringModalOpen(false)}
+        >
+          <TransitionChild
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-dark/60 backdrop-blur-sm" />
+          </TransitionChild>
+
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4 text-center">
+              <TransitionChild
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <DialogPanel className="w-full max-w-xl transform overflow-hidden rounded-3xl bg-white dark:bg-dark border border-tertiary/20 dark:border-tertiary/10 p-8 text-left align-middle shadow-2xl transition-all space-y-6">
+                  <div className="flex items-center justify-between border-b border-tertiary/20 pb-4">
+                    <div className="flex items-center gap-2">
+                      <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20">
+                        <ArrowPathIcon className="h-5 w-5 text-primary" />
+                      </div>
+                      <DialogTitle
+                        as="h3"
+                        className="text-lg font-bold font-heading text-dark dark:text-light"
+                      >
+                        Manage Recurring Commitments
+                      </DialogTitle>
+                    </div>
+                    <button
+                      onClick={() => setIsRecurringModalOpen(false)}
+                      className="p-1.5 rounded-xl text-dark/50 dark:text-light/50 hover:bg-primary/10 hover:text-primary transition-colors cursor-pointer"
+                    >
+                      <XMarkIcon className="h-5 w-5" />
+                    </button>
+                  </div>
+
+                  {successMessage && (
+                    <div className="text-xs text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 p-3 rounded-xl font-medium">
+                      {successMessage}
+                    </div>
+                  )}
+
+                  <RecurringExpenseForm
+                    onSubmitBatch={handleBatchRecurringSubmit}
+                    loading={recurringLoading}
+                  />
+                </DialogPanel>
+              </TransitionChild>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
+
+      {/* 3. Expense Calendar Modal */}
       <Transition appear show={isCalendarModalOpen} as={Fragment}>
         <Dialog
           as="div"
@@ -543,13 +647,13 @@ export default function ExpenseClient() {
         </Dialog>
       </Transition>
 
-      {/* 3. Mock Data Generator Modal */}
+      {/* 4. Mock Data Generator Modal */}
       <MockExpenseModal
         isOpen={isMockModalOpen}
         onClose={() => setIsMockModalOpen(false)}
       />
 
-      {/* 4. Confirmation Delete Modal */}
+      {/* 5. Confirmation Delete Modal */}
       <ConfirmModal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
