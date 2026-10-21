@@ -77,14 +77,15 @@ export const useExpenseStore = create((set, get) => ({
     set({ loading: true, error: null });
     try {
       await httpClient.delete(`/expense/${expenseId}`, getAuthHeaders());
-      // Remove the deleted expense from the current list
+      
       set((state) => ({
         expenses: state.expenses.filter((exp) => exp._id !== expenseId),
         loading: false,
       }));
       return { success: true };
     } catch (err) {
-      const errorMessage = err.response?.data?.error || err.response?.data?.message || err.message || "Failed to delete expense.";
+      // Capture the 400 or 403 error message sent from backend
+      const errorMessage = err.response?.data?.message || err.message || "Failed to delete expense.";
       set({ error: errorMessage, loading: false });
       return { success: false, error: errorMessage };
     }

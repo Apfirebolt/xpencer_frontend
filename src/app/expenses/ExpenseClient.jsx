@@ -77,6 +77,7 @@ export default function ExpenseClient() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [expenseToDeleteId, setExpenseToDeleteId] = useState(null);
   const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
 
   // Search Query & Filter Type State ("all" | "personal" | "split" | "recurring")
   const [searchQuery, setSearchQuery] = useState("");
@@ -131,6 +132,7 @@ export default function ExpenseClient() {
 
   // Prompt confirmation modal for deletion
   const promptDeleteExpense = (id) => {
+    setDeleteError("");
     setExpenseToDeleteId(id);
     setIsDeleteModalOpen(true);
   };
@@ -139,13 +141,21 @@ export default function ExpenseClient() {
   const handleConfirmDelete = async () => {
     if (!expenseToDeleteId) return;
     setDeleting(true);
+    setDeleteError("");
 
     try {
-      await deleteExpense(expenseToDeleteId);
-      setIsDeleteModalOpen(false);
-      setExpenseToDeleteId(null);
+      const result = await deleteExpense(expenseToDeleteId);
+      if (result && !result.success) {
+        setDeleteError(result.error);
+        setIsDeleteModalOpen(false);
+        setExpenseToDeleteId(null);
+      } else {
+        setIsDeleteModalOpen(false);
+        setExpenseToDeleteId(null);
+      }
     } catch (err) {
       console.error("Failed to delete expense:", err);
+      setDeleteError("Failed to delete expense.");
     } finally {
       setDeleting(false);
     }
@@ -256,11 +266,24 @@ export default function ExpenseClient() {
               onClick={() => setIsFormModalOpen(true)}
               className="px-5 py-3 rounded-2xl font-bold bg-primary hover:bg-secondary text-white transition-all shadow-lg shadow-primary/25 flex items-center gap-2 cursor-pointer shrink-0 text-xs"
             >
-              <PlusCircleIcon className="h-4 w-4" />
+              <PlusCircleIcon className="h-5 w-5" />
               <span>{t("expenses.addExpense") || "Add Expense"}</span>
             </button>
           </div>
         </div>
+
+        {/* Delete Error Notification Banner */}
+        {deleteError && (
+          <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs font-semibold flex items-center justify-between" data-aos="fade-down">
+            <span>{deleteError}</span>
+            <button 
+              onClick={() => setDeleteError("")} 
+              className="font-bold underline cursor-pointer hover:opacity-80"
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
 
         {/* Expense Charts Section (Rendered if analytics toggled) */}
         {!fetching && isAnalyticsOpen && expenses.length > 0 && (
