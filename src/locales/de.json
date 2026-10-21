@@ -205,6 +205,8 @@
     "settled": "Beglichen / Bezahlt",
     "pending": "Ausstehender Anteil",
     "yourShare": "Ihr Anteil",
-    "amount": "Betrag"
+    "amount": "Betrag",
+    "markPaid": "Als bezahlt markieren",
+    "awaitingConfirmation": "Bestätigung ausstehend"    
   }
 }

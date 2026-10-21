@@ -205,6 +205,8 @@
     "settled": "Settled / Paid",
     "pending": "Pending Share",
     "yourShare": "Your Share",
-    "amount": "Amount"
+    "amount": "Amount",
+    "markPaid": "Mark as Paid",
+    "awaitingConfirmation": "Awaiting Confirmation"
   }
 }

@@ -7,8 +7,9 @@ import ExpenseRoomModal from "@/components/ExpenseRoomModal";
 import InviteMemberModal from "@/components/InviteMemberModal";
 import AddRoomExpenseModal from "@/components/AddRoomExpenseModal";
 import { useAuthStore } from "@/store/useAuthStore";
-import { useRouter } from "next/navigation";
 import { useExpenseRoomStore } from "@/store/useRoomStore";
+import { useExpenseStore } from "@/store/useExpenseStore";
+import { useRouter } from "next/navigation";
 import {
   UserGroupIcon,
   PlusCircleIcon,
@@ -17,6 +18,7 @@ import {
   CheckCircleIcon,
   XCircleIcon,
   BellAlertIcon,
+  CheckBadgeIcon,
 } from "@heroicons/react/24/outline";
 import {
   Dialog,
@@ -37,7 +39,15 @@ export default function RoomClient() {
     respondToJoinRequest,
     addRoomExpense,
   } = useExpenseRoomStore();
+  
   const { getJoiningRoomRequests } = useAuthStore();
+  
+  const { 
+    pendingConfirmations, 
+    fetchingPending, 
+    fetchPendingConfirmations, 
+    confirmSplitPayment 
+  } = useExpenseStore();
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState(null);
@@ -69,7 +79,8 @@ export default function RoomClient() {
     AOS.init({ duration: 800, once: true, easing: "ease-out-cubic" });
     fetchRooms();
     fetchJoinRequests();
-  }, [fetchRooms]);
+    fetchPendingConfirmations(); // Fetch pending settlement requests via dedicated store action
+  }, [fetchRooms, fetchPendingConfirmations]);
 
   async function handleInviteSubmit({ email, message }) {
     setFeedbackMessage("");
@@ -91,6 +102,7 @@ export default function RoomClient() {
       setTimeout(() => {
         setFeedbackMessage("");
         setIsExpenseModalOpen(false);
+        fetchPendingConfirmations();
       }, 1500);
     }
   }
@@ -100,6 +112,11 @@ export default function RoomClient() {
     if (result.success) {
       fetchJoinRequests();
     }
+  };
+
+  // Confirm payment receipt as creditor using store action
+  const handleConfirmReceipt = async (expenseId) => {
+    await confirmSplitPayment(expenseId);
   };
 
   return (
@@ -126,6 +143,58 @@ export default function RoomClient() {
             <PlusCircleIcon className="h-5 w-5" />
             <span>Create Expense Room</span>
           </button>
+        </div>
+
+        {/* Pending Settlement Confirmations Section (Creditor Action Queue) */}
+        <div className="w-full bg-white dark:bg-tertiary/5 border border-tertiary/20 dark:border-tertiary/10 rounded-3xl p-6 shadow-sm space-y-4" data-aos="fade-up">
+          <div className="flex items-center justify-between border-b border-tertiary/20 pb-3">
+            <div className="flex items-center gap-2">
+              <CheckBadgeIcon className="h-5 w-5 text-primary" />
+              <h2 className="text-lg font-bold font-heading">Pending Payment Confirmations</h2>
+            </div>
+            <span className="px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-bold">
+              {pendingConfirmations.length}
+            </span>
+          </div>
+
+          {fetchingPending ? (
+            <div className="text-center py-6 text-xs text-dark/50 dark:text-light/50">Loading settlement requests...</div>
+          ) : pendingConfirmations.length === 0 ? (
+            <div className="text-center py-6 text-xs text-dark/50 dark:text-light/50">
+              No pending settlement confirmations required.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {pendingConfirmations.map((exp) => {
+                const debtorName = exp.user 
+                  ? `${exp.user.firstName || ''} ${exp.user.lastName || ''}`.trim() || exp.user.email 
+                  : 'Member';
+                return (
+                  <div key={exp._id} className="flex items-center justify-between p-4 rounded-2xl bg-amber-500/5 border border-amber-500/20 shadow-sm">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="px-2 py-0.5 rounded bg-primary/10 text-primary text-[10px] font-bold font-mono uppercase">
+                          ${exp.amount?.toFixed(2)}
+                        </span>
+                        <span className="text-xs font-bold text-dark dark:text-light">{exp.description}</span>
+                      </div>
+                      <p className="text-xs text-dark/70 dark:text-light/70">
+                        Marked as paid by: <strong className="text-dark dark:text-light">{debtorName}</strong>
+                      </p>
+                    </div>
+
+                    <button
+                      onClick={() => handleConfirmReceipt(exp._id)}
+                      className="px-3.5 py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 transition-all cursor-pointer flex items-center gap-1.5 text-xs font-bold border border-emerald-500/20 shrink-0 animate-pulse"
+                    >
+                      <CheckCircleIcon className="h-4 w-4" />
+                      <span>Confirm Receipt</span>
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* Pending Room Joining Requests Section */}
@@ -254,10 +323,9 @@ export default function RoomClient() {
         </div>
       </main>
 
-      {/* 1. Create Room Modal */}
+      {/* Modals */}
       <ExpenseRoomModal isOpen={isCreateModalOpen} onClose={() => { setIsCreateModalOpen(false); fetchRooms(); }} />
 
-      {/* 2. Invite Member Modal */}
       <Transition appear show={isInviteModalOpen} as={Fragment}>
         <Dialog as="div" className="relative z-50" onClose={() => setIsInviteModalOpen(false)}>
           <TransitionChild as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0" enterTo="opacity-100" leave="ease-in duration-200" leaveFrom="opacity-100" leaveTo="opacity-0">
@@ -280,7 +348,6 @@ export default function RoomClient() {
         </Dialog>
       </Transition>
 
-      {/* 3. Add Room Expense Modal */}
       <Transition appear show={isExpenseModalOpen} as={Fragment}>
         <Dialog as="div" className="relative z-50" onClose={() => setIsExpenseModalOpen(false)}>
           <TransitionChild as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0" enterTo="opacity-100" leave="ease-in duration-200" leaveFrom="opacity-100" leaveTo="opacity-0">

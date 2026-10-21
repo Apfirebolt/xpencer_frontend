@@ -10,8 +10,10 @@ const getAuthHeaders = () => {
 
 export const useExpenseStore = create((set, get) => ({
   expenses: [],
+  pendingConfirmations: [],
   loading: false,
   fetching: true,
+  fetchingPending: false,
   error: null,
 
   // Fetch all expenses with auth header
@@ -19,7 +21,6 @@ export const useExpenseStore = create((set, get) => ({
     set({ fetching: true, error: null });
     try {
       const res = await httpClient.get('/expense', getAuthHeaders());
-      console.log("Fetched expenses response:", res.data);
       const data = res.data.expenses || res.data;
       set({ expenses: Array.isArray(data) ? data : [], fetching: false });
     } catch (err) {
@@ -28,6 +29,26 @@ export const useExpenseStore = create((set, get) => ({
         ? "Session expired or unauthorized. Please sign in again." 
         : "Failed to load expenses.";
       set({ error: errorMsg, fetching: false, expenses: [] });
+    }
+  },
+
+  // Dedicated store call for pending expenses awaiting confirmation
+  fetchPendingConfirmations: async () => {
+    set({ fetchingPending: true, error: null });
+    try {
+      const res = await httpClient.get('/expense?pendingConfirmation=true', getAuthHeaders());
+      const data = res.data.expenses || res.data;
+      set({ 
+        pendingConfirmations: Array.isArray(data) ? data : [], 
+        fetchingPending: false 
+      });
+    } catch (err) {
+      console.error("Failed to fetch pending confirmations:", err);
+      set({ 
+        error: "Failed to load pending confirmations.", 
+        fetchingPending: false, 
+        pendingConfirmations: [] 
+      });
     }
   },
 
@@ -96,7 +117,10 @@ export const useExpenseStore = create((set, get) => ({
       const updatedExpense = res.data.expense || res.data;
 
       set((state) => ({
+        // Update item in main expenses list
         expenses: state.expenses.map((exp) => (exp._id === expenseId ? updatedExpense : exp)),
+        // Remove item from pending confirmations queue once verified
+        pendingConfirmations: state.pendingConfirmations.filter((exp) => exp._id !== expenseId),
         loading: false,
       }));
       return { success: true, message: res.data.message };

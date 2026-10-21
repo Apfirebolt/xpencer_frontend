@@ -3,7 +3,7 @@
 import { useTranslation } from '@/context/LanguageContext';
 import { CalendarIcon, TrashIcon, UserGroupIcon, UserIcon, CheckCircleIcon, ClockIcon } from '@heroicons/react/24/outline';
 
-export default function ExpenseCardView({ expenses, onDelete }) {
+export default function ExpenseCardView({ expenses, onDelete, markSplitPaymentPaid }) {
   const { t } = useTranslation();
 
   if (!expenses || expenses.length === 0) return null;
@@ -16,6 +16,8 @@ export default function ExpenseCardView({ expenses, onDelete }) {
         const payerName = exp.paidBy 
           ? `${exp.paidBy.firstName || ''} ${exp.paidBy.lastName || ''}`.trim() || exp.paidBy.email 
           : null;
+        
+        const settlementStatus = exp.settlementStatus || 'unpaid';
 
         return (
           <div 
@@ -65,7 +67,7 @@ export default function ExpenseCardView({ expenses, onDelete }) {
 
               {/* Split & Room Metadata Footer Info */}
               {isSplit && (
-                <div className="space-y-1.5 pt-2 border-t border-tertiary/10 text-xs text-dark/60 dark:text-light/60">
+                <div className="space-y-2 pt-2 border-t border-tertiary/10 text-xs text-dark/60 dark:text-light/60">
                   {roomTitle && (
                     <div className="flex items-center gap-1.5 font-medium text-primary">
                       <UserGroupIcon className="h-3.5 w-3.5 shrink-0" />
@@ -80,15 +82,29 @@ export default function ExpenseCardView({ expenses, onDelete }) {
                     </div>
                   )}
 
-                  <div className="flex items-center gap-1.5">
-                    {exp.isPaid ? (
+                  {/* Two-Step Settlement Status & Action Button */}
+                  <div className="pt-1 flex items-center justify-between flex-wrap gap-2">
+                    {settlementStatus === 'settled' ? (
                       <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-semibold">
                         <CheckCircleIcon className="h-3.5 w-3.5" /> {t('expenseCard.settled') || 'Settled / Paid'}
                       </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 text-amber-600 dark:text-amber-400 font-semibold">
-                        <ClockIcon className="h-3.5 w-3.5" /> {t('expenseCard.pending') || 'Pending Share'}
+                    ) : settlementStatus === 'pending_confirmation' ? (
+                      <span className="inline-flex items-center gap-1 text-amber-600 dark:text-amber-400 font-semibold italic bg-amber-500/10 px-2.5 py-1 rounded-lg">
+                        <ClockIcon className="h-3.5 w-3.5 animate-spin" /> {t('expenseCard.awaitingConfirmation') || 'Awaiting payer confirmation'}
                       </span>
+                    ) : (
+                      <div className="flex items-center justify-between w-full pt-1">
+                        <span className="inline-flex items-center gap-1 text-amber-600 dark:text-amber-400 font-semibold">
+                          <ClockIcon className="h-3.5 w-3.5" /> {t('expenseCard.pending') || 'Unpaid Share'}
+                        </span>
+                        
+                        <button
+                            onClick={() => markSplitPaymentPaid(exp._id)}
+                            className="px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-500/10 text-amber-600 hover:bg-amber-500/20 transition-all cursor-pointer flex items-center gap-1 border border-amber-500/20 shadow-sm"
+                          >
+                            <ClockIcon className="h-3.5 w-3.5" /> {t('expenseCard.markPaid') || 'Mark as Paid'}
+                          </button>
+                      </div>
                     )}
                   </div>
                 </div>

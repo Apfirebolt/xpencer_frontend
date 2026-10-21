@@ -205,6 +205,8 @@
     "settled": "清算済み / 支払い済み",
     "pending": "保留中のシェア",
     "yourShare": "あなたのシェア",
-    "amount": "金額"
+    "amount": "金額",
+    "markPaid": "支払い済みとしてマーク",
+    "awaitingConfirmation": "確認待ち"
   }
 }

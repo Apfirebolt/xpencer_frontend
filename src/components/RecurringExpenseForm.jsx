@@ -8,7 +8,8 @@ import {
   ArrowRightIcon, 
   PlusIcon, 
   TrashIcon,
-  ArrowPathIcon
+  ArrowPathIcon,
+  CalendarIcon
 } from '@heroicons/react/24/outline';
 import { expenseCategories as EXPENSE_CATEGORIES } from '../utils/constants';
 
@@ -19,9 +20,9 @@ const FREQUENCY_OPTIONS = [
 ];
 
 export default function RecurringExpenseForm({ onSubmitBatch, loading }) {
-  // State holds an array of recurring expense rows
+  // State holds an array of recurring expense rows including billingDate
   const [items, setItems] = useState([
-    { amount: '', description: '', category: EXPENSE_CATEGORIES[0], frequency: 'monthly' }
+    { amount: '', description: '', category: EXPENSE_CATEGORIES[0], frequency: 'monthly', billingDate: '1' }
   ]);
 
   const handleItemChange = (index, field, value) => {
@@ -33,7 +34,7 @@ export default function RecurringExpenseForm({ onSubmitBatch, loading }) {
   const handleAddRow = () => {
     setItems([
       ...items,
-      { amount: '', description: '', category: EXPENSE_CATEGORIES[0], frequency: 'monthly' }
+      { amount: '', description: '', category: EXPENSE_CATEGORIES[0], frequency: 'monthly', billingDate: '1' }
     ]);
   };
 
@@ -47,9 +48,9 @@ export default function RecurringExpenseForm({ onSubmitBatch, loading }) {
     e.preventDefault();
     
     // Validate rows
-    const isValid = items.every((item) => item.amount && item.description.trim());
+    const isValid = items.every((item) => item.amount && item.description.trim() && item.billingDate);
     if (!isValid) {
-      alert("Please fill in the amount and description for all recurring items.");
+      alert("Please fill in the amount, description, and billing date for all recurring items.");
       return;
     }
 
@@ -58,7 +59,8 @@ export default function RecurringExpenseForm({ onSubmitBatch, loading }) {
       amount: parseFloat(item.amount),
       description: item.description.trim(),
       category: item.category,
-      frequency: item.frequency
+      frequency: item.frequency,
+      billingDate: parseInt(item.billingDate, 10)
     }));
 
     onSubmitBatch(payload);
@@ -89,7 +91,7 @@ export default function RecurringExpenseForm({ onSubmitBatch, loading }) {
       </div>
 
       {/* Dynamic Rows Container */}
-      <div className="space-y-4 max-h-[400px] overflow-y-auto pr-1">
+      <div className="space-y-4 max-h-[420px] overflow-y-auto pr-1">
         {items.map((item, index) => (
           <div 
             key={index}
@@ -111,7 +113,7 @@ export default function RecurringExpenseForm({ onSubmitBatch, loading }) {
               )}
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {/* Amount */}
               <div className="space-y-1">
                 <label className="block text-[11px] font-bold text-dark/70 dark:text-light/70 uppercase tracking-wider font-heading">
@@ -148,6 +150,28 @@ export default function RecurringExpenseForm({ onSubmitBatch, loading }) {
                     <option key={freq.value} value={freq.value}>{freq.label}</option>
                   ))}
                 </select>
+              </div>
+
+              {/* Billing Date */}
+              <div className="space-y-1">
+                <label className="block text-[11px] font-bold text-dark/70 dark:text-light/70 uppercase tracking-wider font-heading">
+                  Billing Day *
+                </label>
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-dark/30 dark:text-light/30">
+                    <CalendarIcon className="h-3.5 w-3.5" />
+                  </span>
+                  <input
+                    type="number"
+                    min="1"
+                    max="31"
+                    value={item.billingDate}
+                    onChange={(e) => handleItemChange(index, 'billingDate', e.target.value)}
+                    className="w-full pl-9 pr-3 py-2.5 text-xs bg-white dark:bg-tertiary/5 border border-tertiary/30 rounded-xl focus:outline-none focus:border-primary text-dark dark:text-light placeholder-dark/30 shadow-inner"
+                    placeholder="1"
+                    required
+                  />
+                </div>
               </div>
             </div>
 

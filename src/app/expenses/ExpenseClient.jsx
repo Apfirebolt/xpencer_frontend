@@ -53,6 +53,7 @@ export default function ExpenseClient() {
     fetchExpenses,
     createExpense,
     deleteExpense,
+    markSplitPaymentPaid,
     getTotalSpent,
   } = useExpenseStore();
 
@@ -525,10 +526,10 @@ export default function ExpenseClient() {
           ) : (
             <>
               {viewMode === "card" && (
-                <ExpenseCardView expenses={filteredExpenses} onDelete={promptDeleteExpense} />
+                <ExpenseCardView expenses={filteredExpenses} onDelete={promptDeleteExpense} markSplitPaymentPaid={markSplitPaymentPaid} />
               )}
               {viewMode === "list" && (
-                <ExpenseListView expenses={filteredExpenses} onDelete={promptDeleteExpense} />
+                <ExpenseListView expenses={filteredExpenses} onDelete={promptDeleteExpense} markSplitPaymentPaid={markSplitPaymentPaid} />
               )}
               {viewMode === "grid" && <ExpenseAgGrid expenses={filteredExpenses} />}
             </>
@@ -640,7 +641,7 @@ export default function ExpenseClient() {
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <DialogPanel className="w-full max-w-xl transform overflow-hidden rounded-3xl bg-white dark:bg-dark border border-tertiary/20 dark:border-tertiary/10 p-8 text-left align-middle shadow-2xl transition-all space-y-6">
+                <DialogPanel className="w-full max-w-4xl transform overflow-hidden rounded-3xl bg-white dark:bg-dark border border-tertiary/20 dark:border-tertiary/10 p-8 text-left align-middle shadow-2xl transition-all space-y-6">
                   <div className="flex items-center justify-between border-b border-tertiary/20 pb-4">
                     <div className="flex items-center gap-2">
                       <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20">
