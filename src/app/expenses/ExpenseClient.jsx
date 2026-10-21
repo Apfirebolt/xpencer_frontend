@@ -30,6 +30,7 @@ import {
   UserGroupIcon,
   UserIcon,
   ArrowPathIcon,
+  TrashIcon,
 } from "@heroicons/react/24/outline";
 import {
   Dialog,
@@ -55,9 +56,16 @@ export default function ExpenseClient() {
     getTotalSpent,
   } = useExpenseStore();
 
-  const { createRecurring, loading: recurringLoading } = useRecurringStore();
+  const {
+    recurringList,
+    fetchRecurring,
+    createRecurring,
+    deleteRecurring,
+    loading: recurringLoading,
+    fetching: recurringFetching,
+  } = useRecurringStore();
 
-  // Modals & View toggle state ('card' | 'list' | 'grid')
+  // Modals & View toggle state ('card' | 'list' | 'grid' | 'recurring')
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [isRecurringModalOpen, setIsRecurringModalOpen] = useState(false);
   const [isAnalyticsOpen, setIsAnalyticsOpen] = useState(false);
@@ -69,17 +77,19 @@ export default function ExpenseClient() {
   const [expenseToDeleteId, setExpenseToDeleteId] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
-  // Search Query & Filter Type State ("all" | "personal" | "split")
+  // Search Query & Filter Type State ("all" | "personal" | "split" | "recurring")
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState("all");
 
   const [viewMode, setViewMode] = useState("card");
   const [successMessage, setSuccessMessage] = useState("");
 
+  // Fetch both standard expenses and recurring commitments on mount
   useEffect(() => {
     AOS.init({ duration: 800, once: true, easing: "ease-out-cubic" });
     fetchExpenses();
-  }, [fetchExpenses]);
+    fetchRecurring();
+  }, [fetchExpenses, fetchRecurring]);
 
   async function handleCreateExpense(newExpenseData) {
     setSuccessMessage("");
@@ -113,6 +123,7 @@ export default function ExpenseClient() {
         setSuccessMessage("");
         setIsRecurringModalOpen(false);
         fetchExpenses(); // Refresh to catch auto-generated ones
+        fetchRecurring();
       }, 1500);
     }
   };
@@ -139,7 +150,7 @@ export default function ExpenseClient() {
     }
   };
 
-  // Client-side fuzzy search and split filtering logic
+  // Client-side fuzzy search and split/recurring filtering logic
   const filteredExpenses = useMemo(() => {
     let result = expenses;
 
@@ -208,7 +219,7 @@ export default function ExpenseClient() {
               title="Add Recurring Expenses"
             >
               <ArrowPathIcon className="h-4 w-4" />
-              <span className="hidden sm:inline">Recurring</span>
+              <span className="hidden sm:inline">Recurring ({recurringList.length})</span>
             </button>
 
             {/* Mock Data Generator Modal Button */}
@@ -274,10 +285,10 @@ export default function ExpenseClient() {
               <div>
                 <div className="flex items-center gap-2">
                   <h2 className="text-xl sm:text-2xl font-extrabold font-heading text-dark dark:text-light tracking-tight">
-                    {t("dashboard.recentTransactions") || "Recent Transactions"}
+                    {filterType === 'recurring' ? 'Recurring Expense Templates' : (t("dashboard.recentTransactions") || "Recent Transactions")}
                   </h2>
                   <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
-                    {filteredExpenses.length} / {expenses.length}
+                    {filterType === 'recurring' ? recurringList.length : `${filteredExpenses.length} / ${expenses.length}`}
                   </span>
                 </div>
               </div>
@@ -285,66 +296,70 @@ export default function ExpenseClient() {
 
             {/* Search Bar & View Mode Toggles */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
-              <div className="relative flex-grow sm:w-72">
-                <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-dark/40 dark:text-light/40">
-                  <MagnifyingGlassIcon className="h-4 w-4" />
-                </span>
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder={t("expenses.searchPlaceholder") || "Search category, description, room..."}
-                  className="w-full pl-10 pr-10 py-2.5 rounded-2xl bg-white dark:bg-tertiary/5 border border-tertiary/20 text-xs font-semibold focus:outline-none focus:border-primary shadow-sm"
-                />
-                {searchQuery && (
-                  <button
-                    onClick={() => setSearchQuery("")}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-dark/40 hover:text-primary cursor-pointer"
-                  >
-                    <XMarkIcon className="h-4 w-4" />
-                  </button>
-                )}
-              </div>
+              {filterType !== 'recurring' && (
+                <div className="relative flex-grow sm:w-72">
+                  <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-dark/40 dark:text-light/40">
+                    <MagnifyingGlassIcon className="h-4 w-4" />
+                  </span>
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder={t("expenses.searchPlaceholder") || "Search category, description, room..."}
+                    className="w-full pl-10 pr-10 py-2.5 rounded-2xl bg-white dark:bg-tertiary/5 border border-tertiary/20 text-xs font-semibold focus:outline-none focus:border-primary shadow-sm"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery("")}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-dark/40 hover:text-primary cursor-pointer"
+                    >
+                      <XMarkIcon className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
+              )}
 
-              {/* View Switches */}
-              <div className="flex items-center p-1.5 rounded-2xl bg-white dark:bg-tertiary/5 border border-tertiary/20 shadow-sm self-end">
-                <button
-                  onClick={() => setViewMode("card")}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                    viewMode === "card"
-                      ? "bg-primary text-white shadow-md shadow-primary/20"
-                      : "text-dark/70 dark:text-light/70 hover:text-primary"
-                  }`}
-                  title="Card View"
-                >
-                  <Squares2X2Icon className="h-4 w-4" />
-                  <span className="hidden sm:inline">{t("expenses.cardView") || "Card"}</span>
-                </button>
-                <button
-                  onClick={() => setViewMode("list")}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                    viewMode === "list"
-                      ? "bg-primary text-white shadow-md shadow-primary/20"
-                      : "text-dark/70 dark:text-light/70 hover:text-primary"
-                  }`}
-                  title="List View"
-                >
-                  <ListBulletIcon className="h-4 w-4" />
-                  <span className="hidden sm:inline">{t("expenses.listView") || "List"}</span>
-                </button>
-                <button
-                  onClick={() => setViewMode("grid")}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                    viewMode === "grid"
-                      ? "bg-primary text-white shadow-md shadow-primary/20"
-                      : "text-dark/70 dark:text-light/70 hover:text-primary"
-                  }`}
-                  title="Grid View"
-                >
-                  <TableCellsIcon className="h-4 w-4" />
-                  <span className="hidden sm:inline">{t("expenses.gridView") || "Grid"}</span>
-                </button>
-              </div>
+              {/* View Switches (Hidden for Recurring tab) */}
+              {filterType !== 'recurring' && (
+                <div className="flex items-center p-1.5 rounded-2xl bg-white dark:bg-tertiary/5 border border-tertiary/20 shadow-sm self-end">
+                  <button
+                    onClick={() => setViewMode("card")}
+                    className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                      viewMode === "card"
+                        ? "bg-primary text-white shadow-md shadow-primary/20"
+                        : "text-dark/70 dark:text-light/70 hover:text-primary"
+                    }`}
+                    title="Card View"
+                  >
+                    <Squares2X2Icon className="h-4 w-4" />
+                    <span className="hidden sm:inline">{t("expenses.cardView") || "Card"}</span>
+                  </button>
+                  <button
+                    onClick={() => setViewMode("list")}
+                    className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                      viewMode === "list"
+                        ? "bg-primary text-white shadow-md shadow-primary/20"
+                        : "text-dark/70 dark:text-light/70 hover:text-primary"
+                    }`}
+                    title="List View"
+                  >
+                    <ListBulletIcon className="h-4 w-4" />
+                    <span className="hidden sm:inline">{t("expenses.listView") || "List"}</span>
+                  </button>
+                  <button
+                    onClick={() => setViewMode("grid")}
+                    className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                      viewMode === "grid"
+                        ? "bg-primary text-white shadow-md shadow-primary/20"
+                        : "text-dark/70 dark:text-light/70 hover:text-primary"
+                    }`}
+                    title="Grid View"
+                  >
+                    <TableCellsIcon className="h-4 w-4" />
+                    <span className="hidden sm:inline">{t("expenses.gridView") || "Grid"}</span>
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 
@@ -389,12 +404,87 @@ export default function ExpenseClient() {
               <UserGroupIcon className="h-3.5 w-3.5" />
               <span>Room Split Shares</span>
             </button>
+
+            <button
+              onClick={() => setFilterType("recurring")}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 flex items-center gap-1.5 ${
+                filterType === "recurring"
+                  ? "bg-primary text-white shadow-sm"
+                  : "bg-tertiary/10 hover:bg-tertiary/20 text-dark/70 dark:text-light/70 border border-tertiary/20"
+              }`}
+            >
+              <ArrowPathIcon className="h-3.5 w-3.5" />
+              <span>Recurring Commitments ({recurringList.length})</span>
+            </button>
           </div>
         </div>
 
-        {/* Transactions Display Area */}
+        {/* Transactions & Recurring Display Area */}
         <div className="w-full" data-aos="fade-up" data-aos-delay="100">
-          {fetching ? (
+          {filterType === "recurring" ? (
+            recurringFetching ? (
+              <div className="p-12 text-center text-sm text-dark/50 dark:text-light/50 bg-white/50 dark:bg-dark/50 rounded-3xl border border-tertiary/20">
+                Loading recurring commitments...
+              </div>
+            ) : recurringList.length === 0 ? (
+              <div className="p-16 text-center space-y-4 max-w-md mx-auto bg-white/50 dark:bg-dark/50 rounded-3xl border border-tertiary/20">
+                <ArrowPathIcon className="h-12 w-12 text-primary mx-auto opacity-50" />
+                <div className="space-y-1">
+                  <p className="text-sm font-semibold text-dark dark:text-light">
+                    No recurring commitments active
+                  </p>
+                  <p className="text-xs text-dark/60 dark:text-light/60">
+                    Add subscriptions, rent, or utilities to auto-generate monthly bills.
+                  </p>
+                </div>
+                <button
+                  onClick={() => setIsRecurringModalOpen(true)}
+                  className="px-5 py-2.5 rounded-xl text-xs font-bold bg-primary/10 hover:bg-primary/20 text-primary transition-all border border-primary/20 cursor-pointer"
+                >
+                  Add Recurring Commitment
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {recurringList.map((item) => (
+                  <div
+                    key={item._id}
+                    className="p-6 rounded-3xl bg-white dark:bg-tertiary/5 border border-tertiary/20 dark:border-tertiary/10 shadow-sm space-y-4 flex flex-col justify-between"
+                  >
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="px-2.5 py-1 rounded-lg bg-primary/10 text-primary text-[10px] font-bold uppercase font-mono border border-primary/20">
+                          {item.category || 'General'}
+                        </span>
+                        <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-tertiary/20 text-dark/70 dark:text-light/70 font-mono">
+                          {item.frequency}
+                        </span>
+                      </div>
+                      <h3 className="text-base font-bold text-dark dark:text-light">{item.description}</h3>
+                      <p className="text-xs text-dark/50 dark:text-light/50">
+                        Last generated: {item.lastGeneratedDate ? new Date(item.lastGeneratedDate).toLocaleDateString() : "Never"}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-4 border-t border-tertiary/10">
+                      <div>
+                        <p className="text-lg font-extrabold font-heading text-primary">${item.amount?.toFixed(2)}</p>
+                        <p className="text-[10px] text-dark/40 dark:text-light/40 font-bold uppercase">Commitment</p>
+                      </div>
+
+                      <button
+                        onClick={() => deleteRecurring(item._id)}
+                        className="p-2 rounded-xl text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer"
+                        title="Delete Recurring Template"
+                      >
+                        <TrashIcon className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )
+          ) : fetching ? (
             <div className="p-12 text-center text-sm text-dark/50 dark:text-light/50 bg-white/50 dark:bg-dark/50 rounded-3xl border border-tertiary/20">
               Loading expenses ledger...
             </div>
