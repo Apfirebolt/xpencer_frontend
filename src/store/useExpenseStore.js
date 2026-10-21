@@ -69,6 +69,44 @@ export const useExpenseStore = create((set, get) => ({
     }
   },
 
+  // Mark split payment as paid (Debtor Action)
+  markSplitPaymentPaid: async (expenseId) => {
+    set({ loading: true, error: null });
+    try {
+      const res = await httpClient.put(`/expense/${expenseId}/mark-paid`, {}, getAuthHeaders());
+      const updatedExpense = res.data.expense || res.data;
+
+      set((state) => ({
+        expenses: state.expenses.map((exp) => (exp._id === expenseId ? updatedExpense : exp)),
+        loading: false,
+      }));
+      return { success: true, message: res.data.message };
+    } catch (err) {
+      const errorMessage = err.response?.data?.error || err.response?.data?.message || err.message || "Failed to mark payment as paid.";
+      set({ error: errorMessage, loading: false });
+      return { success: false, error: errorMessage };
+    }
+  },
+
+  // Confirm split payment received (Creditor / paidBy Action)
+  confirmSplitPayment: async (expenseId) => {
+    set({ loading: true, error: null });
+    try {
+      const res = await httpClient.put(`/expense/${expenseId}/confirm-settlement`, {}, getAuthHeaders());
+      const updatedExpense = res.data.expense || res.data;
+
+      set((state) => ({
+        expenses: state.expenses.map((exp) => (exp._id === expenseId ? updatedExpense : exp)),
+        loading: false,
+      }));
+      return { success: true, message: res.data.message };
+    } catch (err) {
+      const errorMessage = err.response?.data?.error || err.response?.data?.message || err.message || "Failed to confirm payment settlement.";
+      set({ error: errorMessage, loading: false });
+      return { success: false, error: errorMessage };
+    }
+  },
+
   // Generate random mock expenses (10, 20, 30, or 40 items)
   generateMockExpenses: async (count = 10, month, year) => {
     set({ loading: true, error: null });
