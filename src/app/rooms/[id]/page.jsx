@@ -4,18 +4,16 @@ import { useState, useEffect, Fragment } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import AddRoomExpenseModal from '@/components/AddRoomExpenseModal';
 import httpClient from '@/lib/api';
 import Cookie from 'js-cookie';
 import { 
   ArrowLeftIcon, 
   CurrencyDollarIcon, 
-  UserGroupIcon, 
   PlusCircleIcon, 
-  TagIcon, 
-  CalendarIcon,
-  XMarkIcon 
+  CalendarIcon 
 } from '@heroicons/react/24/outline';
-import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react';
+import { Dialog, Transition, TransitionChild } from '@headlessui/react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
@@ -36,10 +34,6 @@ export default function RoomDetailClient() {
 
   // Add Expense Modal State
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
-  const [amount, setAmount] = useState('');
-  const [category, setCategory] = useState('Food & Dining');
-  const [description, setDescription] = useState('');
-  const [splitBetween, setSplitBetween] = useState([]);
   const [submitting, setSubmitting] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState('');
 
@@ -53,10 +47,6 @@ export default function RoomDetailClient() {
 
       setRoom(roomData);
       setExpenses(Array.isArray(expenseData) ? expenseData : []);
-      // Default all members checked for splitting
-      if (roomData?.members) {
-        setSplitBetween(roomData.members.map(m => typeof m === 'object' ? m._id : m));
-      }
     } catch (err) {
       console.error("Failed to load room details:", err);
       setError("Failed to load room details or expenses.");
@@ -70,29 +60,15 @@ export default function RoomDetailClient() {
     fetchRoomDetails();
   }, [roomId]);
 
-  const toggleSplitMember = (memberId) => {
-    setSplitBetween(prev => 
-      prev.includes(memberId) ? prev.filter(id => id !== memberId) : [...prev, memberId]
-    );
-  };
-
-  const handleAddExpenseSubmit = async (e) => {
-    e.preventDefault();
-    if (!amount || !roomId) return;
+  const handleAddExpenseSubmit = async (expenseData) => {
+    if (!roomId) return;
 
     setSubmitting(true);
     setFeedbackMessage('');
     try {
-      await httpClient.post(`/rooms/${roomId}/expense`, {
-        amount: parseFloat(amount),
-        category,
-        description: description.trim() || 'Room expense',
-        splitBetween
-      }, getAuthHeaders());
+      await httpClient.post(`/rooms/${roomId}/expense`, expenseData, getAuthHeaders());
 
       setFeedbackMessage('Expense added successfully!');
-      setAmount('');
-      setDescription('');
       setTimeout(() => {
         setFeedbackMessage('');
         setIsExpenseModalOpen(false);
@@ -228,93 +204,14 @@ export default function RoomDetailClient() {
           <div className="fixed inset-0 overflow-y-auto">
             <div className="flex min-h-full items-center justify-center p-4 text-center">
               <TransitionChild as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0 scale-95" enterTo="opacity-100 scale-100" leave="ease-in duration-200" leaveFrom="opacity-100 scale-100" leaveTo="opacity-0 scale-95">
-                <DialogPanel className="w-full max-w-md transform overflow-hidden rounded-3xl bg-white dark:bg-dark border border-tertiary/20 p-8 text-left align-middle shadow-2xl transition-all space-y-6">
-                  <div className="flex items-center justify-between border-b border-tertiary/20 pb-4">
-                    <DialogTitle as="h3" className="text-lg font-bold font-heading text-dark dark:text-light">
-                      Add Expense to {room?.title}
-                    </DialogTitle>
-                    <button onClick={() => setIsExpenseModalOpen(false)} className="p-1.5 rounded-xl text-dark/50 hover:bg-primary/10 hover:text-primary cursor-pointer">
-                      <XMarkIcon className="h-5 w-5" />
-                    </button>
-                  </div>
-
-                  {error && <div className="text-xs text-rose-600 bg-rose-500/10 p-3 rounded-xl font-medium">{error}</div>}
-                  {feedbackMessage && <div className="text-xs text-emerald-600 bg-emerald-500/10 p-3 rounded-xl font-medium">{feedbackMessage}</div>}
-
-                  <form onSubmit={handleAddExpenseSubmit} className="space-y-4">
-                    <div className="space-y-1.5">
-                      <label className="block text-xs font-bold uppercase tracking-wider font-heading">Amount ($) *</label>
-                      <input
-                        type="number"
-                        step="0.01"
-                        value={amount}
-                        onChange={(e) => setAmount(e.target.value)}
-                        className="w-full px-4 py-3 text-sm bg-white dark:bg-dark border border-tertiary/30 rounded-xl focus:outline-none focus:border-primary shadow-inner"
-                        placeholder="0.00"
-                        required
-                      />
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="block text-xs font-bold uppercase tracking-wider font-heading">Category *</label>
-                      <select
-                        value={category}
-                        onChange={(e) => setCategory(e.target.value)}
-                        className="w-full px-4 py-3 text-sm bg-white dark:bg-dark border border-tertiary/30 rounded-xl focus:outline-none focus:border-primary shadow-inner cursor-pointer"
-                      >
-                        <option value="Food & Dining">Food & Dining</option>
-                        <option value="Transport">Transport</option>
-                        <option value="Shopping">Shopping</option>
-                        <option value="Bills & Utilities">Bills & Utilities</option>
-                        <option value="Entertainment">Entertainment</option>
-                        <option value="Travel">Travel</option>
-                      </select>
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="block text-xs font-bold uppercase tracking-wider font-heading">Description</label>
-                      <input
-                        type="text"
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        className="w-full px-4 py-3 text-sm bg-white dark:bg-dark border border-tertiary/30 rounded-xl focus:outline-none focus:border-primary shadow-inner"
-                        placeholder="Dinner bill..."
-                      />
-                    </div>
-
-                    {/* Split Checkbox Section */}
-                    <div className="space-y-2 pt-2">
-                      <label className="block text-xs font-bold uppercase tracking-wider font-heading">
-                        Split Expense with Members
-                      </label>
-                      <div className="space-y-2 max-h-40 overflow-y-auto p-3 rounded-2xl bg-tertiary/5 border border-tertiary/20">
-                        {room?.members?.map((member) => {
-                          const memberId = typeof member === 'object' ? member._id : member;
-                          const memberName = typeof member === 'object' ? (member.name || member.email) : member;
-
-                          return (
-                            <div key={memberId} className="flex items-center gap-3">
-                              <input
-                                type="checkbox"
-                                id={`split-${memberId}`}
-                                checked={splitBetween.includes(memberId)}
-                                onChange={() => toggleSplitMember(memberId)}
-                                className="w-4 h-4 text-primary rounded border-tertiary/30 cursor-pointer"
-                              />
-                              <label htmlFor={`split-${memberId}`} className="text-xs font-medium cursor-pointer">
-                                {memberName}
-                              </label>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-
-                    <button type="submit" disabled={submitting} className="w-full py-3 text-sm font-bold text-white bg-primary hover:bg-secondary rounded-xl transition-all shadow-lg cursor-pointer mt-2">
-                      {submitting ? "Adding..." : "Submit Expense"}
-                    </button>
-                  </form>
-                </DialogPanel>
+                <AddRoomExpenseModal
+                  room={room}
+                  onClose={() => setIsExpenseModalOpen(false)}
+                  onSubmit={handleAddExpenseSubmit}
+                  submitting={submitting}
+                  error={error}
+                  feedbackMessage={feedbackMessage}
+                />
               </TransitionChild>
             </div>
           </div>
