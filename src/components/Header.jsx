@@ -125,8 +125,6 @@ const Header = () => {
   const aboutSubLinks = [
     { name: t("nav.aboutXpencer"), href: "/about", description: t("nav.aboutXpencerDesc"), icon: SparklesIcon },
     { name: t("nav.techStack"), href: "/about/tech", description: t("nav.techStackDesc"), icon: CodeBracketIcon },
-    { name: t("nav.securityPrivacy"), href: "/about/security", description: t("nav.securityPrivacyDesc"), icon: ShieldCheckIcon },
-    { name: t("nav.apiDocs"), href: "/api-docs", description: t("nav.apiDocsDesc"), icon: CpuChipIcon },
   ];
 
   const currentAvatar = user?.profilePic?.url || null;
