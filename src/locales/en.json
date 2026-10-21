@@ -165,5 +165,24 @@
     "modalTitle": "New Expense Entry",
     "calendarModalTitle": "Monthly Expense Calendar",
     "successExpenseRecorded": "Expense successfully recorded!"
+  },
+  "passwordChange": {
+    "title": "Change Password",
+    "subtitle": "Ensure your account is using a long, random password to stay secure.",
+    "currentPasswordLabel": "Current Password",
+    "newPasswordLabel": "New Password",
+    "confirmPasswordLabel": "Confirm New Password",
+    "errorMismatch": "New passwords do not match.",
+    "successMessage": "Password updated successfully!",
+    "updateButton": "Update Password",
+    "updating": "Updating..."
+  },
+  "profilePic": {
+    "title": "Profile Picture",
+    "subtitle": "Upload a new avatar image to personalize your account.",
+    "fileHint": "JPG, PNG or GIF (Max 5MB)",
+    "successMessage": "Profile picture updated successfully!",
+    "uploadButton": "Upload Avatar",
+    "uploading": "Uploading..."
   }
 }

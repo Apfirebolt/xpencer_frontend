@@ -2,11 +2,13 @@
 
 import { useState } from 'react';
 import { useAuthStore } from '@/store/useAuthStore';
+import { useTranslation } from '@/context/LanguageContext';
 import { PhotoIcon, ArrowUpTrayIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 
-export default function ProfilePicForm({ user }) {
+const ProfilePicForm = ({ user }) => {
   const { updateProfilePic, loading, error } = useAuthStore();
+  const { t } = useTranslation();
   
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
@@ -27,7 +29,7 @@ export default function ProfilePicForm({ user }) {
     setFeedback('');
     const result = await updateProfilePic(selectedFile);
     if (result.success) {
-      setFeedback('Profile picture updated successfully!');
+      setFeedback(t('profilePic.successMessage') || 'Profile picture updated successfully!');
       setSelectedFile(null);
     }
   };
@@ -37,8 +39,8 @@ export default function ProfilePicForm({ user }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-xl">
       <div className="space-y-1">
-        <h3 className="text-lg font-bold font-heading">Profile Picture</h3>
-        <p className="text-xs text-dark/60 dark:text-light/60">Upload a new avatar image to personalize your account.</p>
+        <h3 className="text-lg font-bold font-heading">{t('profilePic.title') || 'Profile Picture'}</h3>
+        <p className="text-xs text-dark/60 dark:text-light/60">{t('profilePic.subtitle') || 'Upload a new avatar image to personalize your account.'}</p>
       </div>
 
       {error && <div className="text-xs text-rose-600 bg-rose-500/10 p-3 rounded-xl font-medium">{error}</div>}
@@ -60,7 +62,7 @@ export default function ProfilePicForm({ user }) {
             onChange={handleFileChange}
             className="w-full text-xs text-dark/60 dark:text-light/60 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer"
           />
-          <p className="text-[11px] text-dark/40 dark:text-light/40">JPG, PNG or GIF (Max 5MB)</p>
+          <p className="text-[11px] text-dark/40 dark:text-light/40">{t('profilePic.fileHint') || 'JPG, PNG or GIF (Max 5MB)'}</p>
         </div>
       </div>
 
@@ -71,9 +73,11 @@ export default function ProfilePicForm({ user }) {
           className="py-3 px-6 text-sm font-bold text-white bg-primary hover:bg-secondary rounded-xl transition-all shadow-lg flex items-center gap-2 cursor-pointer"
         >
           <ArrowUpTrayIcon className="h-4 w-4" />
-          <span>{loading ? "Uploading..." : "Upload Avatar"}</span>
+          <span>{loading ? (t('profilePic.uploading') || 'Uploading...') : (t('profilePic.uploadButton') || 'Upload Avatar')}</span>
         </button>
       )}
     </form>
   );
 }
+
+export default ProfilePicForm;

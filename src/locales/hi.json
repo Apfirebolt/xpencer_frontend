@@ -165,5 +165,24 @@
     "modalTitle": "नया खर्च प्रविष्टि",
     "calendarModalTitle": "मासिक व्यय कैलेंडर",
     "successExpenseRecorded": "खर्च सफलतापूर्वक दर्ज किया गया!"
+  },
+  "passwordChange": {
+    "title": "पासवर्ड बदलें",
+    "subtitle": "सुरक्षित रहने के लिए सुनिश्चित करें कि आपका खाता एक लंबे, यादृच्छिक पासवर्ड का उपयोग कर रहा है।",
+    "currentPasswordLabel": "वर्तमान पासवर्ड",
+    "newPasswordLabel": "नया पासवर्ड",
+    "confirmPasswordLabel": "नए पासवर्ड की पुष्टि करें",
+    "errorMismatch": "नए पासवर्ड मेल नहीं खाते।",
+    "successMessage": "पासवर्ड सफलतापूर्वक अपडेट किया गया!",
+    "updateButton": "पासवर्ड अपडेट करें",
+    "updating": "अपडेट हो रहा है..."
+  },
+  "profilePic": {
+    "title": "प्रोफ़ाइल चित्र",
+    "subtitle": "अपने खाते को व्यक्तिगत बनाने के लिए एक नया अवतार छवि अपलोड करें।",
+    "fileHint": "JPG, PNG या GIF (अधिकतम 5MB)",
+    "successMessage": "प्रोफ़ाइल चित्र सफलतापूर्वक अपडेट किया गया!",
+    "uploadButton": "अवतार अपलोड करें",
+    "uploading": "अपलोड हो रहा है..."
   }
 }

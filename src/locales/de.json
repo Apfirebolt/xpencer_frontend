@@ -165,5 +165,24 @@
     "modalTitle": "Neuer Ausgabeneintrag",
     "calendarModalTitle": "Monatlicher Ausgabenkalender",
     "successExpenseRecorded": "Ausgabe erfolgreich erfasst!"
+  },
+  "passwordChange": {
+    "title": "Passwort ändern",
+    "subtitle": "Stellen Sie sicher, dass Ihr Konto ein langes, zufälliges Passwort verwendet, um sicher zu bleiben.",
+    "currentPasswordLabel": "Aktuelles Passwort",
+    "newPasswordLabel": "Neues Passwort",
+    "confirmPasswordLabel": "Neues Passwort bestätigen",
+    "errorMismatch": "Die neuen Passwörter stimmen nicht überein.",
+    "successMessage": "Passwort erfolgreich aktualisiert!",
+    "updateButton": "Passwort aktualisieren",
+    "updating": "Wird aktualisiert..."
+  },
+  "profilePic": {
+    "title": "Profilbild",
+    "subtitle": "Laden Sie ein neues Avatar-Bild hoch, um Ihr Konto zu personalisieren.",
+    "fileHint": "JPG, PNG oder GIF (Max. 5MB)",
+    "successMessage": "Profilbild erfolgreich aktualisiert!",
+    "uploadButton": "Avatar hochladen",
+    "uploading": "Wird hochgeladen..."
   }
 }

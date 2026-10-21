@@ -2,10 +2,12 @@
 
 import { useState } from 'react';
 import { useAuthStore } from '@/store/useAuthStore';
+import { useTranslation } from '@/context/LanguageContext';
 import { LockClosedIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
 
-export default function PasswordChangeForm() {
+const PasswordChangeForm = () => {
   const { changePassword, loading, error } = useAuthStore();
+  const { t } = useTranslation();
 
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -19,13 +21,13 @@ export default function PasswordChangeForm() {
     setLocalError('');
 
     if (newPassword !== confirmPassword) {
-      setLocalError('New passwords do not match.');
+      setLocalError(t?.passwordChange?.errorMismatch || 'New passwords do not match.');
       return;
     }
 
     const result = await changePassword({ currentPassword, newPassword });
     if (result.success) {
-      setFeedback('Password updated successfully!');
+      setFeedback(t?.passwordChange?.successMessage || 'Password updated successfully!');
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
@@ -35,8 +37,8 @@ export default function PasswordChangeForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-xl">
       <div className="space-y-1">
-        <h3 className="text-lg font-bold font-heading">Change Password</h3>
-        <p className="text-xs text-dark/60 dark:text-light/60">Ensure your account is using a long, random password to stay secure.</p>
+        <h3 className="text-lg font-bold font-heading">{t('passwordChange.title') || 'Change Password'}</h3>
+        <p className="text-xs text-dark/60 dark:text-light/60">{t('passwordChange.subtitle') || 'Ensure your account is using a long, random password to stay secure.'}</p>
       </div>
 
       {error && <div className="text-xs text-rose-600 bg-rose-500/10 p-3 rounded-xl font-medium">{error}</div>}
@@ -44,7 +46,7 @@ export default function PasswordChangeForm() {
       {feedback && <div className="text-xs text-emerald-600 bg-emerald-500/10 p-3 rounded-xl font-medium">{feedback}</div>}
 
       <div className="space-y-1.5">
-        <label className="block text-xs font-bold uppercase tracking-wider font-heading">Current Password *</label>
+        <label className="block text-xs font-bold uppercase tracking-wider font-heading">{t('passwordChange.currentPasswordLabel') || 'Current Password'} *</label>
         <div className="relative">
           <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-dark/30">
             <LockClosedIcon className="h-4 w-4" />
@@ -60,7 +62,7 @@ export default function PasswordChangeForm() {
       </div>
 
       <div className="space-y-1.5">
-        <label className="block text-xs font-bold uppercase tracking-wider font-heading">New Password *</label>
+        <label className="block text-xs font-bold uppercase tracking-wider font-heading">{t('passwordChange.newPasswordLabel') || 'New Password'} *</label>
         <div className="relative">
           <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-dark/30">
             <LockClosedIcon className="h-4 w-4" />
@@ -76,7 +78,7 @@ export default function PasswordChangeForm() {
       </div>
 
       <div className="space-y-1.5">
-        <label className="block text-xs font-bold uppercase tracking-wider font-heading">Confirm New Password *</label>
+        <label className="block text-xs font-bold uppercase tracking-wider font-heading">{t('passwordChange.confirmPasswordLabel') || 'Confirm New Password'} *</label>
         <div className="relative">
           <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-dark/30">
             <LockClosedIcon className="h-4 w-4" />
@@ -96,9 +98,11 @@ export default function PasswordChangeForm() {
         disabled={loading}
         className="py-3 px-6 text-sm font-bold text-white bg-primary hover:bg-secondary rounded-xl transition-all shadow-lg flex items-center gap-2 cursor-pointer"
       >
-        <span>{loading ? "Updating..." : "Update Password"}</span>
+        <span>{loading ? (t('passwordChange.updating') || 'Updating...') : (t('passwordChange.updateButton') || 'Update Password')}</span>
         <ArrowRightIcon className="h-4 w-4" />
       </button>
     </form>
   );
 }
+
+export default PasswordChangeForm;
