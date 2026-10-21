@@ -184,5 +184,15 @@
     "successMessage": "Profilbild erfolgreich aktualisiert!",
     "uploadButton": "Avatar hochladen",
     "uploading": "Wird hochgeladen..."
+  },
+  "profileUpdate": {
+    "title": "Profilinformationen",
+    "subtitle": "Aktualisieren Sie die Profilinformationen und die E-Mail-Adresse Ihres Kontos.",
+    "firstNameLabel": "Vorname",
+    "lastNameLabel": "Nachname",
+    "emailLabel": "E-Mail-Adresse",
+    "successMessage": "Profil erfolgreich aktualisiert!",
+    "saveButton": "Änderungen speichern",
+    "saving": "Wird gespeichert..."
   }
 }

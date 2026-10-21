@@ -184,5 +184,15 @@
     "successMessage": "Profile picture updated successfully!",
     "uploadButton": "Upload Avatar",
     "uploading": "Uploading..."
+  },
+  "profileUpdate": {
+    "title": "Profile Information",
+    "subtitle": "Update your account's profile information and email address.",
+    "firstNameLabel": "First Name",
+    "lastNameLabel": "Last Name",
+    "emailLabel": "Email Address",
+    "successMessage": "Profile successfully updated!",
+    "saveButton": "Save Changes",
+    "saving": "Saving..."
   }
 }

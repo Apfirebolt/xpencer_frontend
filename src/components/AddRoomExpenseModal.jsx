@@ -1,14 +1,32 @@
 "use client";
 
-import { useState, forwardRef } from "react";
+import { useState, forwardRef, useEffect } from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { DialogPanel, DialogTitle } from "@headlessui/react";
+import { expenseMode, expenseCategories } from "@/utils/constants";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const AddRoomExpenseModal = forwardRef(function AddRoomExpenseModal({ room, onClose, onSubmit, loading, error, feedbackMessage }, ref) {
+  const { user } = useAuthStore();
+
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("Food & Dining");
   const [description, setDescription] = useState("");
+  const [mode, setMode] = useState("Cash");
+  const [paidBy, setPaidBy] = useState("");
   const [splitBetween, setSplitBetween] = useState([]);
+
+  // Initialize defaults when room or user loads
+  useEffect(() => {
+    if (user && user._id) {
+      setPaidBy(user._id);
+    }
+    if (room?.members) {
+      // Default all members checked for splitting
+      const memberIds = room.members.map((m) => (typeof m === "object" ? m._id : m));
+      setSplitBetween(memberIds);
+    }
+  }, [room, user]);
 
   const toggleSplitMember = (memberId) => {
     setSplitBetween((prev) =>
@@ -18,16 +36,16 @@ const AddRoomExpenseModal = forwardRef(function AddRoomExpenseModal({ room, onCl
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!amount || !room) return;
+    if (!amount || !room || splitBetween.length === 0) return;
+
     onSubmit({
       amount: parseFloat(amount),
       category,
       description: description.trim() || "Room expense",
+      mode,
+      paidBy,
       splitBetween,
     });
-    setAmount("");
-    setDescription("");
-    setSplitBetween([]);
   };
 
   return (
@@ -58,20 +76,41 @@ const AddRoomExpenseModal = forwardRef(function AddRoomExpenseModal({ room, onCl
           />
         </div>
 
-        <div className="space-y-1.5">
-          <label className="block text-xs font-bold uppercase tracking-wider font-heading">Category *</label>
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="w-full px-4 py-3 text-sm bg-white dark:bg-dark border border-tertiary/30 rounded-xl focus:outline-none focus:border-primary shadow-inner cursor-pointer"
-          >
-            <option value="Food & Dining">Food & Dining</option>
-            <option value="Transport">Transport</option>
-            <option value="Shopping">Shopping</option>
-            <option value="Bills & Utilities">Bills & Utilities</option>
-            <option value="Entertainment">Entertainment</option>
-            <option value="Travel">Travel</option>
-          </select>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-1.5">
+            <label className="block text-xs font-bold uppercase tracking-wider font-heading">Category *</label>
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="w-full px-4 py-3 text-sm bg-white dark:bg-dark border border-tertiary/30 rounded-xl focus:outline-none focus:border-primary shadow-inner cursor-pointer"
+            >
+              {expenseCategories.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="block text-xs font-bold uppercase tracking-wider font-heading">Paid By *</label>
+            <select
+              value={paidBy}
+              onChange={(e) => setPaidBy(e.target.value)}
+              className="w-full px-4 py-3 text-sm bg-white dark:bg-dark border border-tertiary/30 rounded-xl focus:outline-none focus:border-primary shadow-inner cursor-pointer"
+              required
+            >
+              {room?.members?.map((member) => {
+                const memberId = typeof member === "object" ? member._id : member;
+                const memberName = typeof member === "object" ? member.name || member.email : member;
+                return (
+                  <option key={memberId} value={memberId}>
+                    {memberName} {memberId === user?._id && "(You)"}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
         </div>
 
         <div className="space-y-1.5">
@@ -81,14 +120,14 @@ const AddRoomExpenseModal = forwardRef(function AddRoomExpenseModal({ room, onCl
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             className="w-full px-4 py-3 text-sm bg-white dark:bg-dark border border-tertiary/30 rounded-xl focus:outline-none focus:border-primary shadow-inner"
-            placeholder="Group dinner..."
+            placeholder="Hotel bill..."
           />
         </div>
 
         {/* Split Checkbox Section */}
         <div className="space-y-2 pt-2">
           <label className="block text-xs font-bold uppercase tracking-wider font-heading">
-            Split Expense with Members
+            Split Expense Between Members *
           </label>
           <div className="space-y-2 max-h-40 overflow-y-auto p-3 rounded-2xl bg-tertiary/5 border border-tertiary/20">
             {room?.members?.map((member) => {
@@ -113,7 +152,7 @@ const AddRoomExpenseModal = forwardRef(function AddRoomExpenseModal({ room, onCl
           </div>
         </div>
 
-        <button type="submit" disabled={loading} className="w-full py-3 text-sm font-bold text-white bg-primary hover:bg-secondary rounded-xl transition-all shadow-lg cursor-pointer mt-2">
+        <button type="submit" disabled={loading || splitBetween.length === 0} className="w-full py-3 text-sm font-bold text-white bg-primary hover:bg-secondary rounded-xl transition-all shadow-lg cursor-pointer mt-2 disabled:opacity-50">
           {loading ? "Adding Expense..." : "Submit & Split Expense"}
         </button>
       </form>
