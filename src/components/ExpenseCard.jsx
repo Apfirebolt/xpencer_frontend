@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useTranslation } from "@/context/LanguageContext";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -10,7 +10,24 @@ import {
   UserIcon,
   CheckCircleIcon,
   ClockIcon,
+  CreditCardIcon,
+  BanknotesIcon,
+  DevicePhoneMobileIcon,
+  BuildingLibraryIcon,
+  WalletIcon,
+  TagIcon
 } from "@heroicons/react/24/outline";
+
+// Helper to return the correct icon based on the payment mode string
+const getPaymentModeIcon = (mode) => {
+  if (!mode) return <WalletIcon className="h-3.5 w-3.5" />;
+  const lower = mode.toLowerCase();
+  if (lower.includes("card")) return <CreditCardIcon className="h-3.5 w-3.5" />;
+  if (lower.includes("upi")) return <DevicePhoneMobileIcon className="h-3.5 w-3.5" />;
+  if (lower.includes("cash")) return <BanknotesIcon className="h-3.5 w-3.5" />;
+  if (lower.includes("bank") || lower.includes("net")) return <BuildingLibraryIcon className="h-3.5 w-3.5" />;
+  return <WalletIcon className="h-3.5 w-3.5" />;
+};
 
 export default function ExpenseCardView({
   expenses,
@@ -38,6 +55,7 @@ export default function ExpenseCardView({
           : null;
 
         const settlementStatus = exp.settlementStatus || "unpaid";
+        const paymentMode = exp.mode || "Cash";
 
         return (
           <div
@@ -51,8 +69,15 @@ export default function ExpenseCardView({
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 flex-wrap">
+                  {/* Category Badge */}
                   <span className="px-3.5 py-1.5 rounded-xl bg-primary/10 text-primary text-xs font-bold font-mono border border-primary/20 shadow-xs">
                     {exp.category}
+                  </span>
+
+                  {/* Payment Mode Badge with Icon */}
+                  <span className="px-3 py-1.5 rounded-xl bg-secondary/10 text-secondary text-xs font-bold font-mono border border-secondary/20 shadow-xs flex items-center gap-1.5">
+                    {getPaymentModeIcon(paymentMode)}
+                    {paymentMode}
                   </span>
 
                   {/* Split Expense Badge */}
