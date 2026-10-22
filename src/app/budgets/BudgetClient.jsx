@@ -6,6 +6,7 @@ import Footer from '@/components/Footer';
 import BudgetForm from '@/components/BudgetForm';
 import BudgetModeForm from '@/components/BudgetModeForm';
 import BudgetComparisonChart from '@/components/BudgetComparisonChart';
+import BudgetChart from '@/components/BudgetCharts';
 import ConfirmModal from '@/components/ConfirmModal';
 import { useBudgetStore } from '@/store/useBudgetStore';
 import { useBudgetModeStore } from '@/store/useBudgetModeStore';
@@ -136,7 +137,6 @@ export default function BudgetClient() {
     }
   }
 
-  // Prompt confirmation modal for budget deletion
   const promptDeleteBudget = (id) => {
     setBudgetToDeleteId(id);
     setIsDeleteModalOpen(true);
@@ -147,7 +147,6 @@ export default function BudgetClient() {
     setIsDeleteModeModalOpen(true);
   };
 
-  // Execute deletion upon confirmation
   const handleConfirmDelete = async () => {
     if (!budgetToDeleteId) return;
     setDeleting(true);
@@ -178,7 +177,6 @@ export default function BudgetClient() {
     }
   };
 
-  // Fetch comparison data between Month 1 (selected) and Month 2
   async function handleRunComparison() {
     setComparingLoading(true);
     try {
@@ -204,7 +202,6 @@ export default function BudgetClient() {
   const totalModeSpent = getTotalBudgetModeSpent();
   const overallModePercentage = totalModeLimit > 0 ? Math.min(Math.round((totalModeSpent / totalModeLimit) * 100), 100) : 0;
 
-  // Compute totals for comparison month 2
   const month2Limit = comparisonData?.month2.budgets.reduce((acc, b) => acc + Number(b.limit || 0), 0) || 0;
   const month2Spent = comparisonData?.month2.budgets.reduce((acc, b) => acc + Number(b.spent || 0), 0) || 0;
 
@@ -227,7 +224,6 @@ export default function BudgetClient() {
           </div>
 
           <div className="flex flex-wrap items-center gap-3 w-full md:w-auto justify-between md:justify-end">
-            {/* Month Selector */}
             <select
               value={selectedMonth}
               onChange={(e) => handleMonthYearChange(Number(e.target.value), selectedYear)}
@@ -238,7 +234,6 @@ export default function BudgetClient() {
               ))}
             </select>
 
-            {/* Compare 2 Months Button */}
             <button
               onClick={() => { setIsCompareModalOpen(true); handleRunComparison(); }}
               className="px-5 py-3 rounded-2xl font-bold bg-tertiary/20 hover:bg-tertiary/30 text-dark dark:text-light border border-tertiary/30 transition-all flex items-center gap-2 cursor-pointer shrink-0 text-xs shadow-sm"
@@ -268,7 +263,6 @@ export default function BudgetClient() {
         {/* Overview Summary Banners */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           
-          {/* Category Budgets Summary */}
           <div className="space-y-4" data-aos="fade-up">
             <h3 className="text-sm font-bold uppercase tracking-wider text-dark/60 dark:text-light/60 font-heading">
               {t("budget.categorySummaryHeading") || "Category Spending Overview"}
@@ -289,7 +283,6 @@ export default function BudgetClient() {
             </div>
           </div>
 
-          {/* Payment Mode Limits Summary */}
           <div className="space-y-4" data-aos="fade-up" data-aos-delay="50">
             <h3 className="text-sm font-bold uppercase tracking-wider text-dark/60 dark:text-light/60 font-heading">
               {t("budget.modeSummaryHeading") || "Payment Mode Limits Overview"}
@@ -311,6 +304,9 @@ export default function BudgetClient() {
           </div>
 
         </div>
+
+        {/* Embedded Visual Analytics Charts */}
+        <BudgetChart budgets={budgets} budgetModes={budgetModes} currencySymbol={currencySymbol} />
 
         {/* Section 1: Category Budgets Grid */}
         <div className="space-y-6 pt-6" data-aos="fade-up" data-aos-delay="100">
@@ -385,7 +381,6 @@ export default function BudgetClient() {
                         </div>
                       </div>
 
-                      {/* Progress Bar */}
                       <div className="space-y-2 pt-2">
                         <div className="w-full bg-tertiary/20 rounded-full h-2.5 overflow-hidden">
                           <div 
@@ -485,7 +480,6 @@ export default function BudgetClient() {
                         </div>
                       </div>
 
-                      {/* Progress Bar */}
                       <div className="space-y-2 pt-2">
                         <div className="w-full bg-tertiary/20 rounded-full h-2.5 overflow-hidden">
                           <div 
@@ -514,7 +508,7 @@ export default function BudgetClient() {
 
       </main>
 
-      {/* 1. Set Category Budget Modal */}
+      {/* Modals */}
       <Transition appear show={isModalOpen} as={Fragment}>
         <Dialog as="div" className="relative z-50" onClose={() => setIsModalOpen(false)}>
           <TransitionChild as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0" enterTo="opacity-100" leave="ease-in duration-200" leaveFrom="opacity-100" leaveTo="opacity-0">
@@ -547,7 +541,6 @@ export default function BudgetClient() {
         </Dialog>
       </Transition>
 
-      {/* 2. Set Payment Mode Limit Modal */}
       <Transition appear show={isModeModalOpen} as={Fragment}>
         <Dialog as="div" className="relative z-50" onClose={() => setIsModeModalOpen(false)}>
           <TransitionChild as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0" enterTo="opacity-100" leave="ease-in duration-200" leaveFrom="opacity-100" leaveTo="opacity-0">
@@ -580,7 +573,6 @@ export default function BudgetClient() {
         </Dialog>
       </Transition>
 
-      {/* 3. Compare 2 Months Modal */}
       <Transition appear show={isCompareModalOpen} as={Fragment}>
         <Dialog as="div" className="relative z-50" onClose={() => setIsCompareModalOpen(false)}>
           <TransitionChild as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0" enterTo="opacity-100" leave="ease-in duration-200" leaveFrom="opacity-100" leaveTo="opacity-0">
@@ -605,7 +597,6 @@ export default function BudgetClient() {
                     </button>
                   </div>
 
-                  {/* Comparison Month Pickers */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-2xl bg-tertiary/5 border border-tertiary/20">
                     <div className="space-y-1">
                       <label className="text-xs font-bold uppercase font-heading">{t("budget.primaryMonth") || "Primary Month"}</label>
@@ -635,7 +626,6 @@ export default function BudgetClient() {
                     {comparingLoading ? (t("budget.comparing") || "Comparing...") : (t("budget.runComparison") || "Run Comparison")}
                   </button>
 
-                  {/* Comparison Results */}
                   {comparisonData && (
                     <div className="space-y-6 pt-4 border-t border-tertiary/20">
                       <div className="grid grid-cols-2 gap-4 text-center">
@@ -662,7 +652,6 @@ export default function BudgetClient() {
         </Dialog>
       </Transition>
 
-      {/* 4. Confirm Delete Modals */}
       <ConfirmModal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}

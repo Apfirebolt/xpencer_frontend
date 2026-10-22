@@ -375,6 +375,24 @@
     "submitBtn": "Absenden & Ausgabe aufteilen",
     "defaultDesc": "Raumausgabe"
   },
+  "inviteMemberModal": {
+    "modalTitle": "Mitglied einladen",
+    "emailLabel": "Benutzer-E-Mail *",
+    "emailPlaceholder": "Geben Sie die E-Mail des Empfängers ein...",
+    "messageLabel": "Benachrichtigungsnachricht",
+    "messagePlaceholder": "Sie sind eingeladen, beizutreten...",
+    "sending": "Wird gesendet...",
+    "submitBtn": "Einladung senden"
+  },
+  "budgetChart": {
+    "sectionTitle": "Visuelle Budget- & Limit-Analyse",
+    "limitLabel": "Limit",
+    "spentLabel": "Ausgegeben",
+    "categoryBarTitle": "Kategorie-Budget vs. Tatsächlich Ausgegeben",
+    "categoryBarDesc": "Direkter Vergleich der zugewiesenen Limits mit den ausgegebenen Beträgen",
+    "modeDoughnutTitle": "Verteilung der Ausgaben nach Zahlungsmethode",
+    "modeDoughnutDesc": "Proportionale Aufschlüsselung der Ausgaben über die Zahlungskanäle"
+  },
   "common": {
     "months": [
       "Januar", "Februar", "März", "April", "Mai", "Juni", 

@@ -385,6 +385,24 @@
     "submitBtn": "送信して経費を分割",
     "defaultDesc": "ルーム経費"
   },
+  "inviteMemberModal": {
+    "modalTitle": "メンバーを招待",
+    "emailLabel": "ユーザーのメール *",
+    "emailPlaceholder": "受信者のユーザーのメールを入力...",
+    "messageLabel": "通知メッセージ",
+    "messagePlaceholder": "参加するように招待されました...",
+    "sending": "送信中...",
+    "submitBtn": "招待を送信"
+  },
+  "budgetChart": {
+    "sectionTitle": "視覚的な予算と制限の分析",
+    "limitLabel": "制限",
+    "spentLabel": "支出",
+    "categoryBarTitle": "カテゴリ予算 vs 実際の支出",
+    "categoryBarDesc": "割り当てられた制限と実際の支出の直接比較",
+    "modeDoughnutTitle": "支払い方法別の支出分布",
+    "modeDoughnutDesc": "支払いチャネルごとの支出の割合内訳"
+  },
   "common": {
     "months": [
       "1月", "2月", "3月", "4月", "5月", "6月", 

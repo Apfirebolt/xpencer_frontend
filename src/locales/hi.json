@@ -371,6 +371,15 @@
     "defaultCancel": "रद्द करें",
     "processing": "प्रक्रिया हो रही है..."
   },
+  "inviteMemberModal": {
+    "modalTitle": "सदस्य को आमंत्रित करें",
+    "emailLabel": "उपयोगकर्ता ईमेल *",
+    "emailPlaceholder": "प्राप्तकर्ता उपयोगकर्ता ईमेल दर्ज करें...",
+    "messageLabel": "सूचना संदेश",
+    "messagePlaceholder": "आपको शामिल होने के लिए आमंत्रित किया गया है...",
+    "sending": "भेजा जा रहा है...",
+    "submitBtn": "जॉइन आमंत्रण भेजें"
+    },
   "addRoomExpenseModal": {
     "modalTitle": "खर्च जोड़ें",
     "amountLabel": "राशि ($) *",
@@ -384,6 +393,15 @@
     "adding": "खर्च जोड़ा जा रहा है...",
     "submitBtn": "सबमिट करें और खर्च विभाजित करें",
     "defaultDesc": "कक्ष खर्च"
+  },
+  "budgetChart": {
+    "sectionTitle": "विज़ुअल बजट और सीमा विश्लेषण",
+    "limitLabel": "सीमा",
+    "spentLabel": "खर्च किया गया",
+    "categoryBarTitle": "श्रेणी बजट बनाम वास्तविक खर्च",
+    "categoryBarDesc": "आवंटित सीमाओं की तुलना में खर्च की गई राशि का प्रत्यक्ष तुलना",
+    "modeDoughnutTitle": "भुगतान मोड आउटफ्लो वितरण",
+    "modeDoughnutDesc": "भुगतान चैनलों में खर्च का अनुपातात्मक विभाजन"
   },
   "common": {
     "months": [

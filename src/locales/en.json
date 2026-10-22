@@ -394,6 +394,15 @@
     "sending": "Sending...",
     "submitBtn": "Send Join Invitation"
   },
+  "budgetChart": {
+    "sectionTitle": "Visual Budget & Limit Analytics",
+    "limitLabel": "Limit",
+    "spentLabel": "Spent",
+    "categoryBarTitle": "Category Budget vs. Actual Spent",
+    "categoryBarDesc": "Direct comparison of allocated limits against money spent",
+    "modeDoughnutTitle": "Payment Mode Outflow Distribution",
+    "modeDoughnutDesc": "Proportional breakdown of spending across payment channels"
+  },
   "common": {
     "months": [
       "January",
