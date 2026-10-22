@@ -49,7 +49,7 @@ const AddRoomExpenseModal = forwardRef(function AddRoomExpenseModal({ room, onCl
   };
 
   return (
-    <DialogPanel ref={ref} className="w-full max-w-md transform overflow-hidden rounded-3xl bg-white dark:bg-dark border border-tertiary/20 p-8 text-left align-middle shadow-2xl transition-all space-y-6">
+    <DialogPanel ref={ref} className="w-full max-w-2xl transform overflow-hidden rounded-3xl bg-white dark:bg-dark border border-tertiary/20 p-8 text-left align-middle shadow-2xl transition-all space-y-6">
       <div className="flex items-center justify-between border-b border-tertiary/20 pb-4">
         <DialogTitle as="h3" className="text-lg font-bold font-heading text-dark dark:text-light">
           Add Expense to {room?.title}

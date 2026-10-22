@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { useAuthStore } from '@/store/useAuthStore';
+import { currencies } from '@/utils/constants';
 import { TagIcon, CurrencyDollarIcon, CalendarIcon, DocumentTextIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
 
 const EXPENSE_CATEGORIES = [
@@ -20,6 +22,13 @@ const MONTH_NAMES = [
 ];
 
 export default function BudgetForm({ onSubmitBudget, loading }) {
+  const { user } = useAuthStore();
+
+  // Extract user preferred currency symbol
+  const userCurrencyCode = user?.settings?.currency || 'USD';
+  const currencyObj = currencies.find((c) => c.code === userCurrencyCode) || { symbol: '$', code: 'USD' };
+  const currencySymbol = currencyObj.symbol;
+
   const currentDate = new Date();
   const [category, setCategory] = useState(EXPENSE_CATEGORIES[0]);
   const [limit, setLimit] = useState('');
@@ -44,22 +53,22 @@ export default function BudgetForm({ onSubmitBudget, loading }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5 font-sans">
+    <form onSubmit={handleSubmit} className="space-y-6 font-sans">
       
       {/* Category Selection */}
-      <div className="space-y-1.5">
+      <div className="space-y-2">
         <label htmlFor="category" className="block text-xs font-bold text-dark dark:text-light uppercase tracking-wider font-heading">
           Category *
         </label>
         <div className="relative">
-          <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-dark/30 dark:text-light/30">
+          <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-dark/40 dark:text-light/40">
             <TagIcon className="h-4 w-4" />
           </span>
           <select
             id="category"
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 text-sm bg-white dark:bg-dark border border-tertiary/30 rounded-xl focus:outline-none focus:border-primary text-dark dark:text-light shadow-inner cursor-pointer"
+            className="w-full pl-10 pr-4 py-3.5 text-sm bg-white dark:bg-dark border border-tertiary/30 rounded-2xl focus:outline-none focus:border-primary text-dark dark:text-light shadow-inner cursor-pointer"
             required
           >
             {EXPENSE_CATEGORIES.map((cat) => (
@@ -72,13 +81,13 @@ export default function BudgetForm({ onSubmitBudget, loading }) {
       </div>
 
       {/* Spending Limit Amount */}
-      <div className="space-y-1.5">
+      <div className="space-y-2">
         <label htmlFor="limit" className="block text-xs font-bold text-dark dark:text-light uppercase tracking-wider font-heading">
-          Monthly Limit ($) *
+          Monthly Limit ({currencySymbol}) *
         </label>
         <div className="relative">
-          <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-dark/30 dark:text-light/30">
-            <CurrencyDollarIcon className="h-4 w-4" />
+          <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-dark/40 dark:text-light/40 font-mono font-bold">
+            {currencySymbol}
           </span>
           <input
             id="limit"
@@ -86,7 +95,7 @@ export default function BudgetForm({ onSubmitBudget, loading }) {
             step="0.01"
             value={limit}
             onChange={(e) => setLimit(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 text-sm bg-white dark:bg-dark border border-tertiary/30 rounded-xl focus:outline-none focus:border-primary text-dark dark:text-light placeholder-dark/30 dark:placeholder-light/30 shadow-inner"
+            className="w-full pl-10 pr-4 py-3.5 text-sm bg-white dark:bg-dark border border-tertiary/30 rounded-2xl focus:outline-none focus:border-primary text-dark dark:text-light placeholder-dark/30 dark:placeholder-light/30 shadow-inner font-mono font-semibold"
             placeholder="500.00"
             required
           />
@@ -95,7 +104,7 @@ export default function BudgetForm({ onSubmitBudget, loading }) {
 
       {/* Month & Year Selection */}
       <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-1.5">
+        <div className="space-y-2">
           <label htmlFor="month" className="block text-xs font-bold text-dark dark:text-light uppercase tracking-wider font-heading">
             Month *
           </label>
@@ -103,7 +112,7 @@ export default function BudgetForm({ onSubmitBudget, loading }) {
             id="month"
             value={month}
             onChange={(e) => setMonth(e.target.value)}
-            className="w-full px-4 py-3 text-sm bg-white dark:bg-dark border border-tertiary/30 rounded-xl focus:outline-none focus:border-primary text-dark dark:text-light shadow-inner cursor-pointer"
+            className="w-full px-4 py-3.5 text-sm bg-white dark:bg-dark border border-tertiary/30 rounded-2xl focus:outline-none focus:border-primary text-dark dark:text-light shadow-inner cursor-pointer"
             required
           >
             {MONTH_NAMES.map((m, idx) => (
@@ -114,7 +123,7 @@ export default function BudgetForm({ onSubmitBudget, loading }) {
           </select>
         </div>
 
-        <div className="space-y-1.5">
+        <div className="space-y-2">
           <label htmlFor="year" className="block text-xs font-bold text-dark dark:text-light uppercase tracking-wider font-heading">
             Year *
           </label>
@@ -123,28 +132,28 @@ export default function BudgetForm({ onSubmitBudget, loading }) {
             type="number"
             value={year}
             onChange={(e) => setYear(e.target.value)}
-            className="w-full px-4 py-3 text-sm bg-white dark:bg-dark border border-tertiary/30 rounded-xl focus:outline-none focus:border-primary text-dark dark:text-light shadow-inner"
+            className="w-full px-4 py-3.5 text-sm bg-white dark:bg-dark border border-tertiary/30 rounded-2xl focus:outline-none focus:border-primary text-dark dark:text-light shadow-inner font-mono"
             required
           />
         </div>
       </div>
 
       {/* Description */}
-      <div className="space-y-1.5">
+      <div className="space-y-2">
         <label htmlFor="description" className="block text-xs font-bold text-dark dark:text-light uppercase tracking-wider font-heading">
           Description / Note
         </label>
         <div className="relative">
-          <span className="absolute inset-y-0 left-3.5 top-3.5 pointer-events-none text-dark/30 dark:text-light/30">
+          <span className="absolute inset-y-0 left-4 top-4 pointer-events-none text-dark/40 dark:text-light/40">
             <DocumentTextIcon className="h-4 w-4" />
           </span>
           <textarea
             id="description"
-            rows={2}
+            rows={4}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 text-sm bg-white dark:bg-dark border border-tertiary/30 rounded-xl focus:outline-none focus:border-primary text-dark dark:text-light placeholder-dark/30 dark:placeholder-light/30 shadow-inner"
-            placeholder="Monthly dining allowance..."
+            className="w-full pl-10 pr-4 py-3.5 text-sm bg-white dark:bg-dark border border-tertiary/30 rounded-2xl focus:outline-none focus:border-primary text-dark dark:text-light placeholder-dark/30 dark:placeholder-light/30 shadow-inner resize-none leading-relaxed"
+            placeholder="Monthly dining allowance and restaurant cap..."
           />
         </div>
       </div>
@@ -152,7 +161,7 @@ export default function BudgetForm({ onSubmitBudget, loading }) {
       <button
         type="submit"
         disabled={loading}
-        className="w-full py-3 text-sm font-bold text-white bg-primary hover:bg-secondary rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/25 disabled:opacity-50 cursor-pointer"
+        className="w-full py-4 text-sm font-bold text-white bg-primary hover:bg-secondary rounded-2xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/25 disabled:opacity-50 cursor-pointer"
       >
         <span>{loading ? "Saving Budget..." : "Save Budget"}</span>
         <ArrowRightIcon className="h-4 w-4" />

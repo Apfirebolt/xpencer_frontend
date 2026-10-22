@@ -1,12 +1,21 @@
 'use client';
 
+import { useAuthStore } from '@/store/useAuthStore';
+import { currencies } from '@/utils/constants';
 import { CalendarIcon, TrashIcon, UserGroupIcon, UserIcon, CheckCircleIcon, ClockIcon } from '@heroicons/react/24/outline';
 
 export default function ExpenseListView({ expenses, onDelete }) {
+  const { user } = useAuthStore();
+
+  // Extract user preferred currency symbol
+  const userCurrencyCode = user?.settings?.currency || 'USD';
+  const currencyObj = currencies.find((c) => c.code === userCurrencyCode) || { symbol: '$', code: 'USD' };
+  const currencySymbol = currencyObj.symbol;
+
   if (!expenses || expenses.length === 0) return null;
 
   return (
-    <div className="space-y-3 max-w-4xl mx-auto w-full">
+    <div className="space-y-4 max-w-4xl mx-auto w-full">
       {expenses.map((exp) => {
         const isSplit = exp.isSplit;
         const roomTitle = exp.roomId?.title;
@@ -17,23 +26,25 @@ export default function ExpenseListView({ expenses, onDelete }) {
         return (
           <div 
             key={exp._id || Math.random()} 
-            className={`p-5 rounded-2xl bg-white/80 dark:bg-dark/80 border transition-all shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 group ${
-              isSplit ? 'border-primary/40 bg-gradient-to-r from-primary/[0.02] to-transparent' : 'border-tertiary/20 dark:border-tertiary/10 hover:border-primary/40'
+            className={`p-6 rounded-[1.5rem] bg-white/90 dark:bg-dark/90 backdrop-blur-md border transition-all duration-300 shadow-sm hover:shadow-xl hover:-translate-y-0.5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-5 group ${
+              isSplit 
+                ? 'border-primary/40 bg-gradient-to-r from-primary/[0.04] via-transparent to-transparent shadow-primary/5' 
+                : 'border-tertiary/20 dark:border-tertiary/15 hover:border-primary/50 shadow-tertiary/10'
             }`}
           >
-            <div className="flex items-start sm:items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/25 shrink-0 text-primary font-bold font-heading">
-                ${Number(exp.amount).toFixed(0)}
+            <div className="flex items-start sm:items-center gap-5">
+              <div className="w-13 h-13 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/25 shrink-0 text-primary font-bold font-heading shadow-xs">
+                {currencySymbol}{Number(exp.amount).toFixed(0)}
               </div>
-              <div className="space-y-1">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="px-2.5 py-0.5 rounded-lg bg-primary/10 text-primary text-xs font-bold font-mono">
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2.5 flex-wrap">
+                  <span className="px-3 py-1 rounded-xl bg-primary/10 text-primary text-xs font-bold font-mono border border-primary/20 shadow-xs">
                     {exp.category}
                   </span>
 
                   {/* Split Expense Badge */}
                   {isSplit && (
-                    <span className="px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[10px] font-bold font-mono border border-amber-500/20 flex items-center gap-1">
+                    <span className="px-2.5 py-1 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[10px] font-bold font-mono border border-amber-500/20 flex items-center gap-1.5 shadow-xs">
                       <UserGroupIcon className="h-3 w-3" />
                       Split Share
                     </span>
@@ -45,31 +56,31 @@ export default function ExpenseListView({ expenses, onDelete }) {
                   </span>
                 </div>
 
-                <p className="text-sm font-medium text-dark dark:text-light">
+                <p className="text-sm font-semibold text-dark dark:text-light leading-snug">
                   {exp.description || 'No description provided'}
                 </p>
 
                 {/* Split & Room Metadata Details */}
                 {isSplit && (
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 pt-1 text-[11px] text-dark/60 dark:text-light/60">
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 pt-1.5 text-xs text-dark/60 dark:text-light/60">
                     {roomTitle && (
-                      <span className="inline-flex items-center gap-1 text-primary font-medium">
-                        <UserGroupIcon className="h-3 w-3" /> Room: {roomTitle}
+                      <span className="inline-flex items-center gap-1.5 text-primary font-medium">
+                        <UserGroupIcon className="h-3.5 w-3.5" /> Room: {roomTitle}
                       </span>
                     )}
                     {payerName && (
-                      <span className="inline-flex items-center gap-1">
-                        <UserIcon className="h-3 w-3 text-dark/40" /> Paid by: <strong className="text-dark dark:text-light">{payerName}</strong>
+                      <span className="inline-flex items-center gap-1.5">
+                        <UserIcon className="h-3.5 w-3.5 text-dark/40" /> Paid by: <strong className="text-dark dark:text-light">{payerName}</strong>
                       </span>
                     )}
                     <span>
                       {exp.isPaid ? (
-                        <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-semibold">
-                          <CheckCircleIcon className="h-3 w-3" /> Settled
+                        <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-semibold bg-emerald-500/10 px-2.5 py-0.5 rounded-lg border border-emerald-500/20">
+                          <CheckCircleIcon className="h-3.5 w-3.5" /> Settled
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 text-amber-600 dark:text-amber-400 font-semibold">
-                          <ClockIcon className="h-3 w-3" /> Pending
+                        <span className="inline-flex items-center gap-1 text-amber-600 dark:text-amber-400 font-semibold bg-amber-500/10 px-2.5 py-0.5 rounded-lg border border-amber-500/20">
+                          <ClockIcon className="h-3.5 w-3.5" /> Pending
                         </span>
                       )}
                     </span>
@@ -78,13 +89,13 @@ export default function ExpenseListView({ expenses, onDelete }) {
               </div>
             </div>
 
-            <div className="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto border-t sm:border-t-0 pt-2 sm:pt-0 border-tertiary/20">
+            <div className="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto border-t sm:border-t-0 pt-3 sm:pt-0 border-tertiary/20">
               <div className="text-right">
                 <span className="sm:hidden text-xs font-bold text-dark/50 dark:text-light/50 mr-2">
                   {isSplit ? 'Your Share:' : 'Amount:'}
                 </span>
-                <span className="text-lg font-extrabold font-heading text-primary">
-                  ${Number(exp.amount).toFixed(2)}
+                <span className="text-xl font-extrabold font-heading text-primary">
+                  {currencySymbol}{Number(exp.amount).toFixed(2)}
                 </span>
               </div>
 
@@ -92,7 +103,7 @@ export default function ExpenseListView({ expenses, onDelete }) {
               {onDelete && (
                 <button
                   onClick={() => onDelete(exp._id)}
-                  className="p-2 rounded-xl text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer"
+                  className="p-2 rounded-xl text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer shadow-xs"
                   title="Delete Expense"
                 >
                   <TrashIcon className="h-4 w-4" />
