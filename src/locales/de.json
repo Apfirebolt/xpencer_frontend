@@ -354,6 +354,27 @@
     "creating": "Raum wird erstellt...",
     "createBtn": "Expense Room erstellen"
   },
+  "confirmModal": {
+    "defaultTitle": "Sind Sie sicher?",
+    "defaultMessage": "Diese Aktion kann nicht rückgängig gemacht werden. Möchten Sie wirklich fortfahren?",
+    "defaultConfirm": "Löschen",
+    "defaultCancel": "Abbrechen",
+    "processing": "Verarbeitung..."
+  },
+  "addRoomExpenseModal": {
+    "modalTitle": "Ausgabe hinzufügen",
+    "amountLabel": "Betrag ($) *",
+    "categoryLabel": "Kategorie *",
+    "paidByLabel": "Bezahlt von *",
+    "descriptionLabel": "Beschreibung",
+    "descriptionPlaceholder": "Hotelrechnung...",
+    "splitBetweenLabel": "Ausgabe zwischen Mitgliedern aufteilen *",
+    "youLabel": "(Sie)",
+    "creatorLabel": "(Ersteller)",
+    "adding": "Ausgabe wird hinzugefügt...",
+    "submitBtn": "Absenden & Ausgabe aufteilen",
+    "defaultDesc": "Raumausgabe"
+  },
   "common": {
     "months": [
       "Januar", "Februar", "März", "April", "Mai", "Juni", 

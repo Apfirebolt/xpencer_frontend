@@ -1,6 +1,7 @@
 'use client';
 
 import { Fragment } from 'react';
+import { useTranslation } from '@/context/LanguageContext';
 import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react';
 import { ExclamationTriangleIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
@@ -8,12 +9,19 @@ export default function ConfirmModal({
   isOpen, 
   onClose, 
   onConfirm, 
-  title = "Are you sure?", 
-  message = "This action cannot be undone. Are you sure you want to proceed?",
-  confirmText = "Delete",
-  cancelText = "Cancel",
+  title, 
+  message,
+  confirmText,
+  cancelText,
   loading = false 
 }) {
+  const { t } = useTranslation();
+
+  const resolvedTitle = title || t("confirmModal.defaultTitle") || "Are you sure?";
+  const resolvedMessage = message || t("confirmModal.defaultMessage") || "This action cannot be undone. Are you sure you want to proceed?";
+  const resolvedConfirm = confirmText || t("confirmModal.defaultConfirm") || "Delete";
+  const resolvedCancel = cancelText || t("confirmModal.defaultCancel") || "Cancel";
+
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-50" onClose={onClose}>
@@ -49,7 +57,7 @@ export default function ConfirmModal({
                       <ExclamationTriangleIcon className="h-5 w-5" />
                     </div>
                     <DialogTitle as="h3" className="text-lg font-bold font-heading text-dark dark:text-light">
-                      {title}
+                      {resolvedTitle}
                     </DialogTitle>
                   </div>
                   <button
@@ -62,7 +70,7 @@ export default function ConfirmModal({
 
                 {/* Message Body */}
                 <p className="text-xs text-dark/70 dark:text-light/70 leading-relaxed">
-                  {message}
+                  {resolvedMessage}
                 </p>
 
                 {/* Action Buttons */}
@@ -73,7 +81,7 @@ export default function ConfirmModal({
                     disabled={loading}
                     className="flex-1 py-3 text-xs font-bold rounded-xl bg-tertiary/20 hover:bg-tertiary/30 text-dark dark:text-light transition-all cursor-pointer border border-tertiary/30"
                   >
-                    {cancelText}
+                    {resolvedCancel}
                   </button>
                   <button
                     type="button"
@@ -81,7 +89,7 @@ export default function ConfirmModal({
                     disabled={loading}
                     className="flex-1 py-3 text-xs font-bold rounded-xl bg-rose-600 hover:bg-rose-700 text-white transition-all shadow-lg shadow-rose-600/20 disabled:opacity-50 cursor-pointer"
                   >
-                    {loading ? "Processing..." : confirmText}
+                    {loading ? (t("confirmModal.processing") || "Processing...") : resolvedConfirm}
                   </button>
                 </div>
 

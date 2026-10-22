@@ -364,6 +364,36 @@
     "recordBtn": "Record Expense",
     "defaultNoDesc": "No description provided"
   },
+  "confirmModal": {
+    "defaultTitle": "Are you sure?",
+    "defaultMessage": "This action cannot be undone. Are you sure you want to proceed?",
+    "defaultConfirm": "Delete",
+    "defaultCancel": "Cancel",
+    "processing": "Processing..."
+  },
+  "addRoomExpenseModal": {
+    "modalTitle": "Add Expense to",
+    "amountLabel": "Amount ($) *",
+    "categoryLabel": "Category *",
+    "paidByLabel": "Paid By *",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "Hotel bill...",
+    "splitBetweenLabel": "Split Expense Between Members *",
+    "youLabel": "(You)",
+    "creatorLabel": "(Creator)",
+    "adding": "Adding Expense...",
+    "submitBtn": "Submit & Split Expense",
+    "defaultDesc": "Room expense"
+  },
+  "inviteMemberModal": {
+    "modalTitle": "Invite Member to",
+    "emailLabel": "User Email *",
+    "emailPlaceholder": "Enter recipient User Email...",
+    "messageLabel": "Notification Message",
+    "messagePlaceholder": "You are invited to join...",
+    "sending": "Sending...",
+    "submitBtn": "Send Join Invitation"
+  },
   "common": {
     "months": [
       "January",

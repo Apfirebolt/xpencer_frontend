@@ -5,9 +5,11 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 import { DialogPanel, DialogTitle } from "@headlessui/react";
 import { expenseMode, expenseCategories } from "@/utils/constants";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useTranslation } from "@/context/LanguageContext";
 
 const AddRoomExpenseModal = forwardRef(function AddRoomExpenseModal({ room, onClose, onSubmit, loading, error, feedbackMessage }, ref) {
   const { user } = useAuthStore();
+  const { t } = useTranslation();
 
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("Food & Dining");
@@ -41,7 +43,7 @@ const AddRoomExpenseModal = forwardRef(function AddRoomExpenseModal({ room, onCl
     onSubmit({
       amount: parseFloat(amount),
       category,
-      description: description.trim() || "Room expense",
+      description: description.trim() || (t("addRoomExpenseModal.defaultDesc") || "Room expense"),
       mode,
       paidBy,
       splitBetween,
@@ -52,7 +54,7 @@ const AddRoomExpenseModal = forwardRef(function AddRoomExpenseModal({ room, onCl
     <DialogPanel ref={ref} className="w-full max-w-2xl transform overflow-hidden rounded-3xl bg-white dark:bg-dark border border-tertiary/20 p-8 text-left align-middle shadow-2xl transition-all space-y-6">
       <div className="flex items-center justify-between border-b border-tertiary/20 pb-4">
         <DialogTitle as="h3" className="text-lg font-bold font-heading text-dark dark:text-light">
-          Add Expense to {room?.title}
+          {t("addRoomExpenseModal.modalTitle") || "Add Expense to"} {room?.title}
         </DialogTitle>
         <button onClick={onClose} className="p-1.5 rounded-xl text-dark/50 hover:bg-primary/10 hover:text-primary cursor-pointer">
           <XMarkIcon className="h-5 w-5" />
@@ -64,7 +66,9 @@ const AddRoomExpenseModal = forwardRef(function AddRoomExpenseModal({ room, onCl
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-1.5">
-          <label className="block text-xs font-bold uppercase tracking-wider font-heading">Amount ($) *</label>
+          <label className="block text-xs font-bold uppercase tracking-wider font-heading">
+            {t("addRoomExpenseModal.amountLabel") || "Amount ($) *"}
+          </label>
           <input
             type="number"
             step="0.01"
@@ -78,7 +82,9 @@ const AddRoomExpenseModal = forwardRef(function AddRoomExpenseModal({ room, onCl
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-1.5">
-            <label className="block text-xs font-bold uppercase tracking-wider font-heading">Category *</label>
+            <label className="block text-xs font-bold uppercase tracking-wider font-heading">
+              {t("addRoomExpenseModal.categoryLabel") || "Category *"}
+            </label>
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
@@ -93,7 +99,9 @@ const AddRoomExpenseModal = forwardRef(function AddRoomExpenseModal({ room, onCl
           </div>
 
           <div className="space-y-1.5">
-            <label className="block text-xs font-bold uppercase tracking-wider font-heading">Paid By *</label>
+            <label className="block text-xs font-bold uppercase tracking-wider font-heading">
+              {t("addRoomExpenseModal.paidByLabel") || "Paid By *"}
+            </label>
             <select
               value={paidBy}
               onChange={(e) => setPaidBy(e.target.value)}
@@ -105,7 +113,7 @@ const AddRoomExpenseModal = forwardRef(function AddRoomExpenseModal({ room, onCl
                 const memberName = typeof member === "object" ? member.name || member.email : member;
                 return (
                   <option key={memberId} value={memberId}>
-                    {memberName} {memberId === user?._id && "(You)"}
+                    {memberName} {memberId === user?._id && (t("addRoomExpenseModal.youLabel") || "(You)")}
                   </option>
                 );
               })}
@@ -114,20 +122,22 @@ const AddRoomExpenseModal = forwardRef(function AddRoomExpenseModal({ room, onCl
         </div>
 
         <div className="space-y-1.5">
-          <label className="block text-xs font-bold uppercase tracking-wider font-heading">Description</label>
+          <label className="block text-xs font-bold uppercase tracking-wider font-heading">
+            {t("addRoomExpenseModal.descriptionLabel") || "Description"}
+          </label>
           <input
             type="text"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             className="w-full px-4 py-3 text-sm bg-white dark:bg-dark border border-tertiary/30 rounded-xl focus:outline-none focus:border-primary shadow-inner"
-            placeholder="Hotel bill..."
+            placeholder={t("addRoomExpenseModal.descriptionPlaceholder") || "Hotel bill..."}
           />
         </div>
 
         {/* Split Checkbox Section */}
         <div className="space-y-2 pt-2">
           <label className="block text-xs font-bold uppercase tracking-wider font-heading">
-            Split Expense Between Members *
+            {t("addRoomExpenseModal.splitBetweenLabel") || "Split Expense Between Members *"}
           </label>
           <div className="space-y-2 max-h-40 overflow-y-auto p-3 rounded-2xl bg-tertiary/5 border border-tertiary/20">
             {room?.members?.map((member) => {
@@ -144,7 +154,7 @@ const AddRoomExpenseModal = forwardRef(function AddRoomExpenseModal({ room, onCl
                     className="w-4 h-4 text-primary rounded border-tertiary/30 cursor-pointer"
                   />
                   <label htmlFor={`split-${memberId}`} className="text-xs font-medium cursor-pointer">
-                    {memberName} {memberId === room.creator && "(Creator)"}
+                    {memberName} {memberId === room.creator && (t("addRoomExpenseModal.creatorLabel") || "(Creator)")}
                   </label>
                 </div>
               );
@@ -153,7 +163,7 @@ const AddRoomExpenseModal = forwardRef(function AddRoomExpenseModal({ room, onCl
         </div>
 
         <button type="submit" disabled={loading || splitBetween.length === 0} className="w-full py-3 text-sm font-bold text-white bg-primary hover:bg-secondary rounded-xl transition-all shadow-lg cursor-pointer mt-2 disabled:opacity-50">
-          {loading ? "Adding Expense..." : "Submit & Split Expense"}
+          {loading ? (t("addRoomExpenseModal.adding") || "Adding Expense...") : (t("addRoomExpenseModal.submitBtn") || "Submit & Split Expense")}
         </button>
       </form>
     </DialogPanel>

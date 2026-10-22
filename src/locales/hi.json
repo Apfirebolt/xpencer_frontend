@@ -364,6 +364,27 @@
     "recordBtn": "खर्च दर्ज करें",
     "defaultNoDesc": "कोई विवरण प्रदान नहीं किया गया"
   },
+  "confirmModal": {
+    "defaultTitle": "क्या आप सुनिश्चित हैं?",
+    "defaultMessage": "इस क्रिया को पूर्ववत नहीं किया जा सकता। क्या आप वाकई आगे बढ़ना चाहते हैं?",
+    "defaultConfirm": "हटाएँ",
+    "defaultCancel": "रद्द करें",
+    "processing": "प्रक्रिया हो रही है..."
+  },
+  "addRoomExpenseModal": {
+    "modalTitle": "खर्च जोड़ें",
+    "amountLabel": "राशि ($) *",
+    "categoryLabel": "श्रेणी *",
+    "paidByLabel": "द्वारा भुगतान किया गया *",
+    "descriptionLabel": "विवरण",
+    "descriptionPlaceholder": "होटल बिल...",
+    "splitBetweenLabel": "सदस्यों के बीच खर्च विभाजित करें *",
+    "youLabel": "(आप)",
+    "creatorLabel": "(निर्माता)",
+    "adding": "खर्च जोड़ा जा रहा है...",
+    "submitBtn": "सबमिट करें और खर्च विभाजित करें",
+    "defaultDesc": "कक्ष खर्च"
+  },
   "common": {
     "months": [
       "जनवरी", "फ़रवरी", "मार्च", "अप्रैल", "मई", "जून", 

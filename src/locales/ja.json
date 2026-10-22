@@ -364,6 +364,27 @@
     "recordBtn": "支出を記録",
     "defaultNoDesc": "説明が提供されていません"
   },
+  "confirmModal": {
+    "defaultTitle": "本当によろしいですか？",
+    "defaultMessage": "この操作は元に戻せません。本当に続行しますか？",
+    "defaultConfirm": "削除",
+    "defaultCancel": "キャンセル",
+    "processing": "処理中..."
+  },
+  "addRoomExpenseModal": {
+    "modalTitle": "経費を追加",
+    "amountLabel": "金額 ($) *",
+    "categoryLabel": "カテゴリ *",
+    "paidByLabel": "支払者 *",
+    "descriptionLabel": "説明",
+    "descriptionPlaceholder": "ホテルの請求書...",
+    "splitBetweenLabel": "メンバー間で経費を分割 *",
+    "youLabel": "(あなた)",
+    "creatorLabel": "(作成者)",
+    "adding": "経費を追加中...",
+    "submitBtn": "送信して経費を分割",
+    "defaultDesc": "ルーム経費"
+  },
   "common": {
     "months": [
       "1月", "2月", "3月", "4月", "5月", "6月", 
