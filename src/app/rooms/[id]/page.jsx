@@ -10,6 +10,8 @@ import Cookie from "js-cookie";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useExpenseStore } from "@/store/useExpenseStore";
 import { currencies } from "@/utils/constants";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import {
   ArrowLeftIcon,
   CurrencyDollarIcon,
@@ -20,6 +22,7 @@ import {
   UserGroupIcon,
   UserIcon,
   CreditCardIcon,
+  ArrowDownTrayIcon,
 } from "@heroicons/react/24/outline";
 import { Dialog, Transition, TransitionChild } from "@headlessui/react";
 import AOS from "aos";
@@ -42,6 +45,7 @@ export default function RoomDetailClient() {
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [exportingPdf, setExportingPdf] = useState(false);
 
   // Add Expense Modal State
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
@@ -79,6 +83,148 @@ export default function RoomDetailClient() {
     code: "USD",
   };
   const currencySymbol = currencyObj.symbol;
+
+  const totalRoomExpenses = expenses.reduce(
+    (acc, curr) => acc + (curr.totalAmount || curr.amount || 0),
+    0
+  );
+
+  // --- Export Room PDF Handler ---
+  const exportRoomPDF = () => {
+    setExportingPdf(true);
+    try {
+      const doc = new jsPDF('p', 'mm', 'a4');
+      const pageWidth = doc.internal.pageSize.width;
+      const pageHeight = doc.internal.pageSize.height;
+
+      // Decorative Top Banner Header
+      doc.setFillColor(99, 102, 241); // Primary brand color
+      doc.rect(0, 0, pageWidth, 12, 'F');
+
+      // Title & Metadata Section
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(20);
+      doc.setTextColor(30, 41, 59); // Dark slate
+      doc.text(`Room Expense Report`, 14, 24);
+
+      doc.setFontSize(12);
+      doc.setTextColor(99, 102, 241);
+      doc.text(room?.title || "Expense Room", 14, 31);
+
+      // Metadata Box / Sub-header
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      doc.setTextColor(100, 116, 139); // Muted gray
+      doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 38);
+      doc.text(`Total Members: ${room?.members?.length || 1}`, 70, 38);
+      doc.text(`Total Room Outflow: ${currencySymbol}${totalRoomExpenses.toFixed(2)}`, 130, 38);
+
+      // Divider line
+      doc.setDrawColor(226, 232, 240);
+      doc.setLineWidth(0.5);
+      doc.line(14, 43, pageWidth - 14, 43);
+
+      // Build structured rows including participants & settlement status
+      const tableColumn = ["Date", "Description", "Category", "Payer / Type", `Total (${currencySymbol})`, "Participant Breakdown & Status"];
+      const tableRows = [];
+
+      expenses.forEach((item) => {
+        const dateStr = item.createdAt ? new Date(item.createdAt).toLocaleDateString() : "N/A";
+        const category = item.category || "General";
+        const description = item.description || "No description";
+
+        if (item.type === "single") {
+          tableRows.push([
+            dateStr,
+            description,
+            category,
+            `Single Expense (${item.mode || "Cash"})`,
+            `${currencySymbol}${Number(item.amount || 0).toFixed(2)}`,
+            "N/A (Personal Record)"
+          ]);
+        } else {
+          const creditor = item.paidBy;
+          const creditorName = creditor
+            ? `${creditor.firstName || ""} ${creditor.lastName || ""}`.trim() || creditor.email
+            : "Member";
+
+          // Format participants breakdown text cleanly with bullet-like spacing
+          const participantDetails = (item.shares || []).map((share) => {
+            const debtorName = share.user
+              ? `${share.user.firstName || ""} ${share.user.lastName || ""}`.trim() || share.user.email
+              : "Member";
+            const status = share.settlementStatus || "unpaid";
+            const statusText = status === "settled" ? "Settled" : status === "pending_confirmation" ? "Awaiting Conf." : "Pending";
+            return `• ${debtorName}: ${currencySymbol}${Number(share.amount || 0).toFixed(2)} [${statusText}]`;
+          }).join("\n");
+
+          tableRows.push([
+            dateStr,
+            description,
+            category,
+            `Paid by: ${creditorName}`,
+            `${currencySymbol}${Number(item.totalAmount || 0).toFixed(2)}`,
+            participantDetails
+          ]);
+        }
+      });
+
+      // Generate Table using autotable plugin with robust column styling & padding
+      autoTable(doc, {
+        head: [tableColumn],
+        body: tableRows,
+        startY: 48,
+        theme: "grid",
+        headStyles: { 
+          fillColor: [99, 102, 241],
+          textColor: [255, 255, 255],
+          fontStyle: 'bold',
+          fontSize: 9,
+          cellPadding: 4
+        },
+        bodyStyles: {
+          textColor: [51, 65, 85],
+          fontSize: 8.5,
+          cellPadding: 4,
+          valign: 'middle'
+        },
+        alternateRowStyles: {
+          fillColor: [248, 250, 252]
+        },
+        columnStyles: {
+          0: { cellWidth: 22 }, // Date
+          1: { cellWidth: 38 }, // Description
+          2: { cellWidth: 26 }, // Category
+          3: { cellWidth: 30 }, // Payer / Type
+          4: { cellWidth: 20, halign: 'right' }, // Total Amount
+          5: { cellWidth: 54 }  // Participant Breakdown
+        },
+        didDrawPage: (data) => {
+          // Footer with Page Numbers
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(8);
+          doc.setTextColor(148, 163, 184);
+          doc.text(
+            `Page ${doc.internal.getNumberOfPages()}`,
+            pageWidth - 20,
+            pageHeight - 10,
+            { align: 'right' }
+          );
+          doc.text(
+            `Expense Rooms Report — Confidential`,
+            14,
+            pageHeight - 10
+          );
+        }
+      });
+
+      doc.save(`room-report-${room?.title?.toLowerCase().replace(/\s+/g, '-') || 'expenses'}-${new Date().toISOString().slice(0, 10)}.pdf`);
+    } catch (err) {
+      console.error("Failed to export room PDF:", err);
+    } finally {
+      setExportingPdf(false);
+    }
+  };
 
   const handleAddExpenseSubmit = async (expenseData) => {
     if (!roomId) return;
@@ -127,6 +273,7 @@ export default function RoomDetailClient() {
       <Header />
 
       <main className="flex-grow max-w-7xl mx-auto w-full px-6 py-12 space-y-8">
+        
         {/* Back Button & Header Actions */}
         <div
           className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-tertiary/20 pb-6"
@@ -149,13 +296,24 @@ export default function RoomDetailClient() {
             </p>
           </div>
 
-          <button
-            onClick={() => setIsExpenseModalOpen(true)}
-            className="px-5 py-3 rounded-2xl font-bold bg-primary hover:bg-secondary text-white transition-all shadow-lg shadow-primary/25 flex items-center gap-2 cursor-pointer shrink-0"
-          >
-            <PlusCircleIcon className="h-5 w-5" />
-            <span>Add Expense</span>
-          </button>
+          <div className="flex items-center gap-3 shrink-0">
+            <button
+              onClick={exportRoomPDF}
+              disabled={exportingPdf || expenses.length === 0}
+              className="px-4 py-3 rounded-2xl font-bold bg-tertiary/20 hover:bg-tertiary/30 text-dark dark:text-light border border-tertiary/30 transition-all flex items-center gap-2 cursor-pointer text-xs disabled:opacity-50 shadow-xs"
+            >
+              <ArrowDownTrayIcon className="h-4 w-4 text-primary" />
+              <span>{exportingPdf ? "Generating PDF..." : "Export Room PDF"}</span>
+            </button>
+
+            <button
+              onClick={() => setIsExpenseModalOpen(true)}
+              className="px-5 py-3 rounded-2xl font-bold bg-primary hover:bg-secondary text-white transition-all shadow-lg shadow-primary/25 flex items-center gap-2 cursor-pointer text-xs"
+            >
+              <PlusCircleIcon className="h-5 w-5" />
+              <span>Add Expense</span>
+            </button>
+          </div>
         </div>
 
         {/* Room Stats Overview */}
@@ -177,12 +335,7 @@ export default function RoomDetailClient() {
             </p>
             <p className="text-3xl font-extrabold font-heading text-primary">
               {currencySymbol}
-              {expenses
-                .reduce(
-                  (acc, curr) => acc + (curr.totalAmount || curr.amount || 0),
-                  0,
-                )
-                .toFixed(2)}
+              {totalRoomExpenses.toFixed(2)}
             </p>
           </div>
           <div className="p-7 rounded-[2rem] bg-white/90 dark:bg-dark/90 backdrop-blur-md border border-tertiary/20 dark:border-tertiary/15 shadow-sm space-y-2">
