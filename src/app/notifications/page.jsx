@@ -1,4 +1,5 @@
 import NotificationClient from './NotificationClient';
+import AuthGuard from "@/components/AuthGuard";
 
 export const metadata = {
   title: 'Notifications | Xpencer',
@@ -6,5 +7,9 @@ export const metadata = {
 };
 
 export default function NotificationsPage() {
-  return <NotificationClient />;
+  return (
+    <AuthGuard>
+      <NotificationClient />
+    </AuthGuard>
+  );
 }

@@ -1,36 +1,31 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
 import { WalletIcon } from "@heroicons/react/24/outline";
 
 export default function AuthGuard({ children }) {
-  const { user, isAuthenticated, initializeAuth } = useAuthStore();
+  const { isAuthenticated, initializeAuth } = useAuthStore();
   const router = useRouter();
+  const [isChecking, setIsChecking] = useState(true);
 
-  // Initialize session from cookies on mount
   useEffect(() => {
-    if (!isAuthenticated || !user) {
-      initializeAuth();
+    // 1. Synchronously initialize auth from cookies (or logout/reset if corrupted/missing)
+    initializeAuth();
+
+    // 2. Read latest auth state directly from the store
+    const authed = useAuthStore.getState().isAuthenticated;
+
+    if (!authed) {
+      router.replace("/login");
+    } else {
+      setIsChecking(false);
     }
-  }, [isAuthenticated, user, initializeAuth]);
+  }, [initializeAuth, router]);
 
-  // Handle redirection if unauthenticated after initialization attempt
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      // Re-verify auth state from store/cookies after a brief micro-tick
-      const hasToken = document.cookie.includes("token=");
-      if (!user && !hasToken) {
-        router.replace("/login");
-      }
-    }, 100);
-
-    return () => clearTimeout(timer);
-  }, [user, router]);
-
-  // Show a professional loading skeleton while session is being verified
-  if (!user) {
+  // If still checking or not authenticated, render loading screen until redirected
+  if (isChecking || !isAuthenticated) {
     return (
       <div className="min-h-screen bg-light dark:bg-dark flex flex-col items-center justify-center space-y-4">
         <div className="w-16 h-16 rounded-3xl bg-primary/10 flex items-center justify-center border border-primary/20 animate-pulse text-primary shadow-lg">

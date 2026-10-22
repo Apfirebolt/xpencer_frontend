@@ -1,4 +1,5 @@
 import SettingClient from './SettingClient';
+import AuthGuard from "@/components/AuthGuard";
 
 export const metadata = {
   title: 'Account Settings | Xpencer',
@@ -6,5 +7,9 @@ export const metadata = {
 };
 
 export default function SettingsPage() {
-  return <SettingClient />;
+  return (
+    <AuthGuard>
+      <SettingClient />
+    </AuthGuard>
+  );
 }

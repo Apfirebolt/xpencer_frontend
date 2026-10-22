@@ -1,5 +1,6 @@
 // app/dashboard/page.jsx
 import DashboardClient from "./DashboardClient";
+import AuthGuard from "@/components/AuthGuard";
 
 export const metadata = {
   title: "Xpencer | Financial Overview Dashboard",
@@ -13,5 +14,9 @@ export const metadata = {
 };
 
 export default function DashboardPage() {
-  return <DashboardClient />;
+  return (
+    <AuthGuard>
+      <DashboardClient />
+    </AuthGuard>
+  );
 }

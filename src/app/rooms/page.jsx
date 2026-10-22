@@ -1,4 +1,5 @@
 import RoomClient from './RoomClient';
+import AuthGuard from "@/components/AuthGuard";
 
 export const metadata = {
   title: 'Expense Rooms | Xpencer',
@@ -6,5 +7,9 @@ export const metadata = {
 };
 
 export default function RoomsPage() {
-  return <RoomClient />;
+  return (
+    <AuthGuard>
+      <RoomClient />
+    </AuthGuard>
+  );
 }

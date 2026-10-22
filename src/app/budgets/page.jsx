@@ -1,5 +1,6 @@
 // app/budgets/page.jsx
 import BudgetClient from "./BudgetClient";
+import AuthGuard from "@/components/AuthGuard";
 
 export const metadata = {
   title: "Xpencer | Monthly Category Budgets & Spending Limits",
@@ -13,5 +14,9 @@ export const metadata = {
 };
 
 export default function BudgetsPage() {
-  return <BudgetClient />;
+  return (
+    <AuthGuard>
+      <BudgetClient />
+    </AuthGuard>
+  );
 }
