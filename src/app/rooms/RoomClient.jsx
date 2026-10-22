@@ -9,6 +9,7 @@ import AddRoomExpenseModal from "@/components/AddRoomExpenseModal";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useExpenseRoomStore } from "@/store/useRoomStore";
 import { useExpenseStore } from "@/store/useExpenseStore";
+import { useTranslation } from "@/context/LanguageContext";
 import { currencies } from "@/utils/constants";
 import { useRouter } from "next/navigation";
 import {
@@ -53,6 +54,8 @@ export default function RoomClient() {
     fetchPendingConfirmations,
     confirmSplitPayment,
   } = useExpenseStore();
+
+  const { t } = useTranslation();
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState(null);
@@ -100,7 +103,7 @@ export default function RoomClient() {
     setFeedbackMessage("");
     const result = await inviteUser(selectedRoom._id, email, message);
     if (result.success) {
-      setFeedbackMessage("Invitation sent successfully!");
+      setFeedbackMessage(t("roomClient.inviteSuccess") || "Invitation sent successfully!");
       setTimeout(() => {
         setFeedbackMessage("");
         setIsInviteModalOpen(false);
@@ -112,7 +115,7 @@ export default function RoomClient() {
     setFeedbackMessage("");
     const result = await addRoomExpense(selectedRoom._id, expenseData);
     if (result.success) {
-      setFeedbackMessage("Room expense added and split successfully!");
+      setFeedbackMessage(t("roomClient.expenseSuccess") || "Room expense added and split successfully!");
       setTimeout(() => {
         setFeedbackMessage("");
         setIsExpenseModalOpen(false);
@@ -145,14 +148,13 @@ export default function RoomClient() {
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-wider uppercase border border-primary/20 shadow-xs">
               <UserGroupIcon className="h-4 w-4" />
-              <span>Expense Rooms Suite</span>
+              <span>{t("roomClient.badge") || "Expense Rooms Suite"}</span>
             </div>
             <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight font-heading">
-              Collaborative Split Groups
+              {t("roomClient.title") || "Collaborative Split Groups"}
             </h1>
             <p className="text-xs text-dark/60 dark:text-light/60">
-              Manage shared living spaces, travel expenses, and peer
-              settlements.
+              {t("roomClient.subtitle") || "Manage shared living spaces, travel expenses, and peer settlements."}
             </p>
           </div>
 
@@ -161,7 +163,7 @@ export default function RoomClient() {
             className="px-6 py-3.5 rounded-2xl font-bold bg-primary hover:bg-secondary text-white transition-all shadow-lg shadow-primary/25 flex items-center gap-2 cursor-pointer shrink-0 text-xs"
           >
             <PlusCircleIcon className="h-5 w-5" />
-            <span>Create Expense Room</span>
+            <span>{t("roomClient.createRoomBtn") || "Create Expense Room"}</span>
           </button>
         </div>
 
@@ -181,10 +183,10 @@ export default function RoomClient() {
                     </div>
                     <div>
                       <h2 className="text-base font-bold font-heading">
-                        Pending Payment Confirmations
+                        {t("roomClient.pendingConfirmationsTitle") || "Pending Payment Confirmations"}
                       </h2>
                       <p className="text-[11px] text-dark/50 dark:text-light/50">
-                        Action required from creditors
+                        {t("roomClient.pendingConfirmationsSubtitle") || "Action required from creditors"}
                       </p>
                     </div>
                   </div>
@@ -201,11 +203,11 @@ export default function RoomClient() {
                 <DisclosurePanel className="space-y-3 pt-1 animate-fadeIn">
                   {fetchingPending ? (
                     <div className="text-center py-6 text-xs text-dark/50 dark:text-light/50">
-                      Loading settlement requests...
+                      {t("roomClient.loadingSettlements") || "Loading settlement requests..."}
                     </div>
                   ) : pendingConfirmations.length === 0 ? (
                     <div className="text-center py-6 text-xs text-dark/50 dark:text-light/50 bg-tertiary/5 rounded-2xl border border-tertiary/10">
-                      No pending settlement confirmations required.
+                      {t("roomClient.noPendingSettlements") || "No pending settlement confirmations required."}
                     </div>
                   ) : (
                     <div className="space-y-3 max-h-72 overflow-y-auto pr-1">
@@ -213,7 +215,7 @@ export default function RoomClient() {
                         const debtorName = exp.user
                           ? `${exp.user.firstName || ""} ${exp.user.lastName || ""}`.trim() ||
                             exp.user.email
-                          : "Member";
+                          : (t("roomClient.member") || "Member");
                         return (
                           <div
                             key={exp._id}
@@ -230,7 +232,7 @@ export default function RoomClient() {
                                 </span>
                               </div>
                               <p className="text-[11px] text-dark/60 dark:text-light/60">
-                                Paid by:{" "}
+                                {t("roomClient.paidBy") || "Paid by"}:{" "}
                                 <strong className="text-dark dark:text-light">
                                   {debtorName}
                                 </strong>
@@ -242,7 +244,7 @@ export default function RoomClient() {
                               className="px-3.5 py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 transition-all cursor-pointer flex items-center gap-1.5 text-xs font-bold border border-emerald-500/20 shrink-0 animate-pulse shadow-xs"
                             >
                               <CheckCircleIcon className="h-4 w-4" />
-                              <span>Confirm</span>
+                              <span>{t("roomClient.confirmBtn") || "Confirm"}</span>
                             </button>
                           </div>
                         );
@@ -265,10 +267,10 @@ export default function RoomClient() {
                     </div>
                     <div>
                       <h2 className="text-base font-bold font-heading">
-                        Pending Room Join Requests
+                        {t("roomClient.joinRequestsTitle") || "Pending Room Join Requests"}
                       </h2>
                       <p className="text-[11px] text-dark/50 dark:text-light/50">
-                        Approve or reject room access
+                        {t("roomClient.joinRequestsSubtitle") || "Approve or reject room access"}
                       </p>
                     </div>
                   </div>
@@ -285,11 +287,11 @@ export default function RoomClient() {
                 <DisclosurePanel className="space-y-3 pt-1 animate-fadeIn">
                   {fetchingRequests ? (
                     <div className="text-center py-6 text-xs text-dark/50 dark:text-light/50">
-                      Loading requests...
+                      {t("roomClient.loadingRequests") || "Loading requests..."}
                     </div>
                   ) : joinRequests.length === 0 ? (
                     <div className="text-center py-6 text-xs text-dark/50 dark:text-light/50 bg-tertiary/5 rounded-2xl border border-tertiary/10">
-                      No pending room join requests at the moment.
+                      {t("roomClient.noJoinRequests") || "No pending room join requests at the moment."}
                     </div>
                   ) : (
                     <div className="space-y-3 max-h-72 overflow-y-auto pr-1">
@@ -302,10 +304,10 @@ export default function RoomClient() {
                             <p className="text-xs font-bold">
                               {req.room?.title ||
                                 req.roomTitle ||
-                                "Expense Room"}
+                                (t("roomClient.expenseRoomDefault") || "Expense Room")}
                             </p>
                             <p className="text-[11px] text-dark/70 dark:text-light/70 truncate max-w-[160px]">
-                              From:{" "}
+                              {t("roomClient.fromLabel") || "From"}:{" "}
                               <span className="font-semibold">
                                 {req.user?.name ||
                                   req.user?.email ||
@@ -321,10 +323,10 @@ export default function RoomClient() {
                               }
                               disabled={loading}
                               className="p-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 transition-all cursor-pointer flex items-center gap-1 text-xs font-bold shadow-xs"
-                              title="Accept Request"
+                              title={t("roomClient.acceptTitle") || "Accept Request"}
                             >
                               <CheckCircleIcon className="h-4 w-4" />
-                              <span className="hidden sm:inline">Accept</span>
+                              <span className="hidden sm:inline">{t("roomClient.acceptBtn") || "Accept"}</span>
                             </button>
                             <button
                               onClick={() =>
@@ -332,10 +334,10 @@ export default function RoomClient() {
                               }
                               disabled={loading}
                               className="p-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 transition-all cursor-pointer flex items-center gap-1 text-xs font-bold shadow-xs"
-                              title="Reject Request"
+                              title={t("roomClient.rejectTitle") || "Reject Request"}
                             >
                               <XCircleIcon className="h-4 w-4" />
-                              <span className="hidden sm:inline">Reject</span>
+                              <span className="hidden sm:inline">{t("roomClient.rejectBtn") || "Reject"}</span>
                             </button>
                           </div>
                         </div>
@@ -352,33 +354,33 @@ export default function RoomClient() {
         <div className="space-y-6" data-aos="fade-up">
           <div className="flex items-center justify-between border-b border-tertiary/20 pb-3">
             <h2 className="text-xl font-bold font-heading">
-              Your Active Rooms
+              {t("roomClient.activeRoomsTitle") || "Your Active Rooms"}
             </h2>
             <span className="text-xs font-mono font-bold px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20">
-              {rooms.length} Rooms Active
+              {rooms.length} {t("roomClient.roomsActiveSuffix") || "Rooms Active"}
             </span>
           </div>
 
           {fetching ? (
             <div className="p-12 text-center text-sm text-dark/50 dark:text-light/50 bg-white/50 dark:bg-dark/50 rounded-[2rem] border border-tertiary/20">
-              Loading expense rooms...
+              {t("roomClient.loadingRooms") || "Loading expense rooms..."}
             </div>
           ) : rooms.length === 0 ? (
             <div className="p-16 text-center space-y-4 max-w-md mx-auto bg-white/50 dark:bg-dark/50 rounded-[2rem] border border-tertiary/20 shadow-sm">
               <UserGroupIcon className="h-12 w-12 text-primary mx-auto opacity-50" />
               <div className="space-y-1">
                 <p className="text-sm font-semibold text-dark dark:text-light">
-                  No expense rooms found
+                  {t("roomClient.noRoomsTitle") || "No expense rooms found"}
                 </p>
                 <p className="text-xs text-dark/60 dark:text-light/60">
-                  Create a room to start splitting expenses with friends.
+                  {t("roomClient.noRoomsDesc") || "Create a room to start splitting expenses with friends."}
                 </p>
               </div>
               <button
                 onClick={() => setIsCreateModalOpen(true)}
                 className="px-5 py-2.5 rounded-xl text-xs font-bold bg-primary hover:bg-secondary text-white transition-all shadow-md shadow-primary/20 cursor-pointer"
               >
-                Create First Room
+                {t("roomClient.createFirstRoomBtn") || "Create First Room"}
               </button>
             </div>
           ) : (
@@ -394,7 +396,7 @@ export default function RoomClient() {
                         {room.title}
                       </h3>
                       <span className="px-3 py-1 rounded-xl bg-primary/10 text-primary text-xs font-bold font-mono border border-primary/20 shadow-xs">
-                        {room.members?.length || 1} Members
+                        {room.members?.length || 1} {t("roomClient.membersSuffix") || "Members"}
                       </span>
                     </div>
                     <p className="text-xs text-dark/70 dark:text-light/70 line-clamp-2 leading-relaxed">
@@ -407,7 +409,7 @@ export default function RoomClient() {
                       onClick={() => router.push(`/rooms/${room._id}`)}
                       className="px-4 py-2.5 rounded-xl text-xs font-bold bg-tertiary/10 hover:bg-tertiary/20 text-dark dark:text-light transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
                     >
-                      <span>View Room</span>
+                      <span>{t("roomClient.viewRoomBtn") || "View Room"}</span>
                     </button>
 
                     <div className="flex items-center gap-2">
@@ -417,7 +419,7 @@ export default function RoomClient() {
                           setIsInviteModalOpen(true);
                         }}
                         className="p-2.5 rounded-xl bg-tertiary/20 hover:bg-tertiary/30 text-dark dark:text-light transition-all flex items-center justify-center cursor-pointer shadow-xs"
-                        title="Invite Member"
+                        title={t("roomClient.inviteMemberTitle") || "Invite Member"}
                       >
                         <UserPlusIcon className="h-4 w-4 text-primary" />
                       </button>
@@ -428,10 +430,10 @@ export default function RoomClient() {
                           setIsExpenseModalOpen(true);
                         }}
                         className="px-4.5 py-2.5 rounded-xl text-xs font-bold bg-primary hover:bg-secondary text-white transition-all flex items-center gap-1.5 cursor-pointer shadow-md shadow-primary/20"
-                        title="Add Room Expense"
+                        title={t("roomClient.addExpenseTitle") || "Add Room Expense"}
                       >
                         <CurrencyDollarIcon className="h-4 w-4" />
-                        <span>Add Expense</span>
+                        <span>{t("roomClient.addExpenseBtn") || "Add Expense"}</span>
                       </button>
                     </div>
                   </div>

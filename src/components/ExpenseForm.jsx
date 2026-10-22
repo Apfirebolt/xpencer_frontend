@@ -2,12 +2,14 @@
 
 import { useState } from 'react';
 import { useAuthStore } from '@/store/useAuthStore';
+import { useTranslation } from '@/context/LanguageContext';
 import { currencies } from '@/utils/constants';
 import { CurrencyDollarIcon, TagIcon, DocumentTextIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
 import { expenseCategories as EXPENSE_CATEGORIES, expenseMode as EXPENSE_MODES, expenseTypes as EXPENSE_TYPES } from '../utils/constants';
 
 export default function ExpenseForm({ onSubmitExpense, loading }) {
   const { user } = useAuthStore();
+  const { t } = useTranslation();
 
   // Extract user preferred currency symbol
   const userCurrencyCode = user?.settings?.currency || 'USD';
@@ -29,7 +31,7 @@ export default function ExpenseForm({ onSubmitExpense, loading }) {
       category,
       type: expenseType,
       mode,          // Cash, UPI, Card, etc.
-      description: description.trim() || 'No description provided'
+      description: description.trim() || (t("expenseForm.defaultNoDesc") || 'No description provided')
     });
 
     // Clear form on submit
@@ -46,7 +48,7 @@ export default function ExpenseForm({ onSubmitExpense, loading }) {
       {/* Amount Field */}
       <div className="space-y-2">
         <label htmlFor="amount" className="block text-xs font-bold text-dark dark:text-light uppercase tracking-wider font-heading">
-          Amount ({currencySymbol}) *
+          {t("expenseForm.amountLabel") || `Amount (${currencySymbol}) *`}
         </label>
         <div className="relative">
           <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-dark/40 dark:text-light/40 font-mono font-bold">
@@ -68,7 +70,7 @@ export default function ExpenseForm({ onSubmitExpense, loading }) {
       {/* Category Type Field */}
       <div className="space-y-2">
         <label htmlFor="category" className="block text-xs font-bold text-dark dark:text-light uppercase tracking-wider font-heading">
-          Category Type *
+          {t("expenseForm.categoryLabel") || "Category Type *"}
         </label>
         <div className="relative">
           <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-dark/40 dark:text-light/40">
@@ -93,7 +95,7 @@ export default function ExpenseForm({ onSubmitExpense, loading }) {
       {/* Expense Mode Field */}
       <div className="space-y-2">
         <label htmlFor="expenseMode" className="block text-xs font-bold text-dark dark:text-light uppercase tracking-wider font-heading">
-          Payment Mode *
+          {t("expenseForm.paymentModeLabel") || "Payment Mode *"}
         </label>
         <div className="relative">
           <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-dark/40 dark:text-light/40">
@@ -115,10 +117,10 @@ export default function ExpenseForm({ onSubmitExpense, loading }) {
         </div>
       </div>
 
-      {/* Description Field (Expanded Rows) */}
+      {/* Description Field */}
       <div className="space-y-2">
         <label htmlFor="description" className="block text-xs font-bold text-dark dark:text-light uppercase tracking-wider font-heading">
-          Description / Notes
+          {t("expenseForm.descriptionLabel") || "Description / Notes"}
         </label>
         <div className="relative">
           <span className="absolute inset-y-0 left-4 top-4 pointer-events-none text-dark/40 dark:text-light/40">
@@ -130,7 +132,7 @@ export default function ExpenseForm({ onSubmitExpense, loading }) {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             className="w-full pl-10 pr-4 py-3.5 text-sm bg-white dark:bg-dark border border-tertiary/30 rounded-2xl focus:outline-none focus:border-primary text-dark dark:text-light placeholder-dark/30 dark:placeholder-light/30 shadow-inner resize-none leading-relaxed"
-            placeholder="Add detailed notes about this transaction (e.g., Lunch meeting with client at cafeteria)..."
+            placeholder={t("expenseForm.descriptionPlaceholder") || "Add detailed notes about this transaction (e.g., Lunch meeting with client at cafeteria)..."}
           />
         </div>
       </div>
@@ -140,7 +142,7 @@ export default function ExpenseForm({ onSubmitExpense, loading }) {
         disabled={loading}
         className="w-full py-4 text-sm font-bold text-white bg-primary hover:bg-secondary rounded-2xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/25 disabled:opacity-50 cursor-pointer"
       >
-        <span>{loading ? "Saving Expense..." : "Record Expense"}</span>
+        <span>{loading ? (t("expenseForm.saving") || "Saving Expense...") : (t("expenseForm.recordBtn") || "Record Expense")}</span>
         <ArrowRightIcon className="h-4 w-4" />
       </button>
 

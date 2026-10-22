@@ -2,11 +2,13 @@
 
 import { useState, Fragment } from 'react';
 import { useExpenseRoomStore } from '@/store/useRoomStore';
+import { useTranslation } from '@/context/LanguageContext';
 import { UserGroupIcon, DocumentTextIcon, XMarkIcon, ArrowRightIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
 import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react';
 
 export default function ExpenseRoomModal({ isOpen, onClose }) {
   const { createRoom, loading, error } = useExpenseRoomStore();
+  const { t } = useTranslation();
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -25,7 +27,7 @@ export default function ExpenseRoomModal({ isOpen, onClose }) {
     });
 
     if (result.success) {
-      setSuccessMessage('Expense room successfully created!');
+      setSuccessMessage(t("roomModal.successAlert") || 'Expense room successfully created!');
       setTitle('');
       setDescription('');
       setAllowMembersToAddExpense(true);
@@ -72,7 +74,7 @@ export default function ExpenseRoomModal({ isOpen, onClose }) {
                       <UserGroupIcon className="h-5 w-5 text-primary" />
                     </div>
                     <DialogTitle as="h3" className="text-lg font-bold font-heading text-dark dark:text-light">
-                      Create Expense Room
+                      {t("roomModal.modalTitle") || "Create Expense Room"}
                     </DialogTitle>
                   </div>
                   <button
@@ -102,7 +104,7 @@ export default function ExpenseRoomModal({ isOpen, onClose }) {
                   {/* Title Field */}
                   <div className="space-y-1.5">
                     <label htmlFor="title" className="block text-xs font-bold text-dark dark:text-light uppercase tracking-wider font-heading">
-                      Room Title *
+                      {t("roomModal.roomTitleLabel") || "Room Title *"}
                     </label>
                     <div className="relative">
                       <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-dark/30 dark:text-light/30">
@@ -114,7 +116,7 @@ export default function ExpenseRoomModal({ isOpen, onClose }) {
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                         className="w-full pl-10 pr-4 py-3 text-sm bg-white dark:bg-dark border border-tertiary/30 rounded-xl focus:outline-none focus:border-primary text-dark dark:text-light placeholder-dark/30 dark:placeholder-light/30 shadow-inner"
-                        placeholder="Goa Trip 2026"
+                        placeholder={t("roomModal.roomTitlePlaceholder") || "Goa Trip 2026"}
                         required
                       />
                     </div>
@@ -123,7 +125,7 @@ export default function ExpenseRoomModal({ isOpen, onClose }) {
                   {/* Description Field */}
                   <div className="space-y-1.5">
                     <label htmlFor="description" className="block text-xs font-bold text-dark dark:text-light uppercase tracking-wider font-heading">
-                      Description *
+                      {t("roomModal.descriptionLabel") || "Description *"}
                     </label>
                     <div className="relative">
                       <span className="absolute inset-y-0 left-3.5 top-3.5 pointer-events-none text-dark/30 dark:text-light/30">
@@ -135,7 +137,7 @@ export default function ExpenseRoomModal({ isOpen, onClose }) {
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         className="w-full pl-10 pr-4 py-3 text-sm bg-white dark:bg-dark border border-tertiary/30 rounded-xl focus:outline-none focus:border-primary text-dark dark:text-light placeholder-dark/30 dark:placeholder-light/30 shadow-inner"
-                        placeholder="Shared accommodation and travel expenses..."
+                        placeholder={t("roomModal.descriptionPlaceholder") || "Shared accommodation and travel expenses..."}
                         required
                       />
                     </div>
@@ -151,7 +153,7 @@ export default function ExpenseRoomModal({ isOpen, onClose }) {
                       className="w-4 h-4 text-primary bg-white dark:bg-dark border-tertiary/30 rounded focus:ring-primary cursor-pointer"
                     />
                     <label htmlFor="allowMembers" className="text-xs font-medium text-dark dark:text-light cursor-pointer select-none">
-                      Allow other members to add expenses to this room
+                      {t("roomModal.allowMembersLabel") || "Allow other members to add expenses to this room"}
                     </label>
                   </div>
 
@@ -161,7 +163,7 @@ export default function ExpenseRoomModal({ isOpen, onClose }) {
                     disabled={loading}
                     className="w-full py-3 text-sm font-bold text-white bg-primary hover:bg-secondary rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/25 disabled:opacity-50 cursor-pointer mt-4"
                   >
-                    <span>{loading ? "Creating Room..." : "Create Expense Room"}</span>
+                    <span>{loading ? (t("roomModal.creating") || "Creating Room...") : (t("roomModal.createBtn") || "Create Expense Room")}</span>
                     <ArrowRightIcon className="h-4 w-4" />
                   </button>
 
