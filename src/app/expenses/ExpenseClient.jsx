@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, useMemo, Fragment } from "react";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ExpenseForm from "@/components/ExpenseForm";
@@ -33,6 +35,7 @@ import {
   UserIcon,
   ArrowPathIcon,
   TrashIcon,
+  DocumentArrowDownIcon
 } from "@heroicons/react/24/outline";
 import {
   Dialog,
@@ -75,7 +78,7 @@ export default function ExpenseClient() {
   const [isAnalyticsOpen, setIsAnalyticsOpen] = useState(false);
   const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
   const [isMockModalOpen, setIsMockModalOpen] = useState(false);
-  
+
   // Confirmation Delete Modal State
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [expenseToDeleteId, setExpenseToDeleteId] = useState(null);
@@ -98,8 +101,11 @@ export default function ExpenseClient() {
   }, [fetchExpenses, fetchRecurring, initializeAuth]);
 
   // Extract user preferred currency symbol
-  const userCurrencyCode = user?.settings?.currency || 'USD';
-  const currencyObj = currencies.find((c) => c.code === userCurrencyCode) || { symbol: '$', code: 'USD' };
+  const userCurrencyCode = user?.settings?.currency || "USD";
+  const currencyObj = currencies.find((c) => c.code === userCurrencyCode) || {
+    symbol: "$",
+    code: "USD",
+  };
   const currencySymbol = currencyObj.symbol;
 
   async function handleCreateExpense(newExpenseData) {
@@ -107,7 +113,10 @@ export default function ExpenseClient() {
     const result = await createExpense(newExpenseData);
 
     if (result.success) {
-      setSuccessMessage(t("expenses.successExpenseRecorded") || "Expense successfully recorded!");
+      setSuccessMessage(
+        t("expenses.successExpenseRecorded") ||
+          "Expense successfully recorded!",
+      );
       setTimeout(() => {
         setSuccessMessage("");
         setIsFormModalOpen(false);
@@ -170,6 +179,58 @@ export default function ExpenseClient() {
     }
   };
 
+  const exportExpensesPDF = () => {
+    const doc = new jsPDF();
+
+    // Get user currency symbol dynamically
+    const userCurrencyCode = user?.settings?.currency || "USD";
+    const currencySymbol =
+      currencies.find((c) => c.code === userCurrencyCode)?.symbol || "$";
+
+    // Title & Metadata
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.text("Expense Ledger Report", 14, 20);
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 28);
+    doc.text(
+      `Total Tracked: ${currencySymbol}${getTotalSpent().toFixed(2)}`,
+      14,
+      34,
+    );
+
+    // Table Data Mapping
+    const tableColumn = [
+      "Date",
+      "Category",
+      "Mode",
+      "Description",
+      `Amount (${currencySymbol})`,
+    ];
+    const tableRows = filteredExpenses.map((exp) => [
+      exp.createdAt ? new Date(exp.createdAt).toLocaleDateString() : "N/A",
+      exp.category || "General",
+      exp.mode || "Cash",
+      exp.description || "No description",
+      `${currencySymbol}${Number(exp.amount).toFixed(2)}`,
+    ]);
+
+    // Generate Table using autotable plugin
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
+      startY: 42,
+      theme: "grid",
+      headStyles: { fillColor: [99, 102, 241] }, // matches your primary color theme
+      styles: { fontSize: 9, cellPadding: 4 },
+    });
+
+    // Save the PDF
+    doc.save(`expense-report-${new Date().toISOString().slice(0, 10)}.pdf`);
+  };
+
   // Client-side fuzzy search and split/recurring filtering logic
   const filteredExpenses = useMemo(() => {
     let result = expenses;
@@ -225,14 +286,14 @@ export default function ExpenseClient() {
                   {t("expenses.totalTracked") || "Total Tracked"}
                 </p>
                 <p className="text-base font-extrabold font-heading text-primary">
-                  {currencySymbol}{getTotalSpent().toFixed(2)}
+                  {currencySymbol}
+                  {getTotalSpent().toFixed(2)}
                 </p>
               </div>
             </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-3 w-full md:w-auto justify-between md:justify-end">
-
             {/* Recurring Expenses Button */}
             <button
               onClick={() => setIsRecurringModalOpen(true)}
@@ -240,7 +301,9 @@ export default function ExpenseClient() {
               title="Add Recurring Expenses"
             >
               <ArrowPathIcon className="h-4 w-4" />
-              <span className="hidden sm:inline">Recurring ({recurringList.length})</span>
+              <span className="hidden sm:inline">
+                Recurring ({recurringList.length})
+              </span>
             </button>
 
             {/* Mock Data Generator Modal Button */}
@@ -284,10 +347,13 @@ export default function ExpenseClient() {
 
         {/* Delete Error Notification Banner */}
         {deleteError && (
-          <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs font-semibold flex items-center justify-between" data-aos="fade-down">
+          <div
+            className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs font-semibold flex items-center justify-between"
+            data-aos="fade-down"
+          >
             <span>{deleteError}</span>
-            <button 
-              onClick={() => setDeleteError("")} 
+            <button
+              onClick={() => setDeleteError("")}
               className="font-bold underline cursor-pointer hover:opacity-80"
             >
               Dismiss
@@ -297,13 +363,22 @@ export default function ExpenseClient() {
 
         {/* Expense Charts Section (Rendered if analytics toggled) */}
         {!fetching && isAnalyticsOpen && expenses.length > 0 && (
-          <div className="grid grid-cols-1 gap-8 p-7 rounded-[2rem] bg-white/90 dark:bg-dark/90 backdrop-blur-md border border-tertiary/20 dark:border-tertiary/15 shadow-sm" data-aos="fade-up">
+          <div
+            className="grid grid-cols-1 gap-8 p-7 rounded-[2rem] bg-white/90 dark:bg-dark/90 backdrop-blur-md border border-tertiary/20 dark:border-tertiary/15 shadow-sm"
+            data-aos="fade-up"
+          >
             <div className="flex items-center justify-between border-b border-tertiary/15 pb-4">
               <div>
-                <h3 className="text-lg font-bold font-heading">Spending Analytics & Trends</h3>
-                <p className="text-xs text-dark/50 dark:text-light/50">Comprehensive overview of monthly outflows</p>
+                <h3 className="text-lg font-bold font-heading">
+                  Spending Analytics & Trends
+                </h3>
+                <p className="text-xs text-dark/50 dark:text-light/50">
+                  Comprehensive overview of monthly outflows
+                </p>
               </div>
-              <span className="text-xs font-mono px-3 py-1 rounded-xl bg-primary/10 text-primary border border-primary/20">Monthly Overview</span>
+              <span className="text-xs font-mono px-3 py-1 rounded-xl bg-primary/10 text-primary border border-primary/20">
+                Monthly Overview
+              </span>
             </div>
             <ExpenseChart expenses={expenses} type="line" />
           </div>
@@ -322,10 +397,15 @@ export default function ExpenseClient() {
               <div>
                 <div className="flex items-center gap-2">
                   <h2 className="text-xl sm:text-2xl font-extrabold font-heading text-dark dark:text-light tracking-tight">
-                    {filterType === 'recurring' ? 'Recurring Expense Templates' : (t("dashboard.recentTransactions") || "Recent Transactions")}
+                    {filterType === "recurring"
+                      ? "Recurring Expense Templates"
+                      : t("dashboard.recentTransactions") ||
+                        "Recent Transactions"}
                   </h2>
                   <span className="text-xs font-mono font-bold px-3 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 shadow-xs">
-                    {filterType === 'recurring' ? recurringList.length : `${filteredExpenses.length} / ${expenses.length}`}
+                    {filterType === "recurring"
+                      ? recurringList.length
+                      : `${filteredExpenses.length} / ${expenses.length}`}
                   </span>
                 </div>
               </div>
@@ -333,7 +413,7 @@ export default function ExpenseClient() {
 
             {/* Search Bar & View Mode Toggles */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
-              {filterType !== 'recurring' && (
+              {filterType !== "recurring" && (
                 <div className="relative flex-grow sm:w-72">
                   <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-dark/40 dark:text-light/40">
                     <MagnifyingGlassIcon className="h-4 w-4" />
@@ -342,7 +422,10 @@ export default function ExpenseClient() {
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder={t("expenses.searchPlaceholder") || "Search category, description, room..."}
+                    placeholder={
+                      t("expenses.searchPlaceholder") ||
+                      "Search category, description, room..."
+                    }
                     className="w-full pl-10 pr-10 py-3 rounded-2xl bg-white/90 dark:bg-dark/90 backdrop-blur-md border border-tertiary/20 text-xs font-semibold focus:outline-none focus:border-primary shadow-inner"
                   />
                   {searchQuery && (
@@ -357,7 +440,7 @@ export default function ExpenseClient() {
               )}
 
               {/* View Switches (Hidden for Recurring tab) */}
-              {filterType !== 'recurring' && (
+              {filterType !== "recurring" && (
                 <div className="flex items-center p-1.5 rounded-2xl bg-white/90 dark:bg-dark/90 backdrop-blur-md border border-tertiary/20 shadow-sm self-end">
                   <button
                     onClick={() => setViewMode("card")}
@@ -369,7 +452,9 @@ export default function ExpenseClient() {
                     title="Card View"
                   >
                     <Squares2X2Icon className="h-4 w-4" />
-                    <span className="hidden sm:inline">{t("expenses.cardView") || "Card"}</span>
+                    <span className="hidden sm:inline">
+                      {t("expenses.cardView") || "Card"}
+                    </span>
                   </button>
                   <button
                     onClick={() => setViewMode("list")}
@@ -381,7 +466,9 @@ export default function ExpenseClient() {
                     title="List View"
                   >
                     <ListBulletIcon className="h-4 w-4" />
-                    <span className="hidden sm:inline">{t("expenses.listView") || "List"}</span>
+                    <span className="hidden sm:inline">
+                      {t("expenses.listView") || "List"}
+                    </span>
                   </button>
                   <button
                     onClick={() => setViewMode("grid")}
@@ -393,7 +480,9 @@ export default function ExpenseClient() {
                     title="Grid View"
                   >
                     <TableCellsIcon className="h-4 w-4" />
-                    <span className="hidden sm:inline">{t("expenses.gridView") || "Grid"}</span>
+                    <span className="hidden sm:inline">
+                      {t("expenses.gridView") || "Grid"}
+                    </span>
                   </button>
                 </div>
               )}
@@ -453,6 +542,14 @@ export default function ExpenseClient() {
               <ArrowPathIcon className="h-3.5 w-3.5" />
               <span>Recurring Commitments ({recurringList.length})</span>
             </button>
+
+            <button
+              onClick={() => exportExpensesPDF()}
+              className="px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 flex items-center gap-1.5 shadow-xs bg-tertiary/10 hover:bg-tertiary/20 text-dark/70 dark:text-light/70 border border-tertiary/20"
+            >
+              <DocumentArrowDownIcon className="h-3.5 w-3.5" />
+              <span>Export PDF</span>
+            </button>
           </div>
         </div>
 
@@ -471,7 +568,8 @@ export default function ExpenseClient() {
                     No recurring commitments active
                   </p>
                   <p className="text-xs text-dark/60 dark:text-light/60">
-                    Add subscriptions, rent, or utilities to auto-generate monthly bills.
+                    Add subscriptions, rent, or utilities to auto-generate
+                    monthly bills.
                   </p>
                 </div>
                 <button
@@ -491,22 +589,34 @@ export default function ExpenseClient() {
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="px-3 py-1 rounded-xl bg-primary/10 text-primary text-xs font-bold uppercase font-mono border border-primary/20 shadow-xs">
-                          {item.category || 'General'}
+                          {item.category || "General"}
                         </span>
                         <span className="text-[10px] font-bold uppercase px-2.5 py-1 rounded-lg bg-tertiary/20 text-dark/70 dark:text-light/70 font-mono">
                           {item.frequency}
                         </span>
                       </div>
-                      <h3 className="text-base font-bold text-dark dark:text-light">{item.description}</h3>
+                      <h3 className="text-base font-bold text-dark dark:text-light">
+                        {item.description}
+                      </h3>
                       <p className="text-xs text-dark/50 dark:text-light/50">
-                        Last generated: {item.lastGeneratedDate ? new Date(item.lastGeneratedDate).toLocaleDateString() : "Never"}
+                        Last generated:{" "}
+                        {item.lastGeneratedDate
+                          ? new Date(
+                              item.lastGeneratedDate,
+                            ).toLocaleDateString()
+                          : "Never"}
                       </p>
                     </div>
 
                     <div className="flex items-center justify-between pt-4 border-t border-tertiary/15">
                       <div>
-                        <p className="text-xl font-extrabold font-heading text-primary">{currencySymbol}{item.amount?.toFixed(2)}</p>
-                        <p className="text-[10px] text-dark/40 dark:text-light/40 font-bold uppercase">Commitment</p>
+                        <p className="text-xl font-extrabold font-heading text-primary">
+                          {currencySymbol}
+                          {item.amount?.toFixed(2)}
+                        </p>
+                        <p className="text-[10px] text-dark/40 dark:text-light/40 font-bold uppercase">
+                          Commitment
+                        </p>
                       </div>
 
                       <button
@@ -553,7 +663,10 @@ export default function ExpenseClient() {
                 Try clearing your search query or switching filter categories.
               </p>
               <button
-                onClick={() => { setSearchQuery(""); setFilterType("all"); }}
+                onClick={() => {
+                  setSearchQuery("");
+                  setFilterType("all");
+                }}
                 className="px-4 py-2 rounded-xl text-xs font-bold bg-primary/10 hover:bg-primary/20 text-primary transition-all border border-primary/20 cursor-pointer shadow-xs"
               >
                 Reset Filters
@@ -562,12 +675,22 @@ export default function ExpenseClient() {
           ) : (
             <>
               {viewMode === "card" && (
-                <ExpenseCardView expenses={filteredExpenses} onDelete={promptDeleteExpense} markSplitPaymentPaid={markSplitPaymentPaid} />
+                <ExpenseCardView
+                  expenses={filteredExpenses}
+                  onDelete={promptDeleteExpense}
+                  markSplitPaymentPaid={markSplitPaymentPaid}
+                />
               )}
               {viewMode === "list" && (
-                <ExpenseListView expenses={filteredExpenses} onDelete={promptDeleteExpense} markSplitPaymentPaid={markSplitPaymentPaid} />
+                <ExpenseListView
+                  expenses={filteredExpenses}
+                  onDelete={promptDeleteExpense}
+                  markSplitPaymentPaid={markSplitPaymentPaid}
+                />
               )}
-              {viewMode === "grid" && <ExpenseAgGrid expenses={filteredExpenses} />}
+              {viewMode === "grid" && (
+                <ExpenseAgGrid expenses={filteredExpenses} />
+              )}
             </>
           )}
         </div>
@@ -755,7 +878,8 @@ export default function ExpenseClient() {
                         as="h3"
                         className="text-lg font-bold font-heading text-dark dark:text-light"
                       >
-                        {t("dashboard.calendarModalTitle") || "Monthly Expense Calendar"}
+                        {t("dashboard.calendarModalTitle") ||
+                          "Monthly Expense Calendar"}
                       </DialogTitle>
                     </div>
                     <button
