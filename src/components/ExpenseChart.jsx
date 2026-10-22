@@ -19,8 +19,9 @@ import {
   RadarController
 } from 'chart.js';
 import { Line, Doughnut, Bar, PolarArea, Pie, Radar } from 'react-chartjs-2';
-import { EyeIcon, EyeSlashIcon, ChartBarIcon, ArrowsPointingOutIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { EyeIcon, EyeSlashIcon, ChartBarIcon, ArrowsPointingOutIcon, XMarkIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react';
+import jsPDF from 'jspdf';
 
 // Register all required Chart.js modules
 ChartJS.register(
@@ -53,9 +54,65 @@ export default function ExpenseChart({ expenses = [] }) {
 
   const [hiddenCharts, setHiddenCharts] = useState({});
   const [activeModalChart, setActiveModalChart] = useState(null);
+  const [exportingPdf, setExportingPdf] = useState(false);
 
   const toggleChart = (chartKey) => {
     setHiddenCharts(prev => ({ ...prev, [chartKey]: !prev[chartKey] }));
+  };
+
+  // --- Export All Charts to PDF Function ---
+  const exportChartsPDF = async () => {
+    setExportingPdf(true);
+    try {
+      const doc = new jsPDF('p', 'mm', 'a4');
+      const canvasElements = document.querySelectorAll('canvas');
+
+      if (!canvasElements || canvasElements.length === 0) {
+        alert("No visible charts found to export.");
+        setExportingPdf(false);
+        return;
+      }
+
+      // Title Page / Header Banner
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(20);
+      doc.setTextColor(99, 102, 241);
+      doc.text("Financial Analytics & Insights Report", 14, 20);
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+      doc.setTextColor(100, 100, 100);
+      doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 28);
+      doc.text(`Denomination: ${currencySymbol} (${userCurrencyCode})`, 14, 34);
+
+      let yOffset = 45;
+      let pageHeight = doc.internal.pageSize.height;
+
+      canvasElements.forEach((canvas, index) => {
+        // Skip hidden or modal-only canvases if any
+        if (!canvas || canvas.width === 0 || canvas.height === 0) return;
+
+        const imgData = canvas.toDataURL('image/png');
+        const imgWidth = 180; // Fit within A4 width with margins
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        // Check if we need a new page
+        if (yOffset + imgHeight > pageHeight - 20) {
+          doc.addPage();
+          yOffset = 20;
+        }
+
+        // Add chart image to PDF
+        doc.addImage(imgData, 'PNG', 15, yOffset, imgWidth, imgHeight);
+        yOffset += imgHeight + 15;
+      });
+
+      doc.save(`financial-analytics-report-${new Date().toISOString().slice(0, 10)}.pdf`);
+    } catch (err) {
+      console.error("Failed to export charts PDF:", err);
+    } finally {
+      setExportingPdf(false);
+    }
   };
 
   // --- Data Processing Helpers ---
@@ -127,7 +184,7 @@ export default function ExpenseChart({ expenses = [] }) {
     }
   };
 
-  // Distinct chart configurations ensuring no dataset references overlap
+  // Distinct chart configurations
   const chartsConfig = [
     {
       key: 'dailyTrend',
@@ -334,7 +391,7 @@ export default function ExpenseChart({ expenses = [] }) {
   return (
     <div className="w-full space-y-8 font-sans">
       
-      {/* Section Header */}
+      {/* Section Header with Export PDF Button */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/90 dark:bg-dark/90 backdrop-blur-md border border-tertiary/20 dark:border-tertiary/15 p-7 rounded-[2rem] shadow-sm">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20 shadow-xs">
@@ -347,6 +404,15 @@ export default function ExpenseChart({ expenses = [] }) {
             </p>
           </div>
         </div>
+
+        <button
+          onClick={exportChartsPDF}
+          disabled={exportingPdf || expenses.length === 0}
+          className="px-5 py-3 rounded-2xl font-bold bg-primary hover:bg-secondary text-white transition-all shadow-lg shadow-primary/25 flex items-center gap-2 cursor-pointer text-xs disabled:opacity-50 shrink-0"
+        >
+          <ArrowDownTrayIcon className="h-4 w-4" />
+          <span>{exportingPdf ? "Generating PDF..." : "Export Analytics PDF"}</span>
+        </button>
       </div>
 
       {/* 2-Column Grid on Large Screens, 1 on Small */}
