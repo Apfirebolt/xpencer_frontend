@@ -218,5 +218,79 @@
     "amount": "Amount",
     "markPaid": "Mark as Paid",
     "awaitingConfirmation": "Awaiting Confirmation"
+  },
+  "charts": {
+    "suiteTitle": "Comprehensive Financial Suite",
+    "suiteDesc": "Displaying 10 visual insights covering category, mode, and spending trends",
+    "denominated": "denominated",
+    "generatingPdf": "Generating PDF...",
+    "exportPdf": "Export Analytics PDF",
+    "noChartsAlert": "No visible charts found to export.",
+    "pdfGeneratedOn": "Generated on",
+    "pdfDenomination": "Denomination",
+    "showFullScreen": "Show Full Screen",
+    "showBtn": "Show",
+    "hideBtn": "Hide",
+    "hiddenMessage": "Chart hidden. Click 'Show' to view analytics.",
+    "dailyTrendTitle": "1. Daily Spending Trend",
+    "dailyTrendDesc": "Outflow progression across days of the month",
+    "dailySpendLabel": "Daily Spend",
+    "categoryDoughnutTitle": "2. Expense by Category (Doughnut)",
+    "categoryDoughnutDesc": "Proportion of spending across categories",
+    "modeBarTitle": "3. Expense by Payment Mode",
+    "modeBarDesc": "Spending distribution across Cash, UPI, Cards, etc.",
+    "spendLabel": "Spend",
+    "typePieTitle": "4. Expense Type Breakdown",
+    "typePieDesc": "Fixed vs. Variable vs. Discretionary expenses",
+    "categoryPolarTitle": "5. Category Polar Distribution",
+    "categoryPolarDesc": "Multi-dimensional category magnitude view",
+    "modeDoughnutTitle": "6. Payment Mode Share",
+    "modeDoughnutDesc": "Proportional usage of payment channels",
+    "categoryBarTitle": "7. Category Volume Comparison",
+    "categoryBarDesc": "Direct comparison of category spending limits",
+    "amountLabel": "Amount",
+    "transactionSizeTitle": "8. Transaction Size Distribution",
+    "transactionSizeDesc": "Frequency of small, medium, and large purchases",
+    "countLabel": "Count",
+    "typeBarTitle": "9. Expense Type Comparison",
+    "typeBarDesc": "Total capital allocation by financial nature",
+    "categoryRadarTitle": "10. Category Radar Profile",
+    "categoryRadarDesc": "Holistic behavioral profile across categories",
+    "categoryOutflowLabel": "Category Outflow"
+  },
+  "budgetModeForm": {
+    "paymentModeLabel": "Payment Mode *",
+    "monthlyLimitLabel": "Monthly Limit *",
+    "monthLabel": "Month *",
+    "yearLabel": "Year *",
+    "descriptionLabel": "Description / Note",
+    "descriptionPlaceholder": "Monthly spending cap for credit card billing cycle...",
+    "saving": "Saving Budget Mode...",
+    "saveBtn": "Save Budget Mode"
+  },
+  "budgetForm": {
+    "categoryLabel": "Category *",
+    "monthlyLimitLabel": "Monthly Limit *",
+    "monthLabel": "Month *",
+    "yearLabel": "Year *",
+    "descriptionLabel": "Description / Note",
+    "descriptionPlaceholder": "Monthly dining allowance and restaurant cap...",
+    "saving": "Saving Budget...",
+    "saveBtn": "Save Budget"
+  },
+  "budgetComparison": {
+    "sectionTitle": "Visual Monthly Comparison",
+    "totalBudgetedLabel": "Total Budgeted ($)",
+    "totalSpentLabel": "Total Spent ($)",
+    "macroChartTitle": "Budget vs. Actual Outflow",
+    "macroChartDesc": "Macro comparison of total targets and spending",
+    "categoryChartTitle": "Category Spend Breakdown",
+    "categoryChartDesc": "Side-by-side category expenditure comparison"
+  },
+  "common": {
+    "months": [
+      "January", "February", "March", "April", "May", "June", 
+      "July", "August", "September", "October", "November", "December"
+    ]
   }
 }

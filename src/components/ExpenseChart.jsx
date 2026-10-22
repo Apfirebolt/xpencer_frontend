@@ -2,6 +2,7 @@
 
 import { useState, Fragment } from 'react';
 import { useAuthStore } from '@/store/useAuthStore';
+import { useTranslation } from '@/context/LanguageContext';
 import { currencies } from '@/utils/constants';
 import { 
   Chart as ChartJS, 
@@ -46,6 +47,7 @@ const CHART_COLORS = [
 
 export default function ExpenseChart({ expenses = [] }) {
   const { user } = useAuthStore();
+  const { t } = useTranslation();
 
   // Extract user preferred currency symbol
   const userCurrencyCode = user?.settings?.currency || 'USD';
@@ -68,7 +70,7 @@ export default function ExpenseChart({ expenses = [] }) {
       const canvasElements = document.querySelectorAll('canvas');
 
       if (!canvasElements || canvasElements.length === 0) {
-        alert("No visible charts found to export.");
+        alert(t("charts.noChartsAlert") || "No visible charts found to export.");
         setExportingPdf(false);
         return;
       }
@@ -82,14 +84,13 @@ export default function ExpenseChart({ expenses = [] }) {
       doc.setFont("helvetica", "normal");
       doc.setFontSize(10);
       doc.setTextColor(100, 100, 100);
-      doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 28);
-      doc.text(`Denomination: ${currencySymbol} (${userCurrencyCode})`, 14, 34);
+      doc.text(`${t("charts.pdfGeneratedOn") || "Generated on"}: ${new Date().toLocaleDateString()}`, 14, 28);
+      doc.text(`${t("charts.pdfDenomination") || "Denomination"}: ${currencySymbol} (${userCurrencyCode})`, 14, 34);
 
       let yOffset = 45;
       let pageHeight = doc.internal.pageSize.height;
 
-      canvasElements.forEach((canvas, index) => {
-        // Skip hidden or modal-only canvases if any
+      canvasElements.forEach((canvas) => {
         if (!canvas || canvas.width === 0 || canvas.height === 0) return;
 
         const imgData = canvas.toDataURL('image/png');
@@ -102,7 +103,6 @@ export default function ExpenseChart({ expenses = [] }) {
           yOffset = 20;
         }
 
-        // Add chart image to PDF
         doc.addImage(imgData, 'PNG', 15, yOffset, imgWidth, imgHeight);
         yOffset += imgHeight + 15;
       });
@@ -184,19 +184,19 @@ export default function ExpenseChart({ expenses = [] }) {
     }
   };
 
-  // Distinct chart configurations
+  // Distinct chart configurations with translation keys
   const chartsConfig = [
     {
       key: 'dailyTrend',
-      title: '1. Daily Spending Trend',
-      description: 'Outflow progression across days of the month',
+      title: t("charts.dailyTrendTitle") || '1. Daily Spending Trend',
+      description: t("charts.dailyTrendDesc") || 'Outflow progression across days of the month',
       render: (isModal = false) => (
         <Line 
           key={`line-${isModal}`}
           data={{
             labels: Object.keys(dailySpending),
             datasets: [{
-              label: `Daily Spend (${currencySymbol})`,
+              label: `${t("charts.dailySpendLabel") || 'Daily Spend'} (${currencySymbol})`,
               data: Object.values(dailySpending),
               fill: true,
               backgroundColor: 'rgba(99, 102, 241, 0.1)',
@@ -211,8 +211,8 @@ export default function ExpenseChart({ expenses = [] }) {
     },
     {
       key: 'categoryDoughnut',
-      title: '2. Expense by Category (Doughnut)',
-      description: 'Proportion of spending across categories',
+      title: t("charts.categoryDoughnutTitle") || '2. Expense by Category (Doughnut)',
+      description: t("charts.categoryDoughnutDesc") || 'Proportion of spending across categories',
       render: (isModal = false) => (
         <Doughnut 
           key={`doughnut-cat-${isModal}`}
@@ -231,15 +231,15 @@ export default function ExpenseChart({ expenses = [] }) {
     },
     {
       key: 'modeBar',
-      title: '3. Expense by Payment Mode',
-      description: 'Spending distribution across Cash, UPI, Cards, etc.',
+      title: t("charts.modeBarTitle") || '3. Expense by Payment Mode',
+      description: t("charts.modeBarDesc") || 'Spending distribution across Cash, UPI, Cards, etc.',
       render: (isModal = false) => (
         <Bar 
           key={`bar-mode-${isModal}`}
           data={{
             labels: modes,
             datasets: [{
-              label: `Spend (${currencySymbol})`,
+              label: `${t("charts.spendLabel") || 'Spend'} (${currencySymbol})`,
               data: modeAmounts,
               backgroundColor: '#10b981',
               borderRadius: 8
@@ -251,8 +251,8 @@ export default function ExpenseChart({ expenses = [] }) {
     },
     {
       key: 'typePie',
-      title: '4. Expense Type Breakdown',
-      description: 'Fixed vs. Variable vs. Discretionary expenses',
+      title: t("charts.typePieTitle") || '4. Expense Type Breakdown',
+      description: t("charts.typePieDesc") || 'Fixed vs. Variable vs. Discretionary expenses',
       render: (isModal = false) => (
         <Pie 
           key={`pie-type-${isModal}`}
@@ -271,8 +271,8 @@ export default function ExpenseChart({ expenses = [] }) {
     },
     {
       key: 'categoryPolar',
-      title: '5. Category Polar Distribution',
-      description: 'Multi-dimensional category magnitude view',
+      title: t("charts.categoryPolarTitle") || '5. Category Polar Distribution',
+      description: t("charts.categoryPolarDesc") || 'Multi-dimensional category magnitude view',
       render: (isModal = false) => (
         <PolarArea 
           key={`polar-cat-${isModal}`}
@@ -289,8 +289,8 @@ export default function ExpenseChart({ expenses = [] }) {
     },
     {
       key: 'modeDoughnut',
-      title: '6. Payment Mode Share',
-      description: 'Proportional usage of payment channels',
+      title: t("charts.modeDoughnutTitle") || '6. Payment Mode Share',
+      description: t("charts.modeDoughnutDesc") || 'Proportional usage of payment channels',
       render: (isModal = false) => (
         <Doughnut 
           key={`doughnut-mode-${isModal}`}
@@ -307,15 +307,15 @@ export default function ExpenseChart({ expenses = [] }) {
     },
     {
       key: 'categoryBar',
-      title: '7. Category Volume Comparison',
-      description: 'Direct comparison of category spending limits',
+      title: t("charts.categoryBarTitle") || '7. Category Volume Comparison',
+      description: t("charts.categoryBarDesc") || 'Direct comparison of category spending limits',
       render: (isModal = false) => (
         <Bar 
           key={`bar-cat-${isModal}`}
           data={{
             labels: categories,
             datasets: [{
-              label: `Amount (${currencySymbol})`,
+              label: `${t("charts.amountLabel") || 'Amount'} (${currencySymbol})`,
               data: categoryAmounts,
               backgroundColor: '#8b5cf6',
               borderRadius: 8
@@ -327,15 +327,15 @@ export default function ExpenseChart({ expenses = [] }) {
     },
     {
       key: 'transactionSize',
-      title: '8. Transaction Size Distribution',
-      description: 'Frequency of small, medium, and large purchases',
+      title: t("charts.transactionSizeTitle") || '8. Transaction Size Distribution',
+      description: t("charts.transactionSizeDesc") || 'Frequency of small, medium, and large purchases',
       render: (isModal = false) => (
         <Bar 
           key={`bar-size-${isModal}`}
           data={{
             labels: Object.keys(amountDistribution),
             datasets: [{
-              label: 'Count',
+              label: t("charts.countLabel") || 'Count',
               data: Object.values(amountDistribution),
               backgroundColor: '#f43f5e',
               borderRadius: 8
@@ -347,15 +347,15 @@ export default function ExpenseChart({ expenses = [] }) {
     },
     {
       key: 'typeBar',
-      title: '9. Expense Type Comparison',
-      description: 'Total capital allocation by financial nature',
+      title: t("charts.typeBarTitle") || '9. Expense Type Comparison',
+      description: t("charts.typeBarDesc") || 'Total capital allocation by financial nature',
       render: (isModal = false) => (
         <Bar 
           key={`bar-type-${isModal}`}
           data={{
             labels: eTypes,
             datasets: [{
-              label: `Spend (${currencySymbol})`,
+              label: `${t("charts.spendLabel") || 'Spend'} (${currencySymbol})`,
               data: eTypeAmounts,
               backgroundColor: '#3b82f6',
               borderRadius: 8
@@ -367,15 +367,15 @@ export default function ExpenseChart({ expenses = [] }) {
     },
     {
       key: 'categoryRadar',
-      title: '10. Category Radar Profile',
-      description: 'Holistic behavioral profile across categories',
+      title: t("charts.categoryRadarTitle") || '10. Category Radar Profile',
+      description: t("charts.categoryRadarDesc") || 'Holistic behavioral profile across categories',
       render: (isModal = false) => (
         <Radar 
           key={`radar-cat-${isModal}`}
           data={{
             labels: categories,
             datasets: [{
-              label: 'Category Outflow',
+              label: t("charts.categoryOutflowLabel") || 'Category Outflow',
               data: categoryAmounts,
               backgroundColor: 'rgba(99, 102, 241, 0.2)',
               borderColor: '#6366f1',
@@ -398,9 +398,9 @@ export default function ExpenseChart({ expenses = [] }) {
             <ChartBarIcon className="h-6 w-6" />
           </div>
           <div>
-            <h3 className="text-xl font-bold font-heading">Comprehensive Financial Suite</h3>
+            <h3 className="text-xl font-bold font-heading">{t("charts.suiteTitle") || "Comprehensive Financial Suite"}</h3>
             <p className="text-xs text-dark/60 dark:text-light/60">
-              Displaying 10 visual insights covering category, mode, and spending trends ({currencySymbol} denominated)
+              {t("charts.suiteDesc") || "Displaying 10 visual insights covering category, mode, and spending trends"} ({currencySymbol} {t("charts.denominated") || "denominated"})
             </p>
           </div>
         </div>
@@ -411,7 +411,7 @@ export default function ExpenseChart({ expenses = [] }) {
           className="px-5 py-3 rounded-2xl font-bold bg-primary hover:bg-secondary text-white transition-all shadow-lg shadow-primary/25 flex items-center gap-2 cursor-pointer text-xs disabled:opacity-50 shrink-0"
         >
           <ArrowDownTrayIcon className="h-4 w-4" />
-          <span>{exportingPdf ? "Generating PDF..." : "Export Analytics PDF"}</span>
+          <span>{exportingPdf ? (t("charts.generatingPdf") || "Generating PDF...") : (t("charts.exportPdf") || "Export Analytics PDF")}</span>
         </button>
       </div>
 
@@ -440,7 +440,7 @@ export default function ExpenseChart({ expenses = [] }) {
                   <button
                     onClick={() => setActiveModalChart(chart)}
                     className="p-2 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary transition-all cursor-pointer shadow-xs"
-                    title="Show Full Screen"
+                    title={t("charts.showFullScreen") || "Show Full Screen"}
                   >
                     <ArrowsPointingOutIcon className="h-4 w-4" />
                   </button>
@@ -452,12 +452,12 @@ export default function ExpenseChart({ expenses = [] }) {
                     {isHidden ? (
                       <>
                         <EyeIcon className="h-4 w-4 text-primary" />
-                        <span>Show</span>
+                        <span>{t("charts.showBtn") || "Show"}</span>
                       </>
                     ) : (
                       <>
                         <EyeSlashIcon className="h-4 w-4 text-dark/50 dark:text-light/50" />
-                        <span>Hide</span>
+                        <span>{t("charts.hideBtn") || "Hide"}</span>
                       </>
                     )}
                   </button>
@@ -472,7 +472,7 @@ export default function ExpenseChart({ expenses = [] }) {
 
               {isHidden && (
                 <div className="h-28 w-full flex items-center justify-center text-xs text-dark/40 dark:text-light/40 italic bg-tertiary/10 rounded-2xl border border-tertiary/15">
-                  Chart hidden. Click &apos;Show&apos; to view analytics.
+                  {t("charts.hiddenMessage") || "Chart hidden. Click 'Show' to view analytics."}
                 </div>
               )}
             </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useAuthStore } from '@/store/useAuthStore';
+import { useTranslation } from '@/context/LanguageContext';
 import { currencies } from '@/utils/constants';
 import { 
   CalendarIcon, 
@@ -29,6 +30,7 @@ const getPaymentModeIcon = (mode) => {
 
 export default function ExpenseListView({ expenses, onDelete }) {
   const { user } = useAuthStore();
+  const { t } = useTranslation();
 
   // Extract user preferred currency symbol
   const userCurrencyCode = user?.settings?.currency || 'USD';
@@ -46,6 +48,7 @@ export default function ExpenseListView({ expenses, onDelete }) {
           ? `${exp.paidBy.firstName || ''} ${exp.paidBy.lastName || ''}`.trim() || exp.paidBy.email 
           : null;
 
+        const settlementStatus = exp.settlementStatus || "unpaid";
         const paymentMode = exp.mode || "Cash";
 
         return (
@@ -78,18 +81,18 @@ export default function ExpenseListView({ expenses, onDelete }) {
                   {isSplit && (
                     <span className="px-2.5 py-1 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[10px] font-bold font-mono border border-amber-500/20 flex items-center gap-1.5 shadow-xs">
                       <UserGroupIcon className="h-3 w-3" />
-                      Split Share
+                      {t("expenseCard.splitShare") || "Split Share"}
                     </span>
                   )}
 
                   <span className="text-xs text-dark/40 dark:text-light/40 flex items-center gap-1 font-mono">
                     <CalendarIcon className="h-3.5 w-3.5" />
-                    {exp.createdAt ? new Date(exp.createdAt).toLocaleDateString() : 'Just now'}
+                    {exp.createdAt ? new Date(exp.createdAt).toLocaleDateString() : (t("expenseCard.justNow") || 'Just now')}
                   </span>
                 </div>
 
                 <p className="text-sm font-semibold text-dark dark:text-light leading-snug">
-                  {exp.description || 'No description provided'}
+                  {exp.description || (t("expenseCard.noDescription") || 'No description provided')}
                 </p>
 
                 {/* Split & Room Metadata Details */}
@@ -97,22 +100,26 @@ export default function ExpenseListView({ expenses, onDelete }) {
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-1 pt-1.5 text-xs text-dark/60 dark:text-light/60">
                     {roomTitle && (
                       <span className="inline-flex items-center gap-1.5 text-primary font-medium">
-                        <UserGroupIcon className="h-3.5 w-3.5" /> Room: {roomTitle}
+                        <UserGroupIcon className="h-3.5 w-3.5" /> {t("expenseCard.room") || "Room"}: {roomTitle}
                       </span>
                     )}
                     {payerName && (
                       <span className="inline-flex items-center gap-1.5">
-                        <UserIcon className="h-3.5 w-3.5 text-dark/40" /> Paid by: <strong className="text-dark dark:text-light">{payerName}</strong>
+                        <UserIcon className="h-3.5 w-3.5 text-dark/40" /> {t("expenseCard.paidBy") || "Paid by"}: <strong className="text-dark dark:text-light">{payerName}</strong>
                       </span>
                     )}
                     <span>
-                      {exp.isPaid ? (
+                      {settlementStatus === "settled" ? (
                         <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-semibold bg-emerald-500/10 px-2.5 py-0.5 rounded-lg border border-emerald-500/20">
-                          <CheckCircleIcon className="h-3.5 w-3.5" /> Settled
+                          <CheckCircleIcon className="h-3.5 w-3.5" /> {t("expenseCard.settled") || "Settled / Paid"}
+                        </span>
+                      ) : settlementStatus === "pending_confirmation" ? (
+                        <span className="inline-flex items-center gap-1 text-amber-600 dark:text-amber-400 font-semibold italic bg-emerald-500/10 px-2.5 py-0.5 rounded-lg border border-amber-500/20">
+                          <ClockIcon className="h-3.5 w-3.5 animate-spin" /> {t("expenseCard.awaitingConfirmation") || "Awaiting Confirmation"}
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1 text-amber-600 dark:text-amber-400 font-semibold bg-amber-500/10 px-2.5 py-0.5 rounded-lg border border-amber-500/20">
-                          <ClockIcon className="h-3.5 w-3.5" /> Pending
+                          <ClockIcon className="h-3.5 w-3.5" /> {t("expenseCard.pending") || "Pending Share"}
                         </span>
                       )}
                     </span>
@@ -124,7 +131,7 @@ export default function ExpenseListView({ expenses, onDelete }) {
             <div className="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto border-t sm:border-t-0 pt-3 sm:pt-0 border-tertiary/20">
               <div className="text-right">
                 <span className="sm:hidden text-xs font-bold text-dark/50 dark:text-light/50 mr-2">
-                  {isSplit ? 'Your Share:' : 'Amount:'}
+                  {isSplit ? (t("expenseCard.yourShare") || "Your Share") : (t("expenseCard.amount") || "Amount")}
                 </span>
                 <span className="text-xl font-extrabold font-heading text-primary">
                   {currencySymbol}{Number(exp.amount).toFixed(2)}
@@ -136,7 +143,7 @@ export default function ExpenseListView({ expenses, onDelete }) {
                 <button
                   onClick={() => onDelete(exp._id)}
                   className="p-2 rounded-xl text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer shadow-xs"
-                  title="Delete Expense"
+                  title={t("expenseCard.deleteExpense") || "Delete Expense"}
                 >
                   <TrashIcon className="h-4 w-4" />
                 </button>

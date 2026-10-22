@@ -2,21 +2,25 @@
 
 import { useState } from 'react';
 import { useAuthStore } from '@/store/useAuthStore';
+import { useTranslation } from '@/context/LanguageContext';
 import { currencies, expenseMode } from '@/utils/constants';
 import { CreditCardIcon, CurrencyDollarIcon, CalendarIcon, DocumentTextIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
 
-const MONTH_NAMES = [
+const DEFAULT_MONTH_NAMES = [
   "January", "February", "March", "April", "May", "June", 
   "July", "August", "September", "October", "November", "December"
 ];
 
 export default function BudgetModeForm({ onSubmitBudgetMode, loading }) {
   const { user } = useAuthStore();
+  const { t } = useTranslation();
 
   // Extract user preferred currency symbol
   const userCurrencyCode = user?.settings?.currency || 'USD';
   const currencyObj = currencies.find((c) => c.code === userCurrencyCode) || { symbol: '$', code: 'USD' };
   const currencySymbol = currencyObj.symbol;
+
+  const monthNames = t("common.months") || DEFAULT_MONTH_NAMES;
 
   const currentDate = new Date();
   const [paymentMode, setPaymentMode] = useState(expenseMode[0]);
@@ -47,7 +51,7 @@ export default function BudgetModeForm({ onSubmitBudgetMode, loading }) {
       {/* Payment Mode Selection */}
       <div className="space-y-2">
         <label htmlFor="paymentMode" className="block text-xs font-bold text-dark dark:text-light uppercase tracking-wider font-heading">
-          Payment Mode *
+          {t("budgetModeForm.paymentModeLabel") || "Payment Mode *"}
         </label>
         <div className="relative">
           <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-dark/40 dark:text-light/40">
@@ -72,7 +76,7 @@ export default function BudgetModeForm({ onSubmitBudgetMode, loading }) {
       {/* Monthly Limit Amount */}
       <div className="space-y-2">
         <label htmlFor="limit" className="block text-xs font-bold text-dark dark:text-light uppercase tracking-wider font-heading">
-          Monthly Limit ({currencySymbol}) *
+          {t("budgetModeForm.monthlyLimitLabel") || `Monthly Limit (${currencySymbol}) *`}
         </label>
         <div className="relative">
           <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-dark/40 dark:text-light/40 font-mono font-bold">
@@ -95,7 +99,7 @@ export default function BudgetModeForm({ onSubmitBudgetMode, loading }) {
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <label htmlFor="month" className="block text-xs font-bold text-dark dark:text-light uppercase tracking-wider font-heading">
-            Month *
+            {t("budgetModeForm.monthLabel") || "Month *"}
           </label>
           <select
             id="month"
@@ -104,7 +108,7 @@ export default function BudgetModeForm({ onSubmitBudgetMode, loading }) {
             className="w-full px-4 py-3.5 text-sm bg-white dark:bg-dark border border-tertiary/30 rounded-2xl focus:outline-none focus:border-primary text-dark dark:text-light shadow-inner cursor-pointer"
             required
           >
-            {MONTH_NAMES.map((m, idx) => (
+            {monthNames.map((m, idx) => (
               <option key={m} value={idx + 1}>
                 {m}
               </option>
@@ -114,7 +118,7 @@ export default function BudgetModeForm({ onSubmitBudgetMode, loading }) {
 
         <div className="space-y-2">
           <label htmlFor="year" className="block text-xs font-bold text-dark dark:text-light uppercase tracking-wider font-heading">
-            Year *
+            {t("budgetModeForm.yearLabel") || "Year *"}
           </label>
           <input
             id="year"
@@ -130,7 +134,7 @@ export default function BudgetModeForm({ onSubmitBudgetMode, loading }) {
       {/* Description */}
       <div className="space-y-2">
         <label htmlFor="description" className="block text-xs font-bold text-dark dark:text-light uppercase tracking-wider font-heading">
-          Description / Note
+          {t("budgetModeForm.descriptionLabel") || "Description / Note"}
         </label>
         <div className="relative">
           <span className="absolute inset-y-0 left-4 top-4 pointer-events-none text-dark/40 dark:text-light/40">
@@ -142,7 +146,7 @@ export default function BudgetModeForm({ onSubmitBudgetMode, loading }) {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             className="w-full pl-10 pr-4 py-3.5 text-sm bg-white dark:bg-dark border border-tertiary/30 rounded-2xl focus:outline-none focus:border-primary text-dark dark:text-light placeholder-dark/30 dark:placeholder-light/30 shadow-inner resize-none leading-relaxed"
-            placeholder="Monthly spending cap for credit card billing cycle..."
+            placeholder={t("budgetModeForm.descriptionPlaceholder") || "Monthly spending cap for credit card billing cycle..."}
           />
         </div>
       </div>
@@ -152,7 +156,7 @@ export default function BudgetModeForm({ onSubmitBudgetMode, loading }) {
         disabled={loading}
         className="w-full py-4 text-sm font-bold text-white bg-primary hover:bg-secondary rounded-2xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/25 disabled:opacity-50 cursor-pointer"
       >
-        <span>{loading ? "Saving Budget Mode..." : "Save Budget Mode"}</span>
+        <span>{loading ? (t("budgetModeForm.saving") || "Saving Budget Mode...") : (t("budgetModeForm.saveBtn") || "Save Budget Mode")}</span>
         <ArrowRightIcon className="h-4 w-4" />
       </button>
 

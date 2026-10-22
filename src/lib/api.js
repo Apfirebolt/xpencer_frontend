@@ -1,8 +1,10 @@
 // lib/api.js
 import axios from 'axios';
 
+// https://expencer.softgenie.org/api'
+
 // Use environment variable for production, fallback to localhost for development
-const baseURL = process.env.NEXT_PUBLIC_API_URL || 'https://expencer.softgenie.org/api';
+const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 const httpClient = axios.create({
   baseURL,

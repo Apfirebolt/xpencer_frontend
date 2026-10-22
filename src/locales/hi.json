@@ -218,5 +218,79 @@
     "amount": "राशि",
     "markPaid": "भुगतान के रूप में चिह्नित करें",
     "awaitingConfirmation": "पुष्टि की प्रतीक्षा है"
+  },
+  "charts": {
+    "suiteTitle": "व्यापक वित्तीय सूट",
+    "suiteDesc": "श्रेणी, मोड और खर्च के रुझानों को कवर करने वाले 10 दृश्य अंतर्दृष्टि प्रदर्शित कर रहा है",
+    "denominated": "मूल्यवर्ग",
+    "generatingPdf": "पीडीएफ जनरेट हो रहा है...",
+    "exportPdf": "एनालिटिक्स पीडीएफ निर्यात करें",
+    "noChartsAlert": "निर्यात के लिए कोई दृश्यमान चार्ट नहीं मिला।",
+    "pdfGeneratedOn": "उत्पन्न तिथि",
+    "pdfDenomination": "मुद्रा",
+    "showFullScreen": "फुल स्क्रीन दिखाएं",
+    "showBtn": "दिखाएं",
+    "hideBtn": "छिपाएं",
+    "hiddenMessage": "चार्ट छुपा हुआ है। एनालिटिक्स देखने के लिए 'दिखाएं' पर क्लिक करें।",
+    "dailyTrendTitle": "1. दैनिक खर्च का रुझान",
+    "dailyTrendDesc": "महीने के दिनों में खर्च की प्रगति",
+    "dailySpendLabel": "दैनिक खर्च",
+    "categoryDoughnutTitle": "2. श्रेणी के अनुसार खर्च (डोनट)",
+    "categoryDoughnutDesc": "श्रेणियों में खर्च का अनुपात",
+    "modeBarTitle": "3. भुगतान मोड के अनुसार खर्च",
+    "modeBarDesc": "नकद, यूपीआई, कार्ड आदि में खर्च का वितरण",
+    "spendLabel": "खर्च",
+    "typePieTitle": "4. खर्च के प्रकार का विवरण",
+    "typePieDesc": "निश्चित बनाम परिवर्तनीय बनाम विवेकाधीन खर्च",
+    "categoryPolarTitle": "5. श्रेणी ध्रुवीय वितरण",
+    "categoryPolarDesc": "बहु-आयामी श्रेणी परिमाण दृश्य",
+    "modeDoughnutTitle": "6. भुगतान मोड शेयर",
+    "modeDoughnutDesc": "भुगतान चैनलों का आनुपातिक उपयोग",
+    "categoryBarTitle": "7. श्रेणी वॉल्यूम तुलना",
+    "categoryBarDesc": "श्रेणी खर्च सीमा की प्रत्यक्ष तुलना",
+    "amountLabel": "राशि",
+    "transactionSizeTitle": "8. लेनदेन आकार वितरण",
+    "transactionSizeDesc": "छोटे, मध्यम और बड़े खरीद की आवृत्ति",
+    "countLabel": "गिनती",
+    "typeBarTitle": "9. खर्च के प्रकार की तुलना",
+    "typeBarDesc": "वित्तीय प्रकृति द्वारा कुल पूंजी आवंटन",
+    "categoryRadarTitle": "10. श्रेणी रडार प्रोफाइल",
+    "categoryRadarDesc": "श्रेणियों में समग्र व्यवहार प्रोफाइल",
+    "categoryOutflowLabel": "श्रेणी बहिर्प्रवाह"
+  },
+  "budgetComparison": {
+    "sectionTitle": "दृश्य मासिक तुलना",
+    "totalBudgetedLabel": "कुल बजट ($)",
+    "totalSpentLabel": "कुल खर्च ($)",
+    "macroChartTitle": "बजट बनाम वास्तविक बहिर्प्रवाह",
+    "macroChartDesc": "कुल लक्ष्यों और खर्च की मैक्रो तुलना",
+    "categoryChartTitle": "श्रेणी के अनुसार खर्च",
+    "categoryChartDesc": "श्रेणी के अनुसार खर्च की साइड-बाय-साइड तुलना"
+  },
+  "budgetForm": {
+    "categoryLabel": "श्रेणी *",
+    "monthlyLimitLabel": "मासिक सीमा *",
+    "monthLabel": "महीना *",
+    "yearLabel": "साल *",
+    "descriptionLabel": "विवरण / नोट",
+    "descriptionPlaceholder": "मासिक भोजन भत्ता और रेस्तरां सीमा...",
+    "saving": "बजट सहेजा जा रहा है...",
+    "saveBtn": "बजट सहेजें"
+  },
+  "budgetModeForm": {
+    "paymentModeLabel": "भुगतान मोड *",
+    "monthlyLimitLabel": "मासिक सीमा *",
+    "monthLabel": "महीना *",
+    "yearLabel": "साल *",
+    "descriptionLabel": "विवरण / नोट",
+    "descriptionPlaceholder": "क्रेडिट कार्ड बिलिंग चक्र के लिए मासिक खर्च सीमा...",
+    "saving": "बजट मोड सहेजा जा रहा है...",
+    "saveBtn": "बजट मोड सहेजें"
+  },
+  "common": {
+    "months": [
+      "जनवरी", "फ़रवरी", "मार्च", "अप्रैल", "मई", "जून", 
+      "जुलाई", "अगस्त", "सितंबर", "अक्टूबर", "नवंबर", "दिसंबर"
+    ]
   }
 }

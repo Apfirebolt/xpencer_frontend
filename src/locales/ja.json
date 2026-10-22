@@ -218,5 +218,79 @@
     "amount": "金額",
     "markPaid": "支払い済みとしてマーク",
     "awaitingConfirmation": "確認待ち"
+  },
+  "charts": {
+    "suiteTitle": "包括的ファイナンシャルスイート",
+    "suiteDesc": "カテゴリ、支払い方法、支出トレンドに関する10個の視覚的インサイトを表示",
+    "denominated": "換算",
+    "generatingPdf": "PDFを生成中...",
+    "exportPdf": "アナリティクスPDFをエクスポート",
+    "noChartsAlert": "エクスポート可能な表示中のグラフが見つかりません。",
+    "pdfGeneratedOn": "生成日",
+    "pdfDenomination": "通貨単位",
+    "showFullScreen": "全画面表示",
+    "showBtn": "表示",
+    "hideBtn": "非表示",
+    "hiddenMessage": "グラフは非表示です。「表示」をクリックして分析を確認してください。",
+    "dailyTrendTitle": "1. 日別支出トレンド",
+    "dailyTrendDesc": "月の日数にわたるキャッシュアウトの推移",
+    "dailySpendLabel": "日別支出",
+    "categoryDoughnutTitle": "2. カテゴリ別支出（ドーナツ）",
+    "categoryDoughnutDesc": "カテゴリごとの支出の割合",
+    "modeBarTitle": "3. 支払い方法別支出",
+    "modeBarDesc": "現金、UPI、カード等における支出の分布",
+    "spendLabel": "支出",
+    "typePieTitle": "4. 支出タイプの内訳",
+    "typePieDesc": "固定費 vs 変動費 vs 裁量支出",
+    "categoryPolarTitle": "5. カテゴリ極座標分布",
+    "categoryPolarDesc": "多次元的なカテゴリ規模のビュー",
+    "modeDoughnutTitle": "6. 支払い方法のシェア",
+    "modeDoughnutDesc": "支払いチャネルの割合ごとの使用状況",
+    "categoryBarTitle": "7. カテゴリボリューム比較",
+    "categoryBarDesc": "カテゴリ予算制限の直接比較",
+    "amountLabel": "金額",
+    "transactionSizeTitle": "8. 取引額の分布",
+    "transactionSizeDesc": "少額、中額、高額購入の頻度",
+    "countLabel": "件数",
+    "typeBarTitle": "9. 支出タイプの比較",
+    "typeBarDesc": "財務的性質別の総資本配分",
+    "categoryRadarTitle": "10. カテゴリレーダープロファイル",
+    "categoryRadarDesc": "カテゴリ全体にわたる総合的な行動プロファイル",
+    "categoryOutflowLabel": "カテゴリ支出出費"
+  },
+  "budgetComparison": {
+    "sectionTitle": "視覚的月次比較",
+    "totalBudgetedLabel": "総予算 ($)",
+    "totalSpentLabel": "総支出 ($)",
+    "macroChartTitle": "予算 vs 実際の支出",
+    "macroChartDesc": "総目標と支出のマクロ比較",
+    "categoryChartTitle": "カテゴリ別支出",
+    "categoryChartDesc": "カテゴリ別支出の並列比較"
+  },
+  "budgetForm": {
+    "categoryLabel": "カテゴリ *",
+    "monthlyLimitLabel": "月次上限 *",
+    "monthLabel": "月 *",
+    "yearLabel": "年 *",
+    "descriptionLabel": "説明 / メモ",
+    "descriptionPlaceholder": "月次の食費手当とレストラン上限...",
+    "saving": "予算を保存中...",
+    "saveBtn": "予算を保存"
+  },
+  "budgetModeForm": {
+    "paymentModeLabel": "支払い方法 *",
+    "monthlyLimitLabel": "月次上限 *",
+    "monthLabel": "月 *",
+    "yearLabel": "年 *",
+    "descriptionLabel": "説明 / メモ",
+    "descriptionPlaceholder": "クレジットカード請求サイクルの月次支出上限...",
+    "saving": "予算モードを保存中...",
+    "saveBtn": "予算モードを保存"
+  },
+  "common": {
+    "months": [
+      "1月", "2月", "3月", "4月", "5月", "6月", 
+      "7月", "8月", "9月", "10月", "11月", "12月"
+    ]
   }
 }

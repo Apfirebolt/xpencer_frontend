@@ -218,5 +218,79 @@
     "amount": "Betrag",
     "markPaid": "Als bezahlt markieren",
     "awaitingConfirmation": "Bestätigung ausstehend"    
+  },
+  "charts": {
+    "suiteTitle": "Umfassende Finanz-Suite",
+    "suiteDesc": "Zeigt 10 visuelle Einblicke zu Kategorien, Zahlungsmethoden und Ausgabentrends",
+    "denominated": "in",
+    "generatingPdf": "PDF wird erstellt...",
+    "exportPdf": "Analyse-PDF exportieren",
+    "noChartsAlert": "Keine sichtbaren Diagramme zum Exportieren gefunden.",
+    "pdfGeneratedOn": "Erstellt am",
+    "pdfDenomination": "Währung",
+    "showFullScreen": "Vollbild anzeigen",
+    "showBtn": "Anzeigen",
+    "hideBtn": "Ausblenden",
+    "hiddenMessage": "Diagramm ausgeblendet. Klicken Sie auf „Anzeigen“, um Analysen anzuzeigen.",
+    "dailyTrendTitle": "1. Ttäglicher Ausgabentrend",
+    "dailyTrendDesc": "Verlauf der Ausgaben an den Tagen des Monats",
+    "dailySpendLabel": "Tägliche Ausgaben",
+    "categoryDoughnutTitle": "2. Ausgaben nach Kategorie (Donut)",
+    "categoryDoughnutDesc": "Anteil der Ausgaben nach Kategorien",
+    "modeBarTitle": "3. Ausgaben nach Zahlungsmethode",
+    "modeBarDesc": "Ausgabenverteilung auf Bargeld, UPI, Karten usw.",
+    "spendLabel": "Ausgaben",
+    "typePieTitle": "4. Aufteilung nach Ausgabentyp",
+    "typePieDesc": "Fixe vs. variable vs. diskretionäre Ausgaben",
+    "categoryPolarTitle": "5. Kategorie-Polardiagramm",
+    "categoryPolarDesc": "Mehrdimensionale Darstellung der Kategorien",
+    "modeDoughnutTitle": "6. Anteil der Zahlungsmethoden",
+    "modeDoughnutDesc": "Proportionale Nutzung der Zahlungskanäle",
+    "categoryBarTitle": "7. Kategorienvolumen-Vergleich",
+    "categoryBarDesc": "Direkter Vergleich der Kategorie-Ausgabenlimits",
+    "amountLabel": "Betrag",
+    "transactionSizeTitle": "8. Verteilung der Transaktionsgrößen",
+    "transactionSizeDesc": "Häufigkeit kleiner, mittlerer und großer Käufe",
+    "countLabel": "Anzahl",
+    "typeBarTitle": "9. Vergleich der Ausgabentypen",
+    "typeBarDesc": "Gesamtkapitalzuweisung nach finanzieller Natur",
+    "categoryRadarTitle": "10. Kategorie-Radarprofil",
+    "categoryRadarDesc": "Ganzheitliches Verhaltensprofil über Kategorien hinweg",
+    "categoryOutflowLabel": "Kategorie-Abfluss"
+    },
+  "budgetComparison": {
+    "sectionTitle": "Visueller Monatsvergleich",
+    "totalBudgetedLabel": "Insgesamt budgetiert (€)",
+    "totalSpentLabel": "Insgesamt ausgegeben (€)",
+    "macroChartTitle": "Budget vs. Tatsächlicher Abfluss",
+    "macroChartDesc": "Makrovergleich der Gesamtziele und Ausgaben",
+    "categoryChartTitle": "Ausgaben nach Kategorie",
+    "categoryChartDesc": "Seitenvergleich der Ausgaben nach Kategorie"
+  },
+  "budgetForm": {
+    "categoryLabel": "Kategorie *",
+    "monthlyLimitLabel": "Monatliches Limit *",
+    "monthLabel": "Monat *",
+    "yearLabel": "Jahr *",
+    "descriptionLabel": "Beschreibung / Hinweis",
+    "descriptionPlaceholder": "Monatliches Essensbudget und Restaurantlimit...",
+    "saving": "Budget wird gespeichert...",
+    "saveBtn": "Budget speichern"
+  },
+  "budgetModeForm": {
+    "paymentModeLabel": "Zahlungsmethode *",
+    "monthlyLimitLabel": "Monatliches Limit *",
+    "monthLabel": "Monat *",
+    "yearLabel": "Jahr *",
+    "descriptionLabel": "Beschreibung / Hinweis",
+    "descriptionPlaceholder": "Monatliches Ausgabenlimit für den Kreditkartenabrechnungszyklus...",
+    "saving": "Budgetmodus wird gespeichert...",
+    "saveBtn": "Budgetmodus speichern"
+  },
+  "common": {
+    "months": [
+      "Januar", "Februar", "März", "April", "Mai", "Juni", 
+      "Juli", "August", "September", "Oktober", "November", "Dezember"
+    ]
   }
 }
