@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, Fragment } from 'react';
+import { useAuthStore } from '@/store/useAuthStore';
+import { currencies } from '@/utils/constants';
 import { 
   Chart as ChartJS, 
   CategoryScale, 
@@ -42,6 +44,13 @@ const CHART_COLORS = [
 ];
 
 export default function ExpenseChart({ expenses = [] }) {
+  const { user } = useAuthStore();
+
+  // Extract user preferred currency symbol
+  const userCurrencyCode = user?.settings?.currency || 'USD';
+  const currencyObj = currencies.find((c) => c.code === userCurrencyCode) || { symbol: '$', code: 'USD' };
+  const currencySymbol = currencyObj.symbol;
+
   const [hiddenCharts, setHiddenCharts] = useState({});
   const [activeModalChart, setActiveModalChart] = useState(null);
 
@@ -130,12 +139,12 @@ export default function ExpenseChart({ expenses = [] }) {
           data={{
             labels: Object.keys(dailySpending),
             datasets: [{
-              label: 'Daily Spend ($)',
+              label: `Daily Spend (${currencySymbol})`,
               data: Object.values(dailySpending),
               fill: true,
               backgroundColor: 'rgba(99, 102, 241, 0.1)',
               borderColor: '#6366f1',
-              borderWidth: 2,
+              borderWidth: 2.5,
               tension: 0.4
             }]
           }} 
@@ -173,7 +182,7 @@ export default function ExpenseChart({ expenses = [] }) {
           data={{
             labels: modes,
             datasets: [{
-              label: 'Spend ($)',
+              label: `Spend (${currencySymbol})`,
               data: modeAmounts,
               backgroundColor: '#10b981',
               borderRadius: 8
@@ -249,7 +258,7 @@ export default function ExpenseChart({ expenses = [] }) {
           data={{
             labels: categories,
             datasets: [{
-              label: 'Amount ($)',
+              label: `Amount (${currencySymbol})`,
               data: categoryAmounts,
               backgroundColor: '#8b5cf6',
               borderRadius: 8
@@ -289,7 +298,7 @@ export default function ExpenseChart({ expenses = [] }) {
           data={{
             labels: eTypes,
             datasets: [{
-              label: 'Spend ($)',
+              label: `Spend (${currencySymbol})`,
               data: eTypeAmounts,
               backgroundColor: '#3b82f6',
               borderRadius: 8
@@ -326,15 +335,15 @@ export default function ExpenseChart({ expenses = [] }) {
     <div className="w-full space-y-8 font-sans">
       
       {/* Section Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-light dark:bg-tertiary/5 border border-tertiary/20 dark:border-tertiary/10 p-6 rounded-3xl shadow-sm">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
-            <ChartBarIcon className="h-5 w-5" />
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/90 dark:bg-dark/90 backdrop-blur-md border border-tertiary/20 dark:border-tertiary/15 p-7 rounded-[2rem] shadow-sm">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20 shadow-xs">
+            <ChartBarIcon className="h-6 w-6" />
           </div>
           <div>
-            <h3 className="text-xl font-bold font-heading">Comprehensive Financial </h3>
+            <h3 className="text-xl font-bold font-heading">Comprehensive Financial Suite</h3>
             <p className="text-xs text-dark/60 dark:text-light/60">
-              Displaying 10 visual insights covering category, mode, and spending trends
+              Displaying 10 visual insights covering category, mode, and spending trends ({currencySymbol} denominated)
             </p>
           </div>
         </div>
@@ -348,15 +357,15 @@ export default function ExpenseChart({ expenses = [] }) {
           return (
             <div 
               key={chart.key}
-              className="bg-white dark:bg-tertiary/5 border border-tertiary/20 dark:border-tertiary/10 rounded-3xl p-6 shadow-sm space-y-4 flex flex-col justify-between transition-all"
+              className="bg-white/90 dark:bg-dark/90 backdrop-blur-md border border-tertiary/20 dark:border-tertiary/15 rounded-[2rem] p-7 shadow-sm space-y-5 flex flex-col justify-between hover:shadow-xl transition-all group"
             >
               {/* Card Header with Show/Hide & Full Screen Buttons */}
-              <div className="flex items-center justify-between border-b border-tertiary/20 pb-3">
+              <div className="flex items-center justify-between border-b border-tertiary/15 pb-4">
                 <div>
-                  <h4 className="text-sm font-bold font-heading text-dark dark:text-light">
+                  <h4 className="text-base font-bold font-heading text-dark dark:text-light">
                     {chart.title}
                   </h4>
-                  <p className="text-[11px] text-dark/50 dark:text-light/50">
+                  <p className="text-xs text-dark/50 dark:text-light/50 pt-0.5">
                     {chart.description}
                   </p>
                 </div>
@@ -364,24 +373,24 @@ export default function ExpenseChart({ expenses = [] }) {
                 <div className="flex items-center gap-2 shrink-0">
                   <button
                     onClick={() => setActiveModalChart(chart)}
-                    className="p-2 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary transition-all cursor-pointer"
+                    className="p-2 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary transition-all cursor-pointer shadow-xs"
                     title="Show Full Screen"
                   >
-                    <ArrowsPointingOutIcon className="h-3.5 w-3.5" />
+                    <ArrowsPointingOutIcon className="h-4 w-4" />
                   </button>
 
                   <button
                     onClick={() => toggleChart(chart.key)}
-                    className="px-3 py-1.5 rounded-xl text-xs font-bold bg-tertiary/20 hover:bg-tertiary/30 text-dark dark:text-light transition-all flex items-center gap-1.5 cursor-pointer"
+                    className="px-3.5 py-2 rounded-xl text-xs font-bold bg-tertiary/20 hover:bg-tertiary/30 text-dark dark:text-light transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
                   >
                     {isHidden ? (
                       <>
-                        <EyeIcon className="h-3.5 w-3.5 text-primary" />
+                        <EyeIcon className="h-4 w-4 text-primary" />
                         <span>Show</span>
                       </>
                     ) : (
                       <>
-                        <EyeSlashIcon className="h-3.5 w-3.5 text-dark/50 dark:text-light/50" />
+                        <EyeSlashIcon className="h-4 w-4 text-dark/50 dark:text-light/50" />
                         <span>Hide</span>
                       </>
                     )}
@@ -390,14 +399,14 @@ export default function ExpenseChart({ expenses = [] }) {
               </div>
 
               {!isHidden && (
-                <div className="h-72 w-full pt-2 animate-fadeIn">
+                <div className="h-80 w-full pt-2 animate-fadeIn">
                   {chart.render(false)}
                 </div>
               )}
 
               {isHidden && (
-                <div className="h-24 w-full flex items-center justify-center text-xs text-dark/40 dark:text-light/40 italic bg-tertiary/5 rounded-2xl">
-                  Chart hidden. Click 'Show' to view analytics.
+                <div className="h-28 w-full flex items-center justify-center text-xs text-dark/40 dark:text-light/40 italic bg-tertiary/10 rounded-2xl border border-tertiary/15">
+                  Chart hidden. Click &apos;Show&apos; to view analytics.
                 </div>
               )}
             </div>
@@ -431,7 +440,7 @@ export default function ExpenseChart({ expenses = [] }) {
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <DialogPanel className="w-full max-w-5xl transform overflow-hidden rounded-3xl bg-white dark:bg-dark border border-tertiary/20 dark:border-tertiary/10 p-8 text-left align-middle shadow-2xl transition-all space-y-6">
+                <DialogPanel className="w-full max-w-5xl transform overflow-hidden rounded-[2rem] bg-white dark:bg-dark border border-tertiary/20 p-8 text-left align-middle shadow-2xl transition-all space-y-6">
                   
                   <div className="flex items-center justify-between border-b border-tertiary/20 pb-4">
                     <div className="flex items-center gap-3">

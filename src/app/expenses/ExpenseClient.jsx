@@ -14,6 +14,8 @@ import MockExpenseModal from "@/components/MockExpenseModal";
 import ConfirmModal from "@/components/ConfirmModal";
 import { useExpenseStore } from "@/store/useExpenseStore";
 import { useRecurringStore } from "@/store/useRecurringExpenseStore";
+import { useAuthStore } from "@/store/useAuthStore";
+import { currencies } from "@/utils/constants";
 import {
   WalletIcon,
   PlusCircleIcon,
@@ -45,6 +47,7 @@ import "aos/dist/aos.css";
 
 export default function ExpenseClient() {
   const { t } = useTranslation();
+  const { user, initializeAuth } = useAuthStore();
   const {
     expenses,
     fetching,
@@ -89,9 +92,15 @@ export default function ExpenseClient() {
   // Fetch both standard expenses and recurring commitments on mount
   useEffect(() => {
     AOS.init({ duration: 800, once: true, easing: "ease-out-cubic" });
+    initializeAuth();
     fetchExpenses();
     fetchRecurring();
-  }, [fetchExpenses, fetchRecurring]);
+  }, [fetchExpenses, fetchRecurring, initializeAuth]);
+
+  // Extract user preferred currency symbol
+  const userCurrencyCode = user?.settings?.currency || 'USD';
+  const currencyObj = currencies.find((c) => c.code === userCurrencyCode) || { symbol: '$', code: 'USD' };
+  const currencySymbol = currencyObj.symbol;
 
   async function handleCreateExpense(newExpenseData) {
     setSuccessMessage("");
@@ -197,36 +206,37 @@ export default function ExpenseClient() {
           className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-tertiary/20 pb-6"
           data-aos="fade-down"
         >
-          <div>
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-wider uppercase border border-primary/20 mb-3">
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-wider uppercase border border-primary/20 shadow-xs">
               <WalletIcon className="h-4 w-4" />
               <span>Expense Ledger Suite</span>
             </div>
             <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight font-heading">
               {t("expenses.title") || "Manage Your Expenses"}
             </h1>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-3 w-full md:w-auto justify-between md:justify-end">
-            {/* Total Spent Quick Badge */}
-            <div className="px-4 py-2.5 rounded-2xl bg-white dark:bg-tertiary/5 border border-tertiary/20 flex items-center gap-3 shadow-sm">
-              <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                <CurrencyDollarIcon className="h-4 w-4" />
+            {/* Redesigned Total Tracked Premium Widget */}
+            <div className="p-2 rounded-[1.5rem] bg-white/90 dark:bg-dark/90 backdrop-blur-md border border-tertiary/20 dark:border-tertiary/15 flex items-center gap-3.5 shadow-sm relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-20 h-20 bg-primary/5 rounded-bl-full pointer-events-none group-hover:scale-110 transition-transform" />
+              <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20 shadow-xs">
+                <CurrencyDollarIcon className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-[10px] uppercase font-bold text-dark/50 dark:text-light/50 font-heading">
+                <p className="font-bold tracking-wider text-dark/50 dark:text-light/50 font-heading">
                   {t("expenses.totalTracked") || "Total Tracked"}
                 </p>
-                <p className="text-sm font-extrabold font-heading text-primary">
-                  ${getTotalSpent().toFixed(2)}
+                <p className="text-base font-extrabold font-heading text-primary">
+                  {currencySymbol}{getTotalSpent().toFixed(2)}
                 </p>
               </div>
             </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3 w-full md:w-auto justify-between md:justify-end">
 
             {/* Recurring Expenses Button */}
             <button
               onClick={() => setIsRecurringModalOpen(true)}
-              className="px-4 py-3 rounded-2xl font-bold bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 transition-all flex items-center gap-2 cursor-pointer shrink-0 text-xs"
+              className="px-1 py-1.5 rounded-2xl font-bold bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 transition-all flex items-center gap-2 cursor-pointer shrink-0 text-xs shadow-xs"
               title="Add Recurring Expenses"
             >
               <ArrowPathIcon className="h-4 w-4" />
@@ -236,7 +246,7 @@ export default function ExpenseClient() {
             {/* Mock Data Generator Modal Button */}
             <button
               onClick={() => setIsMockModalOpen(true)}
-              className="px-4 py-3 rounded-2xl font-bold bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 transition-all flex items-center gap-2 cursor-pointer shrink-0 text-xs"
+              className="px-1.5 py-2 rounded-2xl font-bold bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 transition-all flex items-center gap-2 cursor-pointer shrink-0 text-xs shadow-xs"
               title="Generate Mock Data"
             >
               <SparklesIcon className="h-4 w-4" />
@@ -246,7 +256,7 @@ export default function ExpenseClient() {
             {/* Open Calendar Modal Button */}
             <button
               onClick={() => setIsCalendarModalOpen(true)}
-              className="px-4 py-3 rounded-2xl font-bold bg-tertiary/20 hover:bg-tertiary/30 text-dark dark:text-light border border-tertiary/30 transition-all flex items-center gap-2 cursor-pointer shrink-0 text-xs"
+              className="px-2.5 py-3 rounded-2xl font-bold bg-tertiary/20 hover:bg-tertiary/30 text-dark dark:text-light border border-tertiary/30 transition-all flex items-center gap-2 cursor-pointer shrink-0 text-xs shadow-xs"
             >
               <CalendarDaysIcon className="h-4 w-4 text-primary" />
               <span>Calendar</span>
@@ -255,7 +265,7 @@ export default function ExpenseClient() {
             {/* Toggle Analytics */}
             <button
               onClick={() => setIsAnalyticsOpen((prev) => !prev)}
-              className="px-4 py-3 rounded-2xl font-bold bg-tertiary/20 hover:bg-tertiary/30 text-dark dark:text-light border border-tertiary/30 transition-all flex items-center gap-2 cursor-pointer shrink-0 text-xs"
+              className="px-3 py-3.5 rounded-2xl font-bold bg-tertiary/20 hover:bg-tertiary/30 text-dark dark:text-light border border-tertiary/30 transition-all flex items-center gap-2 cursor-pointer shrink-0 text-xs shadow-xs"
             >
               <ChartBarIcon className="h-4 w-4 text-primary" />
               <span>Analytics</span>
@@ -264,7 +274,7 @@ export default function ExpenseClient() {
             {/* Add Expense Button */}
             <button
               onClick={() => setIsFormModalOpen(true)}
-              className="px-5 py-3 rounded-2xl font-bold bg-primary hover:bg-secondary text-white transition-all shadow-lg shadow-primary/25 flex items-center gap-2 cursor-pointer shrink-0 text-xs"
+              className="px-3.5 py-4 rounded-2xl font-bold bg-primary hover:bg-secondary text-white transition-all shadow-lg shadow-primary/25 flex items-center gap-2 cursor-pointer shrink-0 text-xs"
             >
               <PlusCircleIcon className="h-5 w-5" />
               <span>{t("expenses.addExpense") || "Add Expense"}</span>
@@ -287,10 +297,13 @@ export default function ExpenseClient() {
 
         {/* Expense Charts Section (Rendered if analytics toggled) */}
         {!fetching && isAnalyticsOpen && expenses.length > 0 && (
-          <div className="grid grid-cols-1 gap-8 p-6 rounded-3xl bg-white dark:bg-tertiary/5 border border-tertiary/20 shadow-sm" data-aos="fade-up">
-            <div className="flex items-center justify-between border-b border-tertiary/20 pb-4">
-              <h3 className="text-lg font-bold font-heading">Spending Analytics & Trends</h3>
-              <span className="text-xs font-mono px-2.5 py-1 rounded-lg bg-primary/10 text-primary">Monthly Overview</span>
+          <div className="grid grid-cols-1 gap-8 p-7 rounded-[2rem] bg-white/90 dark:bg-dark/90 backdrop-blur-md border border-tertiary/20 dark:border-tertiary/15 shadow-sm" data-aos="fade-up">
+            <div className="flex items-center justify-between border-b border-tertiary/15 pb-4">
+              <div>
+                <h3 className="text-lg font-bold font-heading">Spending Analytics & Trends</h3>
+                <p className="text-xs text-dark/50 dark:text-light/50">Comprehensive overview of monthly outflows</p>
+              </div>
+              <span className="text-xs font-mono px-3 py-1 rounded-xl bg-primary/10 text-primary border border-primary/20">Monthly Overview</span>
             </div>
             <ExpenseChart expenses={expenses} type="line" />
           </div>
@@ -311,7 +324,7 @@ export default function ExpenseClient() {
                   <h2 className="text-xl sm:text-2xl font-extrabold font-heading text-dark dark:text-light tracking-tight">
                     {filterType === 'recurring' ? 'Recurring Expense Templates' : (t("dashboard.recentTransactions") || "Recent Transactions")}
                   </h2>
-                  <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+                  <span className="text-xs font-mono font-bold px-3 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 shadow-xs">
                     {filterType === 'recurring' ? recurringList.length : `${filteredExpenses.length} / ${expenses.length}`}
                   </span>
                 </div>
@@ -330,7 +343,7 @@ export default function ExpenseClient() {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder={t("expenses.searchPlaceholder") || "Search category, description, room..."}
-                    className="w-full pl-10 pr-10 py-2.5 rounded-2xl bg-white dark:bg-tertiary/5 border border-tertiary/20 text-xs font-semibold focus:outline-none focus:border-primary shadow-sm"
+                    className="w-full pl-10 pr-10 py-3 rounded-2xl bg-white/90 dark:bg-dark/90 backdrop-blur-md border border-tertiary/20 text-xs font-semibold focus:outline-none focus:border-primary shadow-inner"
                   />
                   {searchQuery && (
                     <button
@@ -345,10 +358,10 @@ export default function ExpenseClient() {
 
               {/* View Switches (Hidden for Recurring tab) */}
               {filterType !== 'recurring' && (
-                <div className="flex items-center p-1.5 rounded-2xl bg-white dark:bg-tertiary/5 border border-tertiary/20 shadow-sm self-end">
+                <div className="flex items-center p-1.5 rounded-2xl bg-white/90 dark:bg-dark/90 backdrop-blur-md border border-tertiary/20 shadow-sm self-end">
                   <button
                     onClick={() => setViewMode("card")}
-                    className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                       viewMode === "card"
                         ? "bg-primary text-white shadow-md shadow-primary/20"
                         : "text-dark/70 dark:text-light/70 hover:text-primary"
@@ -360,7 +373,7 @@ export default function ExpenseClient() {
                   </button>
                   <button
                     onClick={() => setViewMode("list")}
-                    className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                       viewMode === "list"
                         ? "bg-primary text-white shadow-md shadow-primary/20"
                         : "text-dark/70 dark:text-light/70 hover:text-primary"
@@ -372,7 +385,7 @@ export default function ExpenseClient() {
                   </button>
                   <button
                     onClick={() => setViewMode("grid")}
-                    className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                       viewMode === "grid"
                         ? "bg-primary text-white shadow-md shadow-primary/20"
                         : "text-dark/70 dark:text-light/70 hover:text-primary"
@@ -396,7 +409,7 @@ export default function ExpenseClient() {
 
             <button
               onClick={() => setFilterType("all")}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 ${
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 shadow-xs ${
                 filterType === "all"
                   ? "bg-primary text-white shadow-sm"
                   : "bg-tertiary/10 hover:bg-tertiary/20 text-dark/70 dark:text-light/70 border border-tertiary/20"
@@ -407,7 +420,7 @@ export default function ExpenseClient() {
 
             <button
               onClick={() => setFilterType("personal")}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 flex items-center gap-1.5 ${
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 flex items-center gap-1.5 shadow-xs ${
                 filterType === "personal"
                   ? "bg-primary text-white shadow-sm"
                   : "bg-tertiary/10 hover:bg-tertiary/20 text-dark/70 dark:text-light/70 border border-tertiary/20"
@@ -419,7 +432,7 @@ export default function ExpenseClient() {
 
             <button
               onClick={() => setFilterType("split")}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 flex items-center gap-1.5 ${
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 flex items-center gap-1.5 shadow-xs ${
                 filterType === "split"
                   ? "bg-primary text-white shadow-sm"
                   : "bg-tertiary/10 hover:bg-tertiary/20 text-dark/70 dark:text-light/70 border border-tertiary/20"
@@ -431,7 +444,7 @@ export default function ExpenseClient() {
 
             <button
               onClick={() => setFilterType("recurring")}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 flex items-center gap-1.5 ${
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 flex items-center gap-1.5 shadow-xs ${
                 filterType === "recurring"
                   ? "bg-primary text-white shadow-sm"
                   : "bg-tertiary/10 hover:bg-tertiary/20 text-dark/70 dark:text-light/70 border border-tertiary/20"
@@ -447,11 +460,11 @@ export default function ExpenseClient() {
         <div className="w-full" data-aos="fade-up" data-aos-delay="100">
           {filterType === "recurring" ? (
             recurringFetching ? (
-              <div className="p-12 text-center text-sm text-dark/50 dark:text-light/50 bg-white/50 dark:bg-dark/50 rounded-3xl border border-tertiary/20">
+              <div className="p-12 text-center text-sm text-dark/50 dark:text-light/50 bg-white/50 dark:bg-dark/50 rounded-[2rem] border border-tertiary/20">
                 Loading recurring commitments...
               </div>
             ) : recurringList.length === 0 ? (
-              <div className="p-16 text-center space-y-4 max-w-md mx-auto bg-white/50 dark:bg-dark/50 rounded-3xl border border-tertiary/20">
+              <div className="p-16 text-center space-y-4 max-w-md mx-auto bg-white/50 dark:bg-dark/50 rounded-[2rem] border border-tertiary/20 shadow-sm">
                 <ArrowPathIcon className="h-12 w-12 text-primary mx-auto opacity-50" />
                 <div className="space-y-1">
                   <p className="text-sm font-semibold text-dark dark:text-light">
@@ -463,24 +476,24 @@ export default function ExpenseClient() {
                 </div>
                 <button
                   onClick={() => setIsRecurringModalOpen(true)}
-                  className="px-5 py-2.5 rounded-xl text-xs font-bold bg-primary/10 hover:bg-primary/20 text-primary transition-all border border-primary/20 cursor-pointer"
+                  className="px-5 py-2.5 rounded-xl text-xs font-bold bg-primary/10 hover:bg-primary/20 text-primary transition-all border border-primary/20 cursor-pointer shadow-xs"
                 >
                   Add Recurring Commitment
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {recurringList.map((item) => (
                   <div
                     key={item._id}
-                    className="p-6 rounded-3xl bg-white dark:bg-tertiary/5 border border-tertiary/20 dark:border-tertiary/10 shadow-sm space-y-4 flex flex-col justify-between"
+                    className="p-7 rounded-[2rem] bg-white/90 dark:bg-dark/90 backdrop-blur-md border border-tertiary/20 dark:border-tertiary/15 shadow-sm space-y-4 flex flex-col justify-between hover:shadow-xl transition-all"
                   >
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="px-2.5 py-1 rounded-lg bg-primary/10 text-primary text-[10px] font-bold uppercase font-mono border border-primary/20">
+                        <span className="px-3 py-1 rounded-xl bg-primary/10 text-primary text-xs font-bold uppercase font-mono border border-primary/20 shadow-xs">
                           {item.category || 'General'}
                         </span>
-                        <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-tertiary/20 text-dark/70 dark:text-light/70 font-mono">
+                        <span className="text-[10px] font-bold uppercase px-2.5 py-1 rounded-lg bg-tertiary/20 text-dark/70 dark:text-light/70 font-mono">
                           {item.frequency}
                         </span>
                       </div>
@@ -490,15 +503,15 @@ export default function ExpenseClient() {
                       </p>
                     </div>
 
-                    <div className="flex items-center justify-between pt-4 border-t border-tertiary/10">
+                    <div className="flex items-center justify-between pt-4 border-t border-tertiary/15">
                       <div>
-                        <p className="text-lg font-extrabold font-heading text-primary">${item.amount?.toFixed(2)}</p>
+                        <p className="text-xl font-extrabold font-heading text-primary">{currencySymbol}{item.amount?.toFixed(2)}</p>
                         <p className="text-[10px] text-dark/40 dark:text-light/40 font-bold uppercase">Commitment</p>
                       </div>
 
                       <button
                         onClick={() => deleteRecurring(item._id)}
-                        className="p-2 rounded-xl text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer"
+                        className="p-2 rounded-xl text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer shadow-xs"
                         title="Delete Recurring Template"
                       >
                         <TrashIcon className="h-4 w-4" />
@@ -509,11 +522,11 @@ export default function ExpenseClient() {
               </div>
             )
           ) : fetching ? (
-            <div className="p-12 text-center text-sm text-dark/50 dark:text-light/50 bg-white/50 dark:bg-dark/50 rounded-3xl border border-tertiary/20">
+            <div className="p-12 text-center text-sm text-dark/50 dark:text-light/50 bg-white/50 dark:bg-dark/50 rounded-[2rem] border border-tertiary/20">
               Loading expenses ledger...
             </div>
           ) : expenses.length === 0 ? (
-            <div className="p-16 text-center space-y-4 max-w-md mx-auto bg-white/50 dark:bg-dark/50 rounded-3xl border border-tertiary/20">
+            <div className="p-16 text-center space-y-4 max-w-md mx-auto bg-white/50 dark:bg-dark/50 rounded-[2rem] border border-tertiary/20 shadow-sm">
               <WalletIcon className="h-12 w-12 text-primary mx-auto opacity-50" />
               <div className="space-y-1">
                 <p className="text-sm font-semibold text-dark dark:text-light">
@@ -525,13 +538,13 @@ export default function ExpenseClient() {
               </div>
               <button
                 onClick={() => setIsFormModalOpen(true)}
-                className="px-5 py-2.5 rounded-xl text-xs font-bold bg-primary/10 hover:bg-primary/20 text-primary transition-all border border-primary/20 cursor-pointer"
+                className="px-5 py-2.5 rounded-xl text-xs font-bold bg-primary hover:bg-secondary text-white transition-all shadow-md shadow-primary/20 cursor-pointer"
               >
                 Add First Expense
               </button>
             </div>
           ) : filteredExpenses.length === 0 ? (
-            <div className="p-16 text-center space-y-3 max-w-md mx-auto bg-white/50 dark:bg-dark/50 rounded-3xl border border-tertiary/20">
+            <div className="p-16 text-center space-y-3 max-w-md mx-auto bg-white/50 dark:bg-dark/50 rounded-[2rem] border border-tertiary/20 shadow-sm">
               <MagnifyingGlassIcon className="h-10 w-10 text-primary mx-auto opacity-50" />
               <p className="text-sm font-semibold text-dark dark:text-light">
                 No matching transactions found
@@ -541,7 +554,7 @@ export default function ExpenseClient() {
               </p>
               <button
                 onClick={() => { setSearchQuery(""); setFilterType("all"); }}
-                className="px-4 py-2 rounded-xl text-xs font-bold bg-primary/10 hover:bg-primary/20 text-primary transition-all border border-primary/20 cursor-pointer"
+                className="px-4 py-2 rounded-xl text-xs font-bold bg-primary/10 hover:bg-primary/20 text-primary transition-all border border-primary/20 cursor-pointer shadow-xs"
               >
                 Reset Filters
               </button>
@@ -590,7 +603,7 @@ export default function ExpenseClient() {
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <DialogPanel className="w-full max-w-md transform overflow-hidden rounded-3xl bg-white dark:bg-dark border border-tertiary/20 dark:border-tertiary/10 p-8 text-left align-middle shadow-2xl transition-all space-y-6">
+                <DialogPanel className="w-full max-w-md transform overflow-hidden rounded-[2rem] bg-white dark:bg-dark border border-tertiary/20 dark:border-tertiary/10 p-8 text-left align-middle shadow-2xl transition-all space-y-6">
                   <div className="flex items-center justify-between border-b border-tertiary/20 pb-4">
                     <div className="flex items-center gap-2">
                       <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20">
@@ -664,7 +677,7 @@ export default function ExpenseClient() {
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <DialogPanel className="w-full max-w-4xl transform overflow-hidden rounded-3xl bg-white dark:bg-dark border border-tertiary/20 dark:border-tertiary/10 p-8 text-left align-middle shadow-2xl transition-all space-y-6">
+                <DialogPanel className="w-full max-w-4xl transform overflow-hidden rounded-[2rem] bg-white dark:bg-dark border border-tertiary/20 dark:border-tertiary/10 p-8 text-left align-middle shadow-2xl transition-all space-y-6">
                   <div className="flex items-center justify-between border-b border-tertiary/20 pb-4">
                     <div className="flex items-center gap-2">
                       <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20">
@@ -732,7 +745,7 @@ export default function ExpenseClient() {
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <DialogPanel className="w-full max-w-4xl transform overflow-hidden rounded-3xl bg-white dark:bg-dark border border-tertiary/20 dark:border-tertiary/10 p-8 text-left align-middle shadow-2xl transition-all space-y-6">
+                <DialogPanel className="w-full max-w-4xl transform overflow-hidden rounded-[2rem] bg-white dark:bg-dark border border-tertiary/20 dark:border-tertiary/10 p-8 text-left align-middle shadow-2xl transition-all space-y-6">
                   <div className="flex items-center justify-between border-b border-tertiary/20 pb-4">
                     <div className="flex items-center gap-2">
                       <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20">
