@@ -103,7 +103,9 @@ export default function RoomClient() {
     setFeedbackMessage("");
     const result = await inviteUser(selectedRoom._id, email, message);
     if (result.success) {
-      setFeedbackMessage(t("roomClient.inviteSuccess") || "Invitation sent successfully!");
+      setFeedbackMessage(
+        t("roomClient.inviteSuccess") || "Invitation sent successfully!",
+      );
       setTimeout(() => {
         setFeedbackMessage("");
         setIsInviteModalOpen(false);
@@ -115,7 +117,10 @@ export default function RoomClient() {
     setFeedbackMessage("");
     const result = await addRoomExpense(selectedRoom._id, expenseData);
     if (result.success) {
-      setFeedbackMessage(t("roomClient.expenseSuccess") || "Room expense added and split successfully!");
+      setFeedbackMessage(
+        t("roomClient.expenseSuccess") ||
+          "Room expense added and split successfully!",
+      );
       setTimeout(() => {
         setFeedbackMessage("");
         setIsExpenseModalOpen(false);
@@ -154,7 +159,8 @@ export default function RoomClient() {
               {t("roomClient.title") || "Collaborative Split Groups"}
             </h1>
             <p className="text-xs text-dark/60 dark:text-light/60">
-              {t("roomClient.subtitle") || "Manage shared living spaces, travel expenses, and peer settlements."}
+              {t("roomClient.subtitle") ||
+                "Manage shared living spaces, travel expenses, and peer settlements."}
             </p>
           </div>
 
@@ -163,7 +169,9 @@ export default function RoomClient() {
             className="px-6 py-3.5 rounded-2xl font-bold bg-primary hover:bg-secondary text-white transition-all shadow-lg shadow-primary/25 flex items-center gap-2 cursor-pointer shrink-0 text-xs"
           >
             <PlusCircleIcon className="h-5 w-5" />
-            <span>{t("roomClient.createRoomBtn") || "Create Expense Room"}</span>
+            <span>
+              {t("roomClient.createRoomBtn") || "Create Expense Room"}
+            </span>
           </button>
         </div>
 
@@ -183,10 +191,12 @@ export default function RoomClient() {
                     </div>
                     <div>
                       <h2 className="text-base font-bold font-heading">
-                        {t("roomClient.pendingConfirmationsTitle") || "Pending Payment Confirmations"}
+                        {t("roomClient.pendingConfirmationsTitle") ||
+                          "Pending Payment Confirmations"}
                       </h2>
                       <p className="text-[11px] text-dark/50 dark:text-light/50">
-                        {t("roomClient.pendingConfirmationsSubtitle") || "Action required from creditors"}
+                        {t("roomClient.pendingConfirmationsSubtitle") ||
+                          "Action required from creditors"}
                       </p>
                     </div>
                   </div>
@@ -203,11 +213,13 @@ export default function RoomClient() {
                 <DisclosurePanel className="space-y-3 pt-1 animate-fadeIn">
                   {fetchingPending ? (
                     <div className="text-center py-6 text-xs text-dark/50 dark:text-light/50">
-                      {t("roomClient.loadingSettlements") || "Loading settlement requests..."}
+                      {t("roomClient.loadingSettlements") ||
+                        "Loading settlement requests..."}
                     </div>
                   ) : pendingConfirmations.length === 0 ? (
                     <div className="text-center py-6 text-xs text-dark/50 dark:text-light/50 bg-tertiary/5 rounded-2xl border border-tertiary/10">
-                      {t("roomClient.noPendingSettlements") || "No pending settlement confirmations required."}
+                      {t("roomClient.noPendingSettlements") ||
+                        "No pending settlement confirmations required."}
                     </div>
                   ) : (
                     <div className="space-y-3 max-h-72 overflow-y-auto pr-1">
@@ -215,7 +227,7 @@ export default function RoomClient() {
                         const debtorName = exp.user
                           ? `${exp.user.firstName || ""} ${exp.user.lastName || ""}`.trim() ||
                             exp.user.email
-                          : (t("roomClient.member") || "Member");
+                          : t("roomClient.member") || "Member";
                         return (
                           <div
                             key={exp._id}
@@ -244,7 +256,9 @@ export default function RoomClient() {
                               className="px-3.5 py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 transition-all cursor-pointer flex items-center gap-1.5 text-xs font-bold border border-emerald-500/20 shrink-0 animate-pulse shadow-xs"
                             >
                               <CheckCircleIcon className="h-4 w-4" />
-                              <span>{t("roomClient.confirmBtn") || "Confirm"}</span>
+                              <span>
+                                {t("roomClient.confirmBtn") || "Confirm"}
+                              </span>
                             </button>
                           </div>
                         );
@@ -267,10 +281,12 @@ export default function RoomClient() {
                     </div>
                     <div>
                       <h2 className="text-base font-bold font-heading">
-                        {t("roomClient.joinRequestsTitle") || "Pending Room Join Requests"}
+                        {t("roomClient.joinRequestsTitle") ||
+                          "Pending Room Join Requests"}
                       </h2>
                       <p className="text-[11px] text-dark/50 dark:text-light/50">
-                        {t("roomClient.joinRequestsSubtitle") || "Approve or reject room access"}
+                        {t("roomClient.joinRequestsSubtitle") ||
+                          "Approve or reject room access"}
                       </p>
                     </div>
                   </div>
@@ -291,57 +307,123 @@ export default function RoomClient() {
                     </div>
                   ) : joinRequests.length === 0 ? (
                     <div className="text-center py-6 text-xs text-dark/50 dark:text-light/50 bg-tertiary/5 rounded-2xl border border-tertiary/10">
-                      {t("roomClient.noJoinRequests") || "No pending room join requests at the moment."}
+                      {t("roomClient.noJoinRequests") ||
+                        "No pending room join requests at the moment."}
                     </div>
                   ) : (
                     <div className="space-y-3 max-h-72 overflow-y-auto pr-1">
-                      {joinRequests.map((req) => (
-                        <div
-                          key={req._id}
-                          className="flex items-center justify-between p-4 rounded-2xl bg-tertiary/10 border border-tertiary/20 shadow-xs"
-                        >
-                          <div className="space-y-1">
-                            <p className="text-xs font-bold">
-                              {req.room?.title ||
-                                req.roomTitle ||
-                                (t("roomClient.expenseRoomDefault") || "Expense Room")}
-                            </p>
-                            <p className="text-[11px] text-dark/70 dark:text-light/70 truncate max-w-[160px]">
-                              {t("roomClient.fromLabel") || "From"}:{" "}
-                              <span className="font-semibold">
-                                {req.user?.name ||
-                                  req.user?.email ||
-                                  req.senderEmail}
-                              </span>
-                            </p>
-                          </div>
+                      {joinRequests.map((req) => {
+                        // Helper to get sender's full name or email
+                        const senderName = req.sentBy
+                          ? `${req.sentBy.firstName || ""} ${req.sentBy.lastName || ""}`.trim() ||
+                            req.sentBy.email
+                          : req.user?.name ||
+                            req.user?.email ||
+                            req.senderEmail;
 
-                          <div className="flex items-center gap-1.5 shrink-0">
-                            <button
-                              onClick={() =>
-                                handleRequestResponse(req._id, "accepted")
-                              }
-                              disabled={loading}
-                              className="p-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 transition-all cursor-pointer flex items-center gap-1 text-xs font-bold shadow-xs"
-                              title={t("roomClient.acceptTitle") || "Accept Request"}
-                            >
-                              <CheckCircleIcon className="h-4 w-4" />
-                              <span className="hidden sm:inline">{t("roomClient.acceptBtn") || "Accept"}</span>
-                            </button>
-                            <button
-                              onClick={() =>
-                                handleRequestResponse(req._id, "rejected")
-                              }
-                              disabled={loading}
-                              className="p-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 transition-all cursor-pointer flex items-center gap-1 text-xs font-bold shadow-xs"
-                              title={t("roomClient.rejectTitle") || "Reject Request"}
-                            >
-                              <XCircleIcon className="h-4 w-4" />
-                              <span className="hidden sm:inline">{t("roomClient.rejectBtn") || "Reject"}</span>
-                            </button>
+                        const senderInitials = req.sentBy
+                          ? `${req.sentBy.firstName?.[0] || ""}${req.sentBy.lastName?.[0] || ""}`.toUpperCase()
+                          : "?";
+
+                        return (
+                          <div
+                            key={req._id}
+                            className="flex flex-col gap-2.5 p-4 rounded-2xl bg-tertiary/10 border border-tertiary/20 shadow-xs transition-all hover:bg-tertiary/15"
+                          >
+                            {/* Top Row: Room Title & Status/Time */}
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="space-y-0.5">
+                                <h4 className="text-xs font-bold text-dark dark:text-light flex items-center gap-1.5">
+                                  <span>
+                                    {req.room?.title ||
+                                      req.roomTitle ||
+                                      t("roomClient.expenseRoomDefault") ||
+                                      "Expense Room"}
+                                  </span>
+                                  {req.room?.members && (
+                                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-secondary/20 font-medium text-dark/70 dark:text-light/70">
+                                      {req.room.members.length}{" "}
+                                      {req.room.members.length === 1
+                                        ? "member"
+                                        : "members"}
+                                    </span>
+                                  )}
+                                </h4>
+                                {req.room?.description && (
+                                  <p className="text-[11px] text-dark/60 dark:text-light/60 line-clamp-1">
+                                    {req.room.description}
+                                  </p>
+                                )}
+                              </div>
+
+                              {req.createdAt && (
+                                <span className="text-[10px] text-dark/50 dark:text-light/50 shrink-0">
+                                  {new Date(req.createdAt).toLocaleDateString(
+                                    undefined,
+                                    { month: "short", day: "numeric" },
+                                  )}
+                                </span>
+                              )}
+                            </div>
+
+                            {/* Middle Section: Sender & Optional Message */}
+                            <div className="flex items-start gap-2.5 pt-1 border-t border-tertiary/10">
+                              <div className="w-7 h-7 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
+                                {senderInitials}
+                              </div>
+                              <div className="flex-1 min-w-0 space-y-0.5">
+                                <p className="text-[11px] text-dark/70 dark:text-light/70 truncate">
+                                  {t("roomClient.fromLabel") || "From"}:{" "}
+                                  <span className="font-semibold text-dark dark:text-light">
+                                    {senderName}
+                                  </span>
+                                </p>
+                                {req.notificationMessage && (
+                                  <p className="text-[11px] italic text-dark/60 dark:text-light/60 bg-tertiary/5 p-1.5 rounded-lg border border-tertiary/10">
+                                    &ldquo;{req.notificationMessage}&rdquo;
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Bottom Actions */}
+                            <div className="flex items-center justify-end gap-2 pt-1">
+                              <button
+                                onClick={() =>
+                                  handleRequestResponse(req._id, "rejected")
+                                }
+                                disabled={loading}
+                                className="px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 transition-all cursor-pointer flex items-center gap-1 text-xs font-bold shadow-xs disabled:opacity-50"
+                                title={
+                                  t("roomClient.rejectTitle") ||
+                                  "Reject Request"
+                                }
+                              >
+                                <XCircleIcon className="h-4 w-4" />
+                                <span>
+                                  {t("roomClient.rejectBtn") || "Reject"}
+                                </span>
+                              </button>
+                              <button
+                                onClick={() =>
+                                  handleRequestResponse(req._id, "accepted")
+                                }
+                                disabled={loading}
+                                className="px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 transition-all cursor-pointer flex items-center gap-1 text-xs font-bold shadow-xs disabled:opacity-50"
+                                title={
+                                  t("roomClient.acceptTitle") ||
+                                  "Accept Request"
+                                }
+                              >
+                                <CheckCircleIcon className="h-4 w-4" />
+                                <span>
+                                  {t("roomClient.acceptBtn") || "Accept"}
+                                </span>
+                              </button>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   )}
                 </DisclosurePanel>
@@ -357,7 +439,8 @@ export default function RoomClient() {
               {t("roomClient.activeRoomsTitle") || "Your Active Rooms"}
             </h2>
             <span className="text-xs font-mono font-bold px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20">
-              {rooms.length} {t("roomClient.roomsActiveSuffix") || "Rooms Active"}
+              {rooms.length}{" "}
+              {t("roomClient.roomsActiveSuffix") || "Rooms Active"}
             </span>
           </div>
 
@@ -373,7 +456,8 @@ export default function RoomClient() {
                   {t("roomClient.noRoomsTitle") || "No expense rooms found"}
                 </p>
                 <p className="text-xs text-dark/60 dark:text-light/60">
-                  {t("roomClient.noRoomsDesc") || "Create a room to start splitting expenses with friends."}
+                  {t("roomClient.noRoomsDesc") ||
+                    "Create a room to start splitting expenses with friends."}
                 </p>
               </div>
               <button
@@ -396,7 +480,8 @@ export default function RoomClient() {
                         {room.title}
                       </h3>
                       <span className="px-3 py-1 rounded-xl bg-primary/10 text-primary text-xs font-bold font-mono border border-primary/20 shadow-xs">
-                        {room.members?.length || 1} {t("roomClient.membersSuffix") || "Members"}
+                        {room.members?.length || 1}{" "}
+                        {t("roomClient.membersSuffix") || "Members"}
                       </span>
                     </div>
                     <p className="text-xs text-dark/70 dark:text-light/70 line-clamp-2 leading-relaxed">
@@ -419,7 +504,9 @@ export default function RoomClient() {
                           setIsInviteModalOpen(true);
                         }}
                         className="p-2.5 rounded-xl bg-tertiary/20 hover:bg-tertiary/30 text-dark dark:text-light transition-all flex items-center justify-center cursor-pointer shadow-xs"
-                        title={t("roomClient.inviteMemberTitle") || "Invite Member"}
+                        title={
+                          t("roomClient.inviteMemberTitle") || "Invite Member"
+                        }
                       >
                         <UserPlusIcon className="h-4 w-4 text-primary" />
                       </button>
@@ -430,10 +517,14 @@ export default function RoomClient() {
                           setIsExpenseModalOpen(true);
                         }}
                         className="px-4.5 py-2.5 rounded-xl text-xs font-bold bg-primary hover:bg-secondary text-white transition-all flex items-center gap-1.5 cursor-pointer shadow-md shadow-primary/20"
-                        title={t("roomClient.addExpenseTitle") || "Add Room Expense"}
+                        title={
+                          t("roomClient.addExpenseTitle") || "Add Room Expense"
+                        }
                       >
                         <CurrencyDollarIcon className="h-4 w-4" />
-                        <span>{t("roomClient.addExpenseBtn") || "Add Expense"}</span>
+                        <span>
+                          {t("roomClient.addExpenseBtn") || "Add Expense"}
+                        </span>
                       </button>
                     </div>
                   </div>
