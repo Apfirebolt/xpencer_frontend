@@ -25,6 +25,7 @@ import {
   ArrowDownTrayIcon,
 } from "@heroicons/react/24/outline";
 import { Dialog, Transition, TransitionChild } from "@headlessui/react";
+import { useTranslation } from "@/context/LanguageContext";
 import AOS from "aos";
 import "aos/dist/aos.css";
 
@@ -34,6 +35,7 @@ const getAuthHeaders = () => {
 };
 
 export default function RoomDetailClient() {
+  const { t } = useTranslation();
   const params = useParams();
   const router = useRouter();
   const roomId = params?.id;
@@ -64,7 +66,7 @@ export default function RoomDetailClient() {
       setExpenses(Array.isArray(expenseData) ? expenseData : []);
     } catch (err) {
       console.error("Failed to load room details:", err);
-      setError("Failed to load room details or expenses.");
+      setError(t("roomDetail.loadError"));
     } finally {
       setLoading(false);
     }
@@ -105,19 +107,19 @@ export default function RoomDetailClient() {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(20);
       doc.setTextColor(30, 41, 59); // Dark slate
-      doc.text(`Room Expense Report`, 14, 24);
+      doc.text(t("roomDetail.pdf.reportTitle"), 14, 24);
 
       doc.setFontSize(12);
       doc.setTextColor(99, 102, 241);
-      doc.text(room?.title || "Expense Room", 14, 31);
+      doc.text(room?.title || t("roomDetail.pdf.defaultRoom"), 14, 31);
 
       // Metadata Box / Sub-header
       doc.setFont("helvetica", "normal");
       doc.setFontSize(9);
       doc.setTextColor(100, 116, 139); // Muted gray
-      doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 38);
-      doc.text(`Total Members: ${room?.members?.length || 1}`, 70, 38);
-      doc.text(`Total Room Outflow: ${currencySymbol}${totalRoomExpenses.toFixed(2)}`, 130, 38);
+      doc.text(`${t("roomDetail.pdf.generatedOn")}: ${new Date().toLocaleDateString()}`, 14, 38);
+      doc.text(`${t("roomDetail.pdf.totalMembers")}: ${room?.members?.length || 1}`, 70, 38);
+      doc.text(`${t("roomDetail.pdf.totalOutflow")}: ${currencySymbol}${totalRoomExpenses.toFixed(2)}`, 130, 38);
 
       // Divider line
       doc.setDrawColor(226, 232, 240);
@@ -125,7 +127,14 @@ export default function RoomDetailClient() {
       doc.line(14, 43, pageWidth - 14, 43);
 
       // Build structured rows including participants & settlement status
-      const tableColumn = ["Date", "Description", "Category", "Payer / Type", `Total (${currencySymbol})`, "Participant Breakdown & Status"];
+      const tableColumn = [
+        t("roomDetail.pdf.date"),
+        t("roomDetail.pdf.description"),
+        t("roomDetail.pdf.category"),
+        t("roomDetail.pdf.payerType"),
+        `${t("roomDetail.pdf.total")} (${currencySymbol})`,
+        t("roomDetail.pdf.breakdownStatus")
+      ];
       const tableRows = [];
 
       expenses.forEach((item) => {
@@ -138,23 +147,23 @@ export default function RoomDetailClient() {
             dateStr,
             description,
             category,
-            `Single Expense (${item.mode || "Cash"})`,
+            `${t("roomDetail.pdf.singleExpense")} (${item.mode || "Cash"})`,
             `${currencySymbol}${Number(item.amount || 0).toFixed(2)}`,
-            "N/A (Personal Record)"
+            t("roomDetail.pdf.personalRecord")
           ]);
         } else {
           const creditor = item.paidBy;
           const creditorName = creditor
             ? `${creditor.firstName || ""} ${creditor.lastName || ""}`.trim() || creditor.email
-            : "Member";
+            : t("roomDetail.member");
 
           // Format participants breakdown text cleanly with bullet-like spacing
           const participantDetails = (item.shares || []).map((share) => {
             const debtorName = share.user
               ? `${share.user.firstName || ""} ${share.user.lastName || ""}`.trim() || share.user.email
-              : "Member";
+              : t("roomDetail.member");
             const status = share.settlementStatus || "unpaid";
-            const statusText = status === "settled" ? "Settled" : status === "pending_confirmation" ? "Awaiting Conf." : "Pending";
+            const statusText = status === "settled" ? t("roomDetail.pdf.settled") : status === "pending_confirmation" ? t("roomDetail.pdf.awaitingConf") : t("roomDetail.pdf.pending");
             return `• ${debtorName}: ${currencySymbol}${Number(share.amount || 0).toFixed(2)} [${statusText}]`;
           }).join("\n");
 
@@ -162,7 +171,7 @@ export default function RoomDetailClient() {
             dateStr,
             description,
             category,
-            `Paid by: ${creditorName}`,
+            `${t("roomDetail.pdf.paidBy")}: ${creditorName}`,
             `${currencySymbol}${Number(item.totalAmount || 0).toFixed(2)}`,
             participantDetails
           ]);
@@ -205,13 +214,13 @@ export default function RoomDetailClient() {
           doc.setFontSize(8);
           doc.setTextColor(148, 163, 184);
           doc.text(
-            `Page ${doc.internal.getNumberOfPages()}`,
+            `${t("roomDetail.pdf.page")} ${doc.internal.getNumberOfPages()}`,
             pageWidth - 20,
             pageHeight - 10,
             { align: 'right' }
           );
           doc.text(
-            `Expense Rooms Report — Confidential`,
+            t("roomDetail.pdf.confidential"),
             14,
             pageHeight - 10
           );
@@ -238,7 +247,7 @@ export default function RoomDetailClient() {
         getAuthHeaders(),
       );
 
-      setFeedbackMessage("Expense added successfully!");
+      setFeedbackMessage(t("roomDetail.expenseSuccess"));
       setTimeout(() => {
         setFeedbackMessage("");
         setIsExpenseModalOpen(false);
@@ -246,7 +255,7 @@ export default function RoomDetailClient() {
       }, 1200);
     } catch (err) {
       console.error("Failed to add expense:", err);
-      setError(err.response?.data?.error || "Failed to add expense.");
+      setError(err.response?.data?.error || t("roomDetail.expenseError"));
     } finally {
       setSubmitting(false);
     }
@@ -285,14 +294,14 @@ export default function RoomDetailClient() {
               className="inline-flex items-center gap-2 text-xs font-bold text-primary hover:underline cursor-pointer"
             >
               <ArrowLeftIcon className="h-4 w-4" />
-              <span>Back to Expense Rooms</span>
+              <span>{t("roomDetail.backToRooms")}</span>
             </button>
             <h1 className="text-3xl font-extrabold tracking-tight font-heading">
-              {loading ? "Loading Room..." : room?.title || "Room Details"}
+              {loading ? t("roomDetail.loadingRoom") : room?.title || t("roomDetail.roomDetails")}
             </h1>
             <p className="text-xs text-dark/70 dark:text-light/70 max-w-2xl">
               {room?.description ||
-                "Manage shared group expenses and settlements."}
+                t("roomDetail.defaultDesc")}
             </p>
           </div>
 
@@ -303,7 +312,7 @@ export default function RoomDetailClient() {
               className="px-4 py-3 rounded-2xl font-bold bg-tertiary/20 hover:bg-tertiary/30 text-dark dark:text-light border border-tertiary/30 transition-all flex items-center gap-2 cursor-pointer text-xs disabled:opacity-50 shadow-xs"
             >
               <ArrowDownTrayIcon className="h-4 w-4 text-primary" />
-              <span>{exportingPdf ? "Generating PDF..." : "Export Room PDF"}</span>
+              <span>{exportingPdf ? t("roomDetail.generatingPdf") : t("roomDetail.exportPdf")}</span>
             </button>
 
             <button
@@ -311,7 +320,7 @@ export default function RoomDetailClient() {
               className="px-5 py-3 rounded-2xl font-bold bg-primary hover:bg-secondary text-white transition-all shadow-lg shadow-primary/25 flex items-center gap-2 cursor-pointer text-xs"
             >
               <PlusCircleIcon className="h-5 w-5" />
-              <span>Add Expense</span>
+              <span>{t("roomDetail.addExpense")}</span>
             </button>
           </div>
         </div>
@@ -323,7 +332,7 @@ export default function RoomDetailClient() {
         >
           <div className="p-7 rounded-[2rem] bg-white/90 dark:bg-dark/90 backdrop-blur-md border border-tertiary/20 dark:border-tertiary/15 shadow-sm space-y-2">
             <p className="text-xs font-bold uppercase tracking-wider text-dark/60 dark:text-light/60">
-              Total Members
+              {t("roomDetail.totalMembers")}
             </p>
             <p className="text-3xl font-extrabold font-heading text-primary">
               {room?.members?.length || 1}
@@ -331,7 +340,7 @@ export default function RoomDetailClient() {
           </div>
           <div className="p-7 rounded-[2rem] bg-white/90 dark:bg-dark/90 backdrop-blur-md border border-tertiary/20 dark:border-tertiary/15 shadow-sm space-y-2">
             <p className="text-xs font-bold uppercase tracking-wider text-dark/60 dark:text-light/60">
-              Total Room Expenses
+              {t("roomDetail.totalRoomExpenses")}
             </p>
             <p className="text-3xl font-extrabold font-heading text-primary">
               {currencySymbol}
@@ -340,13 +349,13 @@ export default function RoomDetailClient() {
           </div>
           <div className="p-7 rounded-[2rem] bg-white/90 dark:bg-dark/90 backdrop-blur-md border border-tertiary/20 dark:border-tertiary/15 shadow-sm space-y-2">
             <p className="text-xs font-bold uppercase tracking-wider text-dark/60 dark:text-light/60">
-              Room Creator
+              {t("roomDetail.roomCreator")}
             </p>
             <p className="text-sm font-bold truncate">
               {typeof room?.creator === "object"
                 ? `${room.creator.firstName || ""} ${room.creator.lastName || ""}`.trim() ||
                   room.creator.email
-                : "You"}
+                : t("roomDetail.you")}
             </p>
           </div>
         </div>
@@ -355,26 +364,26 @@ export default function RoomDetailClient() {
         <div className="space-y-4" data-aos="fade-up">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-bold font-heading">
-              Room Expenses & Settlements
+              {t("roomDetail.expensesTitle")}
             </h2>
             <span className="text-xs font-bold px-3 py-1 rounded-full bg-primary/10 text-primary font-mono">
-              {expenses.length} Unified Bills
+              {expenses.length} {t("roomDetail.unifiedBills")}
             </span>
           </div>
 
           {loading ? (
             <div className="p-12 text-center text-sm text-dark/50 dark:text-light/50 bg-white/50 dark:bg-dark/50 rounded-[2rem] border border-tertiary/20">
-              Loading expenses...
+              {t("roomDetail.loadingExpenses")}
             </div>
           ) : expenses.length === 0 ? (
             <div className="p-16 text-center space-y-4 bg-white/50 dark:bg-dark/50 rounded-[2rem] border border-tertiary/20">
               <CurrencyDollarIcon className="h-12 w-12 text-primary mx-auto opacity-50" />
               <div className="space-y-1">
                 <p className="text-sm font-semibold">
-                  No expenses recorded yet
+                  {t("roomDetail.noExpensesTitle")}
                 </p>
                 <p className="text-xs text-dark/60 dark:text-light/60">
-                  Add your first shared expense to start tracking.
+                  {t("roomDetail.noExpensesDesc")}
                 </p>
               </div>
             </div>
@@ -413,7 +422,7 @@ export default function RoomDetailClient() {
                 const creditorName = creditor
                   ? `${creditor.firstName || ""} ${creditor.lastName || ""}`.trim() ||
                     creditor.email
-                  : "Member";
+                  : t("roomDetail.member");
 
                 return (
                   <div
@@ -428,7 +437,7 @@ export default function RoomDetailClient() {
                             {item.category || "General"}
                           </span>
                           <span className="px-3 py-1 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[10px] font-bold font-mono border border-amber-500/20 flex items-center gap-1.5 shadow-xs">
-                            <UserGroupIcon className="h-3 w-3" /> Split Bill
+                            <UserGroupIcon className="h-3 w-3" /> {t("roomDetail.splitBill")}
                           </span>
                           <span className="px-3 py-1 rounded-xl bg-tertiary/10 text-dark/70 dark:text-light/70 text-[10px] font-bold font-mono border border-tertiary/20 flex items-center gap-1.5">
                             <CreditCardIcon className="h-3 w-3" /> {item.mode}
@@ -449,7 +458,7 @@ export default function RoomDetailClient() {
                           {item.totalAmount.toFixed(2)}
                         </p>
                         <p className="text-[10px] text-dark/50 dark:text-light/50 font-bold uppercase tracking-wider pt-0.5">
-                          Paid by{" "}
+                          {t("roomDetail.paidBy")}{" "}
                           <strong className="text-dark dark:text-light">
                             {creditorName}
                           </strong>
@@ -460,7 +469,7 @@ export default function RoomDetailClient() {
                     {/* Participant Breakdown Section */}
                     <div className="space-y-3">
                       <p className="text-xs font-bold uppercase tracking-wider text-dark/60 dark:text-light/60 font-heading">
-                        Participant Breakdown & Settlement Status
+                        {t("roomDetail.participantBreakdownTitle")}
                       </p>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
@@ -479,7 +488,7 @@ export default function RoomDetailClient() {
                           const debtorName = share.user
                             ? `${share.user.firstName || ""} ${share.user.lastName || ""}`.trim() ||
                               share.user.email
-                            : "Member";
+                            : t("roomDetail.member");
 
                           return (
                             <div
@@ -490,7 +499,7 @@ export default function RoomDetailClient() {
                                 <div className="flex items-center gap-2">
                                   <UserIcon className="h-4 w-4 text-primary" />
                                   <span className="text-xs font-bold">
-                                    {debtorName} {isUserDebtor && "(You)"}
+                                    {debtorName} {isUserDebtor && t("roomDetail.youSuffix")}
                                   </span>
                                 </div>
                                 <span className="text-xs font-extrabold font-mono text-primary">
@@ -503,17 +512,16 @@ export default function RoomDetailClient() {
                                 {status === "settled" ? (
                                   <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-xl border border-emerald-500/20">
                                     <CheckCircleIcon className="h-4 w-4" />{" "}
-                                    Settled
+                                    {t("roomDetail.settled")}
                                   </span>
                                 ) : status === "pending_confirmation" ? (
                                   <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-xl border border-amber-500/20">
                                     <ClockIcon className="h-4 w-4 animate-spin" />{" "}
-                                    Awaiting Confirmation
+                                    {t("roomDetail.awaitingConfirmation")}
                                   </span>
                                 ) : (
                                   <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-xl border border-amber-500/20">
-                                    <ClockIcon className="h-4 w-4" /> Pending
-                                    Payment
+                                    <ClockIcon className="h-4 w-4" /> {t("roomDetail.pendingPayment")}
                                   </span>
                                 )}
 
@@ -522,7 +530,7 @@ export default function RoomDetailClient() {
                                     onClick={() => handleMarkPaid(share._id)}
                                     className="px-3 py-1.5 rounded-xl text-[11px] font-bold bg-amber-500/10 text-amber-600 hover:bg-amber-500/20 transition-all cursor-pointer border border-amber-500/20 shadow-xs"
                                   >
-                                    Mark as Paid
+                                    {t("roomDetail.markAsPaid")}
                                   </button>
                                 )}
 
@@ -532,7 +540,7 @@ export default function RoomDetailClient() {
                                       onClick={() => handleConfirm(share._id)}
                                       className="px-3 py-1.5 rounded-xl text-[11px] font-bold bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 transition-all cursor-pointer border border-emerald-500/20 shadow-xs animate-pulse"
                                     >
-                                      Confirm Receipt
+                                      {t("roomDetail.confirmReceipt")}
                                     </button>
                                   )}
                               </div>
