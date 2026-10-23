@@ -7,6 +7,7 @@ import ExpenseForm from '@/components/ExpenseForm';
 import ExpenseCalendar from '@/components/ExpenseCalendar';
 import { useExpenseStore } from '@/store/useExpenseStore';
 import { useBudgetStore } from '@/store/useBudgetStore';
+import { useRecurringStore } from '@/store/useRecurringExpenseStore';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useTranslation } from '@/context/LanguageContext';
 import { currencies } from '@/utils/constants';
@@ -33,6 +34,7 @@ export default function DashboardClient() {
   const { expenses, fetching: fetchingExpenses, fetchExpenses, createExpense, getTotalSpent } = useExpenseStore();
   const { budgets, fetchBudgets, getTotalBudgetLimit, getTotalBudgetSpent } = useBudgetStore();
   const { user, initializeAuth } = useAuthStore();
+  const { recurringList, fetchRecurring } = useRecurringStore();
   const { t } = useTranslation();
 
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
@@ -48,7 +50,8 @@ export default function DashboardClient() {
     initializeAuth();
     fetchExpenses();
     fetchBudgets(currentMonth, currentYear);
-  }, [fetchExpenses, fetchBudgets, initializeAuth, currentMonth, currentYear]);
+    fetchRecurring();
+  }, [fetchExpenses, fetchBudgets, initializeAuth, fetchRecurring, currentMonth, currentYear]);
 
   // Extract user preferred currency symbol
   const userCurrencyCode = user?.settings?.currency || 'USD';
@@ -96,11 +99,15 @@ export default function DashboardClient() {
               <SparklesIcon className="h-4 w-4" />
               <span>{t('dashboard.badge') || "Overview Suite"}</span>
             </div>
-            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight font-heading flex items-center gap-2">
+            {/* Greeting Header */}
+            <h1 
+              className="text-3xl sm:text-4xl font-extrabold tracking-tight font-heading flex items-center gap-2"
+              
+            >
               Hello, <span className="text-primary">{displayName}</span> 👋
             </h1>
             <p className="text-xs text-dark/60 dark:text-light/60 font-sans">
-              Here is your financial pulse and monthly ledger summary.
+              {t('dashboard.welcomeMessage') || "This is your monthly financial overview."}
             </p>
           </div>
 
@@ -423,7 +430,7 @@ export default function DashboardClient() {
                     </button>
                   </div>
 
-                  <ExpenseCalendar expenses={expenses} />
+                  <ExpenseCalendar expenses={expenses} recurringList={recurringList} />
 
                 </DialogPanel>
               </TransitionChild>

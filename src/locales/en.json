@@ -157,6 +157,8 @@
   "dashboard": {
     "badge": "Overview Suite",
     "title": "Financial Dashboard",
+    "welcomeMessage": "Here is your monthly financial overview.",
+    "greeting": "Hello, <span class=\"text-primary\">{{name}}</span> 👋",
     "calendarView": "Calendar View",
     "addExpense": "Add Expense",
     "totalExpenses": "Total Expenses",

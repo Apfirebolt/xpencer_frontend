@@ -155,6 +155,8 @@
   "dashboard": {
     "badge": "概要スイート",
     "title": "財務ダッシュボード",
+    "welcomeMessage": "こちらがあなたの月間財務概要です。",
+    "greeting": "こんにちは、<span class=\"text-primary\">{{name}}</span> 👋",
     "calendarView": "カレンダー表示",
     "addExpense": "支出を追加",
     "totalExpenses": "総支出",

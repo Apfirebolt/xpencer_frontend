@@ -157,6 +157,8 @@
   "dashboard": {
     "badge": "Übersicht",
     "title": "Finanz-Dashboard",
+    "welcomeMessage": "Hier ist deine monatliche Finanzübersicht.",
+    "greeting": "Hallo, <span class=\"text-primary\">{{email}}</span> 👋",
     "calendarView": "Kalenderansicht",
     "addExpense": "Ausgabe hinzufügen",
     "totalExpenses": "Gesamtausgaben",

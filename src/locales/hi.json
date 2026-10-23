@@ -157,6 +157,8 @@
   "dashboard": {
     "badge": "ओवरव्यू सूट",
     "title": "फाइनेंशियल डैशबोर्ड",
+    "welcomeMessage": "ये रहा इस महीने का आपका financial हिसाब-किताब।",
+    "greeting": "नमस्ते, <span class=\"text-primary\">{{name}}</span> 👋",
     "calendarView": "कैलेंडर व्यू",
     "addExpense": "खर्चा जोड़ें",
     "totalExpenses": "कुल खर्चे",
