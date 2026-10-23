@@ -215,9 +215,6 @@ export default function ExpenseCalendar({ expenses = [], recurringList = [], onS
             <h2 className="text-xl sm:text-2xl font-extrabold font-heading text-dark dark:text-light tracking-tight">
               {MONTH_NAMES[month]} <span className="text-primary font-normal">{year}</span>
             </h2>
-            <p className="text-xs text-dark/50 dark:text-light/50 font-sans">
-              {t('calendar.calendarSubtitle') || "Interactive financial timeline. Recurring bills are automatically pinned to their billing dates."}
-            </p>
           </div>
         </div>
 

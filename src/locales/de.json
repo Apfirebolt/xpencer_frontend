@@ -403,6 +403,19 @@
     "showOnlyRecurring": "Nur wiederkehrend anzeigen",
     "today": "Heute"
   },
+  "notifications": {
+    "inbox": "Posteingang",
+    "title": "Benachrichtigungen",
+    "unreadCount": "ungelesen",
+    "markAllAsRead": "Alle als gelesen markieren",
+    "loading": "Benachrichtigungen werden geladen...",
+    "emptyTitle": "Sie sind auf dem Laufenden!",
+    "emptySubtitle": "Derzeit gibt es keine neuen Benachrichtigungen. Wir informieren Sie, wenn etwas passiert.",
+    "justNow": "Gerade eben",
+    "markReadTitle": "Als gelesen markieren",
+    "markReadButton": "Als gelesen markieren",
+    "deleteTitle": "Benachrichtigung löschen"
+  },
   "common": {
     "months": [
       "Januar", "Februar", "März", "April", "Mai", "Juni", 

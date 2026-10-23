@@ -4,6 +4,9 @@ import { useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useNotificationStore } from '@/store/useNotificationStore';
+import { useAuthStore } from '@/store/useAuthStore';
+import { useTranslation } from '@/context/LanguageContext';
+import { currencies } from '@/utils/constants';
 import { 
   BellIcon, 
   CheckIcon, 
@@ -17,6 +20,8 @@ import AOS from 'aos';
 import 'aos/dist/aos.css';
 
 export default function NotificationClient() {
+  const { t } = useTranslation();
+  const { user, initializeAuth, fetchProfile } = useAuthStore();
   const { 
     notifications, 
     unreadCount, 
@@ -27,10 +32,20 @@ export default function NotificationClient() {
     deleteNotification 
   } = useNotificationStore();
 
+  // Extract user preferred currency symbol safely
+  const userCurrencyCode = user?.settings?.currency || "USD";
+  const currencyObj = currencies.find((c) => c.code === userCurrencyCode) || {
+    symbol: "$",
+    code: "USD",
+  };
+  const currencySymbol = currencyObj.symbol;
+
   useEffect(() => {
     AOS.init({ duration: 800, once: true, easing: "ease-out-cubic" });
+    initializeAuth();
+    fetchProfile(); // Ensures latest settings & currency are fetched from backend
     fetchNotifications();
-  }, [fetchNotifications]);
+  }, [initializeAuth, fetchProfile, fetchNotifications]);
 
   // Helper to render appropriate icon based on notification type
   const getNotificationIcon = (type) => {
@@ -57,13 +72,13 @@ export default function NotificationClient() {
           <div>
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-wider uppercase border border-primary/20 mb-3">
               <BellIcon className="h-4 w-4" />
-              <span>Inbox</span>
+              <span>{t('notifications.inbox') || "Inbox"}</span>
             </div>
             <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight font-heading flex items-center gap-3">
-              <span>Notifications</span>
+              <span>{t('notifications.title') || "Notifications"}</span>
               {unreadCount > 0 && (
                 <span className="px-3 py-0.5 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 text-xs font-mono font-bold border border-rose-500/20">
-                  {unreadCount} unread
+                  {unreadCount} {t('notifications.unreadCount') || "unread"}
                 </span>
               )}
             </h1>
@@ -75,7 +90,7 @@ export default function NotificationClient() {
               className="px-4 py-2.5 rounded-xl text-xs font-bold bg-tertiary/20 hover:bg-tertiary/30 text-dark dark:text-light transition-all border border-tertiary/30 flex items-center gap-2 cursor-pointer"
             >
               <CheckBadgeIcon className="h-4 w-4 text-primary" />
-              <span>Mark all as read</span>
+              <span>{t('notifications.markAllAsRead') || "Mark all as read"}</span>
             </button>
           )}
         </div>
@@ -84,17 +99,17 @@ export default function NotificationClient() {
         <div className="space-y-4" data-aos="fade-up">
           {fetching ? (
             <div className="p-12 text-center text-sm text-dark/50 dark:text-light/50 bg-white/50 dark:bg-dark/50 rounded-3xl border border-tertiary/20">
-              Loading notifications...
+              {t('notifications.loading') || "Loading notifications..."}
             </div>
           ) : notifications.length === 0 ? (
             <div className="p-16 text-center space-y-4 max-w-md mx-auto bg-white/50 dark:bg-dark/50 rounded-3xl border border-tertiary/20">
               <BellIcon className="h-12 w-12 text-primary mx-auto opacity-40" />
               <div className="space-y-1">
                 <p className="text-sm font-semibold text-dark dark:text-light">
-                  You're all caught up!
+                  {t('notifications.emptyTitle') || "You're all caught up!"}
                 </p>
                 <p className="text-xs text-dark/60 dark:text-light/60">
-                  No new notifications right now. We'll alert you when something happens.
+                  {t('notifications.emptySubtitle') || "No new notifications right now. We'll alert you when something happens."}
                 </p>
               </div>
             </div>
@@ -126,7 +141,7 @@ export default function NotificationClient() {
                       {item.message}
                     </p>
                     <p className="text-[10px] text-dark/40 dark:text-light/40 font-mono">
-                      {item.createdAt ? new Date(item.createdAt).toLocaleString() : 'Just now'}
+                      {item.createdAt ? new Date(item.createdAt).toLocaleString() : (t('notifications.justNow') || 'Just now')}
                     </p>
                   </div>
                 </div>
@@ -136,17 +151,17 @@ export default function NotificationClient() {
                     <button
                       onClick={() => markAsRead(item._id)}
                       className="px-3 py-1.5 rounded-xl text-xs font-bold text-primary bg-primary/10 hover:bg-primary/20 transition-colors flex items-center gap-1 cursor-pointer"
-                      title="Mark as read"
+                      title={t('notifications.markReadTitle') || "Mark as read"}
                     >
                       <CheckIcon className="h-3.5 w-3.5" />
-                      <span>Mark Read</span>
+                      <span>{t('notifications.markReadButton') || "Mark Read"}</span>
                     </button>
                   )}
 
                   <button
                     onClick={() => deleteNotification(item._id)}
                     className="p-2 rounded-xl text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer"
-                    title="Delete notification"
+                    title={t('notifications.deleteTitle') || "Delete notification"}
                   >
                     <TrashIcon className="h-4 w-4" />
                   </button>

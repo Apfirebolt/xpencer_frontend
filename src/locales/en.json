@@ -413,6 +413,19 @@
     "showOnlyRecurring": "Show Only Recurring",
     "today": "Today"
   },
+  "notifications": {
+    "inbox": "Inbox",
+    "title": "Notifications",
+    "unreadCount": "unread",
+    "markAllAsRead": "Mark all as read",
+    "loading": "Loading notifications...",
+    "emptyTitle": "You're all caught up!",
+    "emptySubtitle": "No new notifications right now. We'll alert you when something happens.",
+    "justNow": "Just now",
+    "markReadTitle": "Mark as read",
+    "markReadButton": "Mark Read",
+    "deleteTitle": "Delete notification"
+  },
   "common": {
     "months": [
       "January",
