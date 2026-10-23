@@ -16,6 +16,7 @@
     "@dnd-kit/modifiers": "^9.0.0",
     "@headlessui/react": "^2.2.10",
     "@heroicons/react": "^2.2.0",
+    "@react-oauth/google": "^0.13.5",
     "ag-grid-community": "^36.2.0",
     "ag-grid-react": "^36.2.0",
     "aos": "^2.3.4",

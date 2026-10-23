@@ -33,7 +33,7 @@ export const useAuthStore = create((set, get) => ({
   login: async (credentials) => {
     set({ loading: true, error: null });
     try {
-        console.log("Logging in with credentials:", credentials);
+      console.log("Logging in with credentials:", credentials);
       const res = await httpClient.post('/auth/login', credentials);
       const data = res.data;
 
@@ -48,6 +48,29 @@ export const useAuthStore = create((set, get) => ({
       return { success: true };
     } catch (err) {
       const errorMsg = err.response?.data?.message || err.message || "Invalid email or password.";
+      set({ error: errorMsg, loading: false });
+      return { success: false, error: errorMsg };
+    }
+  },
+
+  // Google Login action
+  googleLogin: async (credential) => {
+    set({ loading: true, error: null });
+    try {
+      const res = await httpClient.post('/auth/google', { credential });
+      const data = res.data;
+
+      // Set cookies
+      Cookie.set('token', data.token, { expires: 7 });
+      if (data.refreshToken) {
+        Cookie.set('refreshToken', data.refreshToken, { expires: 30 });
+      }
+      Cookie.set('user', JSON.stringify(data), { expires: 7 });
+
+      set({ user: data, isAuthenticated: true, loading: false });
+      return { success: true };
+    } catch (err) {
+      const errorMsg = err.response?.data?.message || err.message || "Google authentication failed.";
       set({ error: errorMsg, loading: false });
       return { success: false, error: errorMsg };
     }
