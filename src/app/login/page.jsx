@@ -152,7 +152,7 @@ export default function LoginPage() {
               {/* Divider */}
               <div className="flex items-center my-2">
                 <div className="flex-grow border-t border-tertiary/20" />
-                <span className="px-3 text-[11px] uppercase tracking-wider text-dark/40 font-bold">Or continue with</span>
+                <span className="px-3 text-[11px] uppercase tracking-wider text-dark/40 font-bold">{t('login.orContinueWith') || "Or continue with"}</span>
                 <div className="flex-grow border-t border-tertiary/20" />
               </div>
 

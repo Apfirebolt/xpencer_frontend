@@ -84,6 +84,7 @@
     "signInButton": "Sign in to X Pencer",
     "signingIn": "Signing in...",
     "errorEmptyFields": "Please enter your email and password.",
+    "orContinueWith": "Or continue with",
     "noAccountPrompt": "Don't have an account?",
     "signUpText": "Sign up"
   },
@@ -101,6 +102,7 @@
     "errorEmptyFields": "Please fill in all required fields.",
     "errorPasswordMismatch": "Passwords do not match.",
     "hasAccountPrompt": "Already have an account?",
+    "orContinueWith": "Or continue with",
     "signInText": "Sign in"
   },
   "settings": {
@@ -374,12 +376,13 @@
   },
   "addRoomExpenseModal": {
     "modalTitle": "Add Expense to",
-    "amountLabel": "Amount ($) *",
+    "amountLabel": "Amount *",
     "categoryLabel": "Category *",
     "paidByLabel": "Paid By *",
     "descriptionLabel": "Description",
     "descriptionPlaceholder": "Hotel bill...",
     "splitBetweenLabel": "Split Expense Between Members *",
+    "unequalSplitLabel": "Unequal Split",
     "youLabel": "(You)",
     "creatorLabel": "(Creator)",
     "adding": "Adding Expense...",

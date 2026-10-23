@@ -380,6 +380,7 @@
     "descriptionLabel": "説明",
     "descriptionPlaceholder": "ホテル代...",
     "splitBetweenLabel": "メンバー間で支出を分割 *",
+    "unequalSplitLabel": "不均等な分割",
     "youLabel": "（あなた）",
     "creatorLabel": "（作成者）",
     "adding": "支出を追加中...",

@@ -85,6 +85,7 @@
     "signingIn": "साइन इन हो रहा है...",
     "errorEmptyFields": "कृपया अपना ईमेल और पासवर्ड दर्ज करें।",
     "noAccountPrompt": "अकाउंट नहीं है?",
+    "orContinueWith": "या इसके साथ जारी रखें",
     "signUpText": "साइन अप करें"
   },
   "register": {
@@ -100,6 +101,7 @@
     "creatingAccount": "अकाउंट बन रहा है...",
     "errorEmptyFields": "कृपया सभी जरूरी फील्ड्स भरें।",
     "errorPasswordMismatch": "पासवर्ड मेल नहीं खा रहे हैं।",
+    "orContinueWith": "या इसके साथ जारी रखें",
     "hasAccountPrompt": "पहले से अकाउंट है?",
     "signInText": "साइन इन करें"
   },
@@ -374,12 +376,13 @@
   },
   "addRoomExpenseModal": {
     "modalTitle": "इसमें खर्चा जोड़ें",
-    "amountLabel": "रकम ($) *",
+    "amountLabel": "रकम *",
     "categoryLabel": "कैटेगरी *",
     "paidByLabel": "भुगतान किसने किया *",
     "descriptionLabel": "विवरण",
     "descriptionPlaceholder": "होटल का बिल...",
     "splitBetweenLabel": "सदस्यों के बीच खर्चा बांटें *",
+    "unequalSplitLabel": "असमान विभाजन",
     "youLabel": "(आप)",
     "creatorLabel": "(क्रिएटर)",
     "adding": "खर्चा जुड़ रहा है...",

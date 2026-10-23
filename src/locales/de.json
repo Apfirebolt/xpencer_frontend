@@ -85,6 +85,7 @@
     "signingIn": "Anmeldung läuft...",
     "errorEmptyFields": "Bitte gib deine E-Mail und dein Passwort ein.",
     "noAccountPrompt": "Noch kein Konto?",
+    "orContinueWith": "Oder fortfahren mit",
     "signUpText": "Registrieren"
   },
   "register": {
@@ -99,6 +100,7 @@
     "createAccountButton": "Konto erstellen",
     "creatingAccount": "Konto wird erstellt...",
     "errorEmptyFields": "Bitte fülle alle Pflichtfelder aus.",
+    "errorInvalidEmail": "Bitte gib eine gültige E-Mail-Adresse ein.",
     "errorPasswordMismatch": "Die Passwörter stimmen nicht überein.",
     "hasAccountPrompt": "Schon ein Konto?",
     "signInText": "Anmelden"
@@ -380,6 +382,7 @@
     "descriptionLabel": "Beschreibung",
     "descriptionPlaceholder": "Hotelrechnung...",
     "splitBetweenLabel": "Aufteilen unter Mitgliedern *",
+    "unequalSplitLabel": "Ungleichmäßige Aufteilung",
     "youLabel": "(Du)",
     "creatorLabel": "(Ersteller)",
     "adding": "Ausgabe wird hinzugefügt...",
