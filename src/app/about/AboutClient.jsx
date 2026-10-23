@@ -40,28 +40,13 @@ const AboutPage = () => {
     {
       icon: <RectangleStackIcon className="h-6 w-6 text-primary" />,
       title: "Automated Expense Tracking",
-      description: "Log daily transactions, organize items with custom tags, and instantly audit where every dollar goes with granular filters."
+      description: "Log daily transactions, organize items with custom tags, and instantly audit where every penny goes with granular type filters."
     },
     {
       icon: <UserGroupIcon className="h-6 w-6 text-primary" />,
       title: "Seamless Bill Splitting",
       description: "Split dinners, group trips, and shared household bills with friends using flexible percentage, exact amount, or equal splits."
     },
-    {
-      icon: <CurrencyDollarIcon className="h-6 w-6 text-primary" />,
-      title: "Multi-Currency Support",
-      description: "Manage expenses across global currencies with live conversion rates, making international travel and remote collaboration smooth."
-    },
-    {
-      icon: <ShieldCheckIcon className="h-6 w-6 text-primary" />,
-      title: "Secure Encrypted Ledger",
-      description: "Your financial data is protected with rigorous encryption standards, secure HTTP-only session cookies, and strict data isolation."
-    },
-    {
-      icon: <WalletIcon className="h-6 w-6 text-primary" />,
-      title: "Real-Time Net Worth Insights",
-      description: "Monitor your financial health indicators, outstanding balances with peers, and historical spending trends on demand."
-    }
   ];
 
   return (
@@ -72,18 +57,18 @@ const AboutPage = () => {
         
         {/* HERO SECTION with AOS */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          <div className="lg:col-span-7 space-y-6" data-aos="fade-right">
+          <div className="lg:col-span-12 space-y-6" data-aos="fade-right">
             
             {/* User Login Status Banner */}
             {user ? (
               <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold border border-emerald-500/20 shadow-sm">
                 <UserCircleIcon className="h-4 w-4" />
-                <span>Active Financial Session: <strong className="text-dark dark:text-light">{user.username || user.email}</strong></span>
+                <span>Active Session: <strong className="text-dark dark:text-light">{user.username || user.email}</strong></span>
               </div>
             ) : (
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-wider uppercase border border-primary/20 shadow-sm">
                 <CodeBracketIcon className="h-4 w-4 animate-pulse" />
-                <span>Smart Expense Suite</span>
+                <span>Smart Expense Management</span>
               </div>
             )}
             
@@ -91,7 +76,7 @@ const AboutPage = () => {
               Master Your Money <span className="text-primary">Without Friction.</span>
             </h1>
             
-            <p className="text-dark/70 dark:text-light/70 text-base sm:text-lg leading-relaxed font-sans max-w-2xl">
+            <p className="text-dark/70 dark:text-light/70 text-base sm:text-lg leading-relaxed font-sans">
               Xpencer brings clarity to personal and shared finances. Keep budgets on track, categorize daily purchases, 
               and split group expenses effortlessly all in one beautifully engineered dashboard.
             </p>
@@ -110,48 +95,6 @@ const AboutPage = () => {
               >
                 Explore Budgets
               </a>
-            </div>
-          </div>
-
-          {/* Visual Card with AOS */}
-          <div className="lg:col-span-5" data-aos="fade-left" data-aos-delay="200">
-            <div className="relative p-8 rounded-3xl bg-gradient-to-tr from-primary/15 via-tertiary/10 to-transparent border border-primary/20 dark:border-primary/10 shadow-2xl backdrop-blur-xl space-y-6">
-              <div className="absolute -top-4 -right-4 w-24 h-24 bg-primary/20 rounded-full blur-2xl pointer-events-none" />
-              
-              <div className="flex items-center justify-between border-b border-tertiary/20 pb-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-danger animate-pulse" />
-                  <div className="w-3 h-3 rounded-full bg-warning" />
-                  <div className="w-3 h-3 rounded-full bg-success" />
-                </div>
-                <span className="text-xs font-mono text-dark/50 dark:text-light/50">xpencer-ledger.secure</span>
-              </div>
-
-              <div className="space-y-3 font-mono text-xs">
-                <div className="p-3 rounded-xl bg-dark/5 dark:bg-white/5 border border-tertiary/20 flex items-center justify-between">
-                  <span className="text-primary font-bold">BUDGET_ENGINE</span>
-                  <span className="text-success">Active & Monitoring</span>
-                </div>
-                <div className="p-3 rounded-xl bg-dark/5 dark:bg-white/5 border border-tertiary/20 flex items-center justify-between">
-                  <span className="text-primary font-bold">EXPENSE_SPLITS</span>
-                  <span className="text-light">Peer-to-Peer Sync</span>
-                </div>
-                <div className="p-3 rounded-xl bg-dark/5 dark:bg-white/5 border border-tertiary/20 flex items-center justify-between">
-                  <span className="text-primary font-bold">SECURITY</span>
-                  <span className="text-warning">End-to-End Encrypted</span>
-                </div>
-                {user && (
-                  <div className="p-3 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-between">
-                    <span className="text-primary font-bold">USER_SESSION</span>
-                    <span className="text-primary truncate max-w-[160px]">{user.email}</span>
-                  </div>
-                )}
-              </div>
-
-              <div className="pt-2 flex items-center gap-3 text-xs text-dark/60 dark:text-light/60">
-                <BoltIcon className="h-4 w-4 text-primary" />
-                <span>Zero third-party tracking. Private financial ledger.</span>
-              </div>
             </div>
           </div>
         </div>

@@ -15,7 +15,7 @@ const Footer = () => {
   const { t } = useTranslation();
   
   const [email, setEmail] = useState('');
-  const [status, setStatus] = useState('idle'); // 'idle' | 'loading' | 'success' | 'error'
+  const [status, setStatus] = useState('idle');
   const [message, setMessage] = useState('');
 
   const handleSubscribe = async (e) => {
@@ -111,10 +111,6 @@ const Footer = () => {
                   <li className="flex items-center gap-1.5 text-dark/50 dark:text-light/50">
                     <UserGroupIcon className="h-4 w-4 text-secondary" />
                     <span>{t('footer.groupSplitting')}</span>
-                  </li>
-                  <li className="flex items-center gap-1.5 text-dark/50 dark:text-light/50">
-                    <ShieldCheckIcon className="h-4 w-4 text-success" />
-                    <span>{t('footer.secureLedger')}</span>
                   </li>
                 </ul>
               </div>
