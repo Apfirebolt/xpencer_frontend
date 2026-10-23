@@ -6,7 +6,8 @@ import { useTranslation } from '@/context/LanguageContext';
 import { 
   WalletIcon, 
   ArrowRightIcon, 
-  ShieldCheckIcon, 
+  BellAlertIcon,
+  ChartBarIcon,
   ChartPieIcon, 
   UserGroupIcon 
 } from "@heroicons/react/24/outline";
@@ -111,6 +112,14 @@ const Footer = () => {
                   <li className="flex items-center gap-1.5 text-dark/50 dark:text-light/50">
                     <UserGroupIcon className="h-4 w-4 text-secondary" />
                     <span>{t('footer.groupSplitting')}</span>
+                  </li>
+                  <li className="flex items-center gap-1.5 text-dark/50 dark:text-light/50">
+                    <ChartBarIcon className="h-4 w-4 text-secondary" />
+                    <span>{t('footer.charts')}</span>
+                  </li>
+                  <li className="flex items-center gap-1.5 text-dark/50 dark:text-light/50">
+                    <BellAlertIcon className="h-4 w-4 text-secondary" />
+                    <span>{t('footer.alerts')}</span>
                   </li>
                 </ul>
               </div>

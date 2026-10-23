@@ -73,7 +73,7 @@ const AboutPage = () => {
             )}
             
             <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight font-heading leading-tight">
-              Master Your Money <span className="text-primary">Without Friction.</span>
+              Master Your Money <span className="text-primary">Hassle-Free</span>
             </h1>
             
             <p className="text-dark/70 dark:text-light/70 text-base sm:text-lg leading-relaxed font-sans">
@@ -135,13 +135,13 @@ const AboutPage = () => {
         >
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/20 via-transparent to-transparent pointer-events-none" />
           
-          <h3 className="text-3xl font-extrabold tracking-tight font-heading">Powered by Modern Web Standards</h3>
+          <h3 className="text-3xl font-extrabold tracking-tight font-heading">Powered by Modern Web Technologies</h3>
           <p className="text-sm text-dark/70 dark:text-light/70 max-w-2xl mx-auto font-sans leading-relaxed">
             Crafted with Next.js App Router, React, Tailwind CSS, Mongoose for robust relational data persistence, 
             and secure cookie-based session management.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-2.5 pt-4">
-            {["Next.js", "React", "MongoDB", "Mongoose", "Tailwind CSS", "Axios"].map((tech, idx) => (
+            {["Next.js", "Express", "React", "MongoDB", "Mongoose", "Tailwind CSS", "Axios"].map((tech, idx) => (
               <span key={idx} className="px-4 py-2 rounded-xl bg-white/80 dark:bg-dark/80 border border-tertiary/30 text-primary font-mono text-xs font-bold shadow-sm">
                 {tech}
               </span>
