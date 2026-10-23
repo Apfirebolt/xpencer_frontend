@@ -7,7 +7,11 @@ import Link from "next/link";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useTranslation } from "@/context/LanguageContext";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
-import { WalletIcon, ArrowRightIcon, LockClosedIcon, EnvelopeIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowRightIcon,
+  LockClosedIcon,
+  EnvelopeIcon,
+} from "@heroicons/react/24/outline";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import AOS from "aos";
@@ -35,7 +39,9 @@ export default function LoginPage() {
     setLocalError("");
 
     if (!email || !password) {
-      setLocalError(t?.login?.errorEmptyFields || "Please enter your email and password.");
+      setLocalError(
+        t?.login?.errorEmptyFields || "Please enter your email and password.",
+      );
       return;
     }
 
@@ -69,30 +75,43 @@ export default function LoginPage() {
         <Header />
 
         <main className="flex-grow flex items-center justify-center px-4 sm:px-6 py-12">
-          
           {/* Unified Single Container with Zero Gaps */}
-          <div 
+          <div
             data-aos="fade-up"
             className="w-full max-w-5xl bg-white dark:bg-tertiary/5 border border-tertiary/20 dark:border-tertiary/10 rounded-3xl shadow-xl overflow-hidden grid grid-cols-1 lg:grid-cols-2"
           >
-            
             {/* Left Side: Form Fields */}
             <div className="p-8 sm:p-12 flex flex-col justify-center space-y-6">
-              
               {/* Brand Header */}
-              <div className="text-center space-y-2" data-aos="fade-down" data-aos-delay="100">
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 mb-1">
-                  <WalletIcon className="h-6 w-6 text-primary animate-pulse" />
+              <div
+                className="flex flex-col items-center justify-center space-y-2 mb-2"
+                data-aos="fade-down"
+                data-aos-delay="100"
+              >
+                <div className="relative w-[240px] md:w-[350px] h-[90px] md:h-[150px] flex items-center justify-center">
+                  <Image
+                    src="/brand.png"
+                    alt="Xpencer Brand"
+                    fill
+                    priority
+                    className="object-contain"
+                  />
                 </div>
-                <h1 className="text-2xl font-extrabold tracking-wider font-heading text-dark dark:text-light">
-                  X <span className="text-primary">Pencer</span>
+                <h1 className="text-2xl font-extrabold tracking-wider font-heading text-dark dark:text-light pt-1">
+                  <span className="text-primary">X</span> Pencer
                 </h1>
-                <p className="text-xs text-dark/60 dark:text-light/60 font-sans leading-relaxed">
-                  {t('login.subtitle') || "Sign in to manage your financial ledger and budgets."}
+                <p className="text-xs text-dark/60 dark:text-light/60 font-sans leading-relaxed text-center">
+                  {t("login.subtitle") ||
+                    "Sign in to manage your financial ledger and budgets."}
                 </p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4 font-sans" data-aos="fade-up" data-aos-delay="200">
+              <form
+                onSubmit={handleSubmit}
+                className="space-y-4 font-sans"
+                data-aos="fade-up"
+                data-aos-delay="200"
+              >
                 {(error || localError) && (
                   <div className="text-xs text-rose-600 dark:text-rose-400 bg-rose-500/10 border border-rose-500/20 p-3 rounded-xl font-medium">
                     {localError || error}
@@ -100,8 +119,11 @@ export default function LoginPage() {
                 )}
 
                 <div className="space-y-1.5">
-                  <label htmlFor="email" className="block text-xs font-bold text-dark dark:text-light uppercase tracking-wider font-heading">
-                    {t('login.emailLabel') || "Email Address"}
+                  <label
+                    htmlFor="email"
+                    className="block text-xs font-bold text-dark dark:text-light uppercase tracking-wider font-heading"
+                  >
+                    {t("login.emailLabel") || "Email Address"}
                   </label>
                   <div className="relative">
                     <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-dark/30 dark:text-light/30">
@@ -120,8 +142,11 @@ export default function LoginPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label htmlFor="password" className="block text-xs font-bold text-dark dark:text-light uppercase tracking-wider font-heading">
-                    {t('login.passwordLabel') || "Password"}
+                  <label
+                    htmlFor="password"
+                    className="block text-xs font-bold text-dark dark:text-light uppercase tracking-wider font-heading"
+                  >
+                    {t("login.passwordLabel") || "Password"}
                   </label>
                   <div className="relative">
                     <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-dark/30 dark:text-light/30">
@@ -142,9 +167,13 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3 text-sm font-bold text-white bg-primary hover:bg-secondary transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/25 disabled:opacity-50 cursor-pointer mt-2"
+                  className="w-full py-3 text-sm font-bold text-white bg-primary hover:bg-secondary transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/25 disabled:opacity-50 cursor-pointer mt-2 rounded-xl"
                 >
-                  <span>{loading ? (t('login.signingIn') || "Signing in...") : (t('login.signInButton') || "Sign in to Xpence")}</span>
+                  <span>
+                    {loading
+                      ? t("login.signingIn") || "Signing in..."
+                      : t("login.signInButton") || "Sign in to Xpence"}
+                  </span>
                   <ArrowRightIcon className="h-4 w-4" />
                 </button>
               </form>
@@ -152,7 +181,9 @@ export default function LoginPage() {
               {/* Divider */}
               <div className="flex items-center my-2">
                 <div className="flex-grow border-t border-tertiary/20" />
-                <span className="px-3 text-[11px] uppercase tracking-wider text-dark/40 font-bold">{t('login.orContinueWith') || "Or continue with"}</span>
+                <span className="px-3 text-[11px] uppercase tracking-wider text-dark/40 font-bold">
+                  {t("login.orContinueWith") || "Or continue with"}
+                </span>
                 <div className="flex-grow border-t border-tertiary/20" />
               </div>
 
@@ -160,7 +191,11 @@ export default function LoginPage() {
               <div className="flex justify-center w-full">
                 <GoogleLogin
                   onSuccess={handleGoogleSuccess}
-                  onError={() => setLocalError("Google Sign-In was unsuccessful. Please try again.")}
+                  onError={() =>
+                    setLocalError(
+                      "Google Sign-In was unsuccessful. Please try again.",
+                    )
+                  }
                   useOneTap
                   theme="outline"
                   shape="pill"
@@ -169,13 +204,19 @@ export default function LoginPage() {
               </div>
 
               {/* Footer Link */}
-              <div className="text-center text-xs text-dark/60 dark:text-light/60 font-sans pt-2 border-t border-tertiary/20 dark:border-tertiary/10" data-aos="fade-in" data-aos-delay="300">
-                {t('login.noAccountPrompt') || "Don't have an account?"}{" "}
-                <Link href="/register" className="text-primary hover:underline font-bold">
-                  {t('login.signUpText') || "Sign up"}
+              <div
+                className="text-center text-xs text-dark/60 dark:text-light/60 font-sans pt-2 border-t border-tertiary/20 dark:border-tertiary/10"
+                data-aos="fade-in"
+                data-aos-delay="300"
+              >
+                {t("login.noAccountPrompt") || "Don't have an account?"}{" "}
+                <Link
+                  href="/register"
+                  className="text-primary hover:underline font-bold"
+                >
+                  {t("login.signUpText") || "Sign up"}
                 </Link>
               </div>
-
             </div>
 
             {/* Right Side: Smaller Compact Background Image Container */}
@@ -191,9 +232,7 @@ export default function LoginPage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-dark/50 via-dark/10 to-transparent" />
               </div>
             </div>
-
           </div>
-
         </main>
 
         <Footer />

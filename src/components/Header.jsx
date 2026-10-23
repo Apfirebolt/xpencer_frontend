@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, Fragment } from 'react';
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import Cookie from "js-cookie";
 import { useNotificationStore } from "@/store/useNotificationStore";
@@ -120,7 +121,7 @@ const Header = () => {
     { name: t("nav.dashboard"), href: "/dashboard", icon: HomeIcon, requiresAuth: true },
     { name: t("nav.budgets"), href: "/budgets", icon: ChartPieIcon, requiresAuth: true },
     { name: t("nav.expenses"), href: "/expenses", icon: RectangleStackIcon, requiresAuth: true },
-    { name: t("nav.rooms"), href: "/rooms", icon: UserGroupIcon, requiresAuth: true }, // Rooms can remain accessible or require auth based on preference
+    { name: t("nav.rooms"), href: "/rooms", icon: UserGroupIcon, requiresAuth: true },
   ];
 
   // Filter links dynamically based on user authentication status
@@ -139,13 +140,16 @@ const Header = () => {
         
         {/* Brand / Logo, Theme Toggle & Language Switcher */}
         <div className="flex items-center gap-3">
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-9 h-9 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:scale-105 transition-transform">
-              <WalletIcon className="h-5 w-5 text-primary" />
+          <Link href="/" className="flex items-center gap-2 group py-1">
+            <div className="relative w-[130px] sm:w-[150px] h-[72px] sm:h-[72px] flex items-center">
+              <Image
+                src="/brand.png"
+                alt="Xpencer Logo"
+                fill
+                priority
+                className="object-contain object-left group-hover:scale-105 transition-transform"
+              />
             </div>
-            <span className="text-xl sm:text-2xl font-extrabold tracking-wider font-heading">
-              X <span className="text-primary"> Pencer</span> 
-            </span>
           </Link>
 
           <button
@@ -161,7 +165,7 @@ const Header = () => {
           </button>
 
           {/* Header Language Switcher */}
-          <div className="flex items-center p-1 rounded-xl bg-tertiary/20 border border-tertiary/30 text-[11px] font-bold">
+          <div className="hidden sm:flex items-center p-1 rounded-xl bg-tertiary/20 border border-tertiary/30 text-[11px] font-bold">
             <button
               onClick={() => changeLanguage('en')}
               className={`px-2 py-1 rounded-lg transition-all cursor-pointer ${

@@ -8,7 +8,6 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { useTranslation } from "@/context/LanguageContext";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import {
-  WalletIcon,
   ArrowRightIcon,
   LockClosedIcon,
   EnvelopeIcon,
@@ -106,17 +105,23 @@ export default function RegisterPage() {
               
               {/* Brand Header */}
               <div
-                className="text-center space-y-2"
+                className="flex flex-col items-center justify-center space-y-2 mb-2"
                 data-aos="fade-down"
                 data-aos-delay="100"
               >
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 mb-1">
-                  <WalletIcon className="h-6 w-6 text-primary animate-pulse" />
+                <div className="relative w-[240px] md:w-[350px] h-[90px] md:h-[150px] flex items-center justify-center">
+                  <Image
+                    src="/brand.png"
+                    alt="Xpencer Brand"
+                    fill
+                    priority
+                    className="object-contain"
+                  />
                 </div>
-                <h1 className="text-2xl font-extrabold tracking-wider font-heading text-dark dark:text-light">
-                  X <span className="text-primary">Pencer</span>
+                <h1 className="text-2xl font-extrabold tracking-wider font-heading text-dark dark:text-light pt-1">
+                  <span className="text-primary">X</span> Pencer
                 </h1>
-                <p className="text-xs text-dark/60 dark:text-light/60 font-sans leading-relaxed">
+                <p className="text-xs text-dark/60 dark:text-light/60 font-sans leading-relaxed text-center">
                   {t('register.subtitle') ||
                     "Create your financial ledger account to start tracking budgets."}
                 </p>
@@ -283,7 +288,7 @@ export default function RegisterPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3 text-sm font-bold text-white bg-primary hover:bg-secondary transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/25 disabled:opacity-50 cursor-pointer mt-1"
+                  className="w-full py-3 text-sm font-bold text-white bg-primary hover:bg-secondary transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/25 disabled:opacity-50 cursor-pointer mt-1 rounded-xl"
                 >
                   <span>
                     {loading
@@ -297,7 +302,7 @@ export default function RegisterPage() {
               {/* Divider */}
               <div className="flex items-center my-1">
                 <div className="flex-grow border-t border-tertiary/20" />
-                <span className="px-3 text-[11px] uppercase tracking-wider text-dark/40 font-bold">Or sign up with</span>
+                <span className="px-3 text-[11px] uppercase tracking-wider text-dark/40 font-bold">{t("register.orContinueWith") || "Or sign up with"}</span>
                 <div className="flex-grow border-t border-tertiary/20" />
               </div>
 

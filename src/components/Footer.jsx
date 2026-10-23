@@ -127,9 +127,9 @@ const Footer = () => {
           </div>
 
           {/* Right Column: Newsletter / Early Access Card */}
-          <div className="lg:col-span-5 p-8 rounded-3xl bg-tertiary/10 dark:bg-tertiary/5 border border-tertiary/20 dark:border-tertiary/10 flex flex-col justify-between space-y-6 shadow-sm">
+          <div className="lg:col-span-5 p-8 rounded-3xl bg-tertiary/10 dark:bg-tertiary/5 border border-tertiary/20 dark:border-tertiary/10 space-y-2 shadow-sm">
             <div className="space-y-2">
-              <h3 className="text-lg font-bold text-dark dark:text-light font-heading">
+              <h3 className="text-lg font-bold text-dark dark:text-light font-heading mb-2">
                 {t('footer.newsletterTitle')}
               </h3>
               <p className="text-xs text-dark/60 dark:text-light/60 font-sans leading-relaxed">
@@ -137,7 +137,7 @@ const Footer = () => {
               </p>
             </div>
 
-            <form onSubmit={handleSubscribe} className="space-y-3 font-sans">
+            <form onSubmit={handleSubscribe} className="space-y-3">
               <div className="relative">
                 <input
                   type="email"
