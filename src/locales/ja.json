@@ -403,6 +403,16 @@
     "modeDoughnutTitle": "支払い方法別の支出分布",
     "modeDoughnutDesc": "支払いチャネルごとの支出の割合内訳"
   },
+  "calendar": {
+    "general": "支出",
+    "more": "もっと",
+    "noActivity": "活動なし",
+    "total": "合計",
+    "calendarSubtitle": "インタラクティブな財務タイムライン。定期請求は請求日に自動的に固定されます。",
+    "showingOnlyRecurring": "定期のみ表示",
+    "showOnlyRecurring": "定期のみ表示",
+    "today": "今日"
+  },
   "common": {
     "months": [
       "1月", "2月", "3月", "4月", "5月", "6月", 

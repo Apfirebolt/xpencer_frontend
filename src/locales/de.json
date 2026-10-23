@@ -393,6 +393,16 @@
     "modeDoughnutTitle": "Verteilung der Ausgaben nach Zahlungsmethode",
     "modeDoughnutDesc": "Proportionale Aufschlüsselung der Ausgaben über die Zahlungskanäle"
   },
+  "calendar": {
+    "general": "Ausgabe",
+    "more": "mehr",
+    "noActivity": "Keine Aktivität",
+    "total": "Gesamt",
+    "calendarSubtitle": "Interaktive Finanz-Zeitleiste. Wiederkehrende Rechnungen werden automatisch an ihren Abrechnungsdaten angeheftet.",
+    "showingOnlyRecurring": "Nur wiederkehrend angezeigt",
+    "showOnlyRecurring": "Nur wiederkehrend anzeigen",
+    "today": "Heute"
+  },
   "common": {
     "months": [
       "Januar", "Februar", "März", "April", "Mai", "Juni", 

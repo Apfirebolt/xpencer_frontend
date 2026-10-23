@@ -403,6 +403,16 @@
     "modeDoughnutTitle": "Payment Mode Outflow Distribution",
     "modeDoughnutDesc": "Proportional breakdown of spending across payment channels"
   },
+  "calendar": {
+    "general": "Expense",
+    "more": "more",
+    "noActivity": "No activity",
+    "total": "Total",
+    "calendarSubtitle": "Interactive financial timeline. Recurring bills are automatically pinned to their billing dates.",
+    "showingOnlyRecurring": "Showing Only Recurring",
+    "showOnlyRecurring": "Show Only Recurring",
+    "today": "Today"
+  },
   "common": {
     "months": [
       "January",
