@@ -483,6 +483,15 @@
       "page": "ページ"
     }
   },
+  "maintenance": {
+    "authenticatedAs": "として認証済み",
+    "title1": "アップグレード中",
+    "title2": "Xpencer",
+    "subtitle": "当社のサーバーは現在、より良い体験を提供するために予定されたメンテナンス中です。",
+    "downtime": "予想ダウンタイム: 最小限。しばらくしてから再度ご確認ください。",
+    "refreshBtn": "ステータスを確認 / 更新",
+    "footerText": "Xpencer 金融エコシステム • 安全なメンテナンスモード"
+  },
   "common": {
     "months": [
       "1月",

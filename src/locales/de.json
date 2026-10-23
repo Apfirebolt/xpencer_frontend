@@ -485,6 +485,15 @@
       "page": "Seite"
     }
   },
+  "maintenance": {
+    "authenticatedAs": "Authentifiziert als",
+    "title1": "Wir führen ein Upgrade durch",
+    "title2": "Xpencer",
+    "subtitle": "Unsere Server befinden sich derzeit in planmäßiger Wartung, um Ihnen ein verbessertes Erlebnis zu bieten.",
+    "downtime": "Erwartete Ausfallzeit: Minimal. Bitte später erneut prüfen.",
+    "refreshBtn": "Status prüfen / Aktualisieren",
+    "footerText": "Xpencer Finanz-Ökosystem • Sicherer Wartungsmodus"
+  },
   "common": {
     "months": [
       "Januar",

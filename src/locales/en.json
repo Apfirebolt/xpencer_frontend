@@ -485,6 +485,15 @@
       "page": "Page"
     }
   },
+  "maintenance": {
+    "authenticatedAs": "Authenticated as",
+    "title1": "We Are Upgrading",
+    "title2": "Xpencer",
+    "subtitle": "Our servers are currently undergoing scheduled maintenance to bring you an improved experience.",
+    "downtime": "Expected downtime: Minimal. Check back shortly.",
+    "refreshBtn": "Check Status / Refresh",
+    "footerText": "Xpencer Financial Ecosystem • Secure Maintenance Mode"
+  },
   "common": {
     "months": [
       "January",
