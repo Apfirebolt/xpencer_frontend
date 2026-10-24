@@ -297,7 +297,7 @@ export default function ExpenseClient() {
             {/* Recurring Expenses Button */}
             <button
               onClick={() => setIsRecurringModalOpen(true)}
-              className="px-1 py-1.5 rounded-2xl font-bold bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 transition-all flex items-center gap-2 cursor-pointer shrink-0 text-xs shadow-xs"
+              className="px-1 py-1.5 rounded-2xl font-bold bg-tertiary/10 hover:bg-tertiary/20 text-primary border border-primary/20 transition-all flex items-center gap-2 cursor-pointer shrink-0 text-xs shadow-xs"
               title="Add Recurring Expenses"
             >
               <ArrowPathIcon className="h-4 w-4" />
@@ -309,11 +309,11 @@ export default function ExpenseClient() {
             {/* Mock Data Generator Modal Button */}
             <button
               onClick={() => setIsMockModalOpen(true)}
-              className="px-1.5 py-2 rounded-2xl font-bold bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 transition-all flex items-center gap-2 cursor-pointer shrink-0 text-xs shadow-xs"
+              className="px-1.5 py-2 rounded-2xl font-bold bg-tertiary/10 hover:bg-tertiary/20 text-primary border border-primary/20 transition-all flex items-center gap-2 cursor-pointer shrink-0 text-xs shadow-xs"
               title="Generate Mock Data"
             >
               <SparklesIcon className="h-4 w-4" />
-              <span className="hidden sm:inline">Mock Data</span>
+              <span className="hidden sm:inline">{t("expenses.mockData") || "Mock Data"}</span>
             </button>
 
             {/* Open Calendar Modal Button */}
@@ -322,7 +322,7 @@ export default function ExpenseClient() {
               className="px-2.5 py-3 rounded-2xl font-bold bg-tertiary/20 hover:bg-tertiary/30 text-dark dark:text-light border border-tertiary/30 transition-all flex items-center gap-2 cursor-pointer shrink-0 text-xs shadow-xs"
             >
               <CalendarDaysIcon className="h-4 w-4 text-primary" />
-              <span>Calendar</span>
+              <span>{t("expenses.calendar") || "Calendar"}</span>
             </button>
 
             {/* Toggle Analytics */}
@@ -331,7 +331,7 @@ export default function ExpenseClient() {
               className="px-3 py-3.5 rounded-2xl font-bold bg-tertiary/20 hover:bg-tertiary/30 text-dark dark:text-light border border-tertiary/30 transition-all flex items-center gap-2 cursor-pointer shrink-0 text-xs shadow-xs"
             >
               <ChartBarIcon className="h-4 w-4 text-primary" />
-              <span>Analytics</span>
+              <span>{t("expenses.analytics") || "Analytics"}</span>
             </button>
 
             {/* Add Expense Button */}
@@ -504,7 +504,7 @@ export default function ExpenseClient() {
                   : "bg-tertiary/10 hover:bg-tertiary/20 text-dark/70 dark:text-light/70 border border-tertiary/20"
               }`}
             >
-              All Transactions ({expenses.length})
+              {t("expenses.all") || "All"} ({expenses.length})
             </button>
 
             <button
@@ -516,7 +516,7 @@ export default function ExpenseClient() {
               }`}
             >
               <UserIcon className="h-3.5 w-3.5" />
-              <span>Personal Expenses</span>
+              <span>{t("expenses.personal") || "Personal"}</span>
             </button>
 
             <button
@@ -528,7 +528,7 @@ export default function ExpenseClient() {
               }`}
             >
               <UserGroupIcon className="h-3.5 w-3.5" />
-              <span>Room Split Shares</span>
+              <span>{t("expenses.split") || "Room Split Shares"}</span>
             </button>
 
             <button
@@ -540,7 +540,7 @@ export default function ExpenseClient() {
               }`}
             >
               <ArrowPathIcon className="h-3.5 w-3.5" />
-              <span>Recurring Commitments ({recurringList.length})</span>
+              <span>{t("expenses.recurring") || "Recurring"} ({recurringList.length})</span>
             </button>
 
             <button
@@ -548,7 +548,7 @@ export default function ExpenseClient() {
               className="px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 flex items-center gap-1.5 shadow-xs bg-tertiary/10 hover:bg-tertiary/20 text-dark/70 dark:text-light/70 border border-tertiary/20"
             >
               <DocumentArrowDownIcon className="h-3.5 w-3.5" />
-              <span>Export PDF</span>
+              <span>{t("expenses.exportPDF") || "Export PDF"}</span>
             </button>
           </div>
         </div>

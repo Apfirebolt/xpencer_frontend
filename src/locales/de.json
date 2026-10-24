@@ -29,6 +29,14 @@
   "expenses": {
     "title": "Ausgaben verwalten",
     "totalTracked": "Gesamt getracked",
+    "recurring": "Wiederkehrend",
+    "mockData": "Beispieldaten",
+    "calendar": "Kalender",
+    "all": "Alle",
+    "personal": "Persönlich",
+    "split": "WG-Anteile",
+    "exportPDF": "PDF exportieren",
+    "analytics": "Analysen",
     "addExpense": "Ausgabe hinzufügen",
     "cardView": "Kartenansicht",
     "listView": "Listenansicht",
@@ -77,6 +85,25 @@
     "feature3Title": "Sicheres Ledger & Datenschutz",
     "feature3Desc": "Deine Finanzdaten sind durch verschlüsselte Sitzungen, sichere Datenbanken und strikte Datentrennung optimal geschützt."
   },
+  "about": {
+    "activeSession": "Aktive Sitzung",
+    "heroBadge": "Smarte Ausgabenverwaltung",
+    "heroTitle1": "Verwalte dein Geld",
+    "heroTitle2": "ohne Aufwand",
+    "heroSubtitle": "Xpencer bringt Klarheit in deine privaten und geteilten Finanzen. Verwalte Budgets, kategorisiere tägliche Ausgaben und teile Gruppen-Ausgaben mühelos – alles in einem schön gestalteten Dashboard.",
+    "openDashboard": "Zum Dashboard",
+    "exploreBudgets": "Budgets ansehen",
+    "featuresHeading": "Für smarte Finanzverwaltung entwickelt",
+    "featuresSubheading": "Erkunde die Hauptfunktionen des Xpencer-Ökosystems.",
+    "feature1Title": "Intelligenter Budgetplaner",
+    "feature1Desc": "Setze monatliche Kategorienlimits, erhalte Echtzeitwarnungen über dein Ausgabentempo und visualisiere deine Finanzzuweisungen mühelos.",
+    "feature2Title": "Automatisches Ausgaben-Tracking",
+    "feature2Desc": "Protokolliere tägliche Transaktionen, organisiere Posten mit benutzerdefinierten Tags und überprüfe sofort, wo jeder Cent ausgegeben wurde.",
+    "feature3Title": "Nahtloses Teilen von Rechnungen",
+    "feature3Desc": "Teile Dinner-Rechnungen, Gruppenreisen und gemeinsame Haushaltskosten mit Freunden flexibel prozentual, nach exakten Beträgen oder gleichmäßig.",
+    "techTitle": "Gebaut mit modernen Webtechnologien",
+    "techSubtitle": "Erstellt mit Next.js App Router, React, Tailwind CSS, robuster relationaler Datenpersistenz mit Mongoose und sicherem Cookie-basiertem Sitzungsmanagement."
+  },
   "login": {
     "subtitle": "Melde dich an, um deine Finanzen und Budgets zu verwalten.",
     "emailLabel": "E-Mail-Adresse",
@@ -89,7 +116,7 @@
     "signUpText": "Registrieren"
   },
   "register": {
-    "subtitle": "Erstelle dein Konto, um deine Ausgaben und Budgets zu tracken.",
+    "subtitle": "Erstelle dein X Pencer Konto, um deine Ausgaben und Budgets zu tracken.",
     "firstNameLabel": "Vorname",
     "lastNameLabel": "Nachname",
     "optional": "Optional",

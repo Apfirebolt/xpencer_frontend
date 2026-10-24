@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import Cookie from "js-cookie";
+import { useTranslation } from "@/context/LanguageContext";
+import Link from "next/link";
 import { 
   WalletIcon, 
   ChartPieIcon, 
@@ -17,7 +19,8 @@ import {
   CurrencyDollarIcon
 } from "@heroicons/react/24/outline";
 
-const AboutPage = () => {
+export default function AboutPage() {
+  const { t } = useTranslation();
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -34,18 +37,18 @@ const AboutPage = () => {
   const features = [
     {
       icon: <ChartPieIcon className="h-6 w-6 text-primary" />,
-      title: "Intelligent Budget Planner",
-      description: "Set monthly category limits, receive real-time spending pace warnings, and visualize your financial allocations effortlessly."
+      title: t('about.feature1Title'),
+      description: t('about.feature1Desc')
     },
     {
       icon: <RectangleStackIcon className="h-6 w-6 text-primary" />,
-      title: "Automated Expense Tracking",
-      description: "Log daily transactions, organize items with custom tags, and instantly audit where every penny goes with granular type filters."
+      title: t('about.feature2Title'),
+      description: t('about.feature2Desc')
     },
     {
       icon: <UserGroupIcon className="h-6 w-6 text-primary" />,
-      title: "Seamless Bill Splitting",
-      description: "Split dinners, group trips, and shared household bills with friends using flexible percentage, exact amount, or equal splits."
+      title: t('about.feature3Title'),
+      description: t('about.feature3Desc')
     },
   ];
 
@@ -63,38 +66,37 @@ const AboutPage = () => {
             {user ? (
               <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold border border-emerald-500/20 shadow-sm">
                 <UserCircleIcon className="h-4 w-4" />
-                <span>Active Session: <strong className="text-dark dark:text-light">{user.username || user.email}</strong></span>
+                <span>{t('about.activeSession')}: <strong className="text-dark dark:text-light">{user.username || user.email}</strong></span>
               </div>
             ) : (
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-wider uppercase border border-primary/20 shadow-sm">
                 <CodeBracketIcon className="h-4 w-4 animate-pulse" />
-                <span>Smart Expense Management</span>
+                <span>{t('about.heroBadge')}</span>
               </div>
             )}
             
             <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight font-heading leading-tight">
-              Master Your Money <span className="text-primary">Hassle-Free</span>
+              {t('about.heroTitle1')} <span className="text-primary">{t('about.heroTitle2')}</span>
             </h1>
             
             <p className="text-dark/70 dark:text-light/70 text-base sm:text-lg leading-relaxed font-sans">
-              Xpencer brings clarity to personal and shared finances. Keep budgets on track, categorize daily purchases, 
-              and split group expenses effortlessly all in one beautifully engineered dashboard.
+              {t('about.heroSubtitle')}
             </p>
 
             <div className="flex flex-wrap items-center gap-4 pt-4">
-              <a
+              <Link
                 href="/dashboard"
                 className="px-6 py-3.5 rounded-2xl font-bold bg-primary hover:bg-secondary text-white transition-all flex items-center gap-2 shadow-lg shadow-primary/25 group"
               >
-                <span>Open Dashboard</span>
+                <span>{t('about.openDashboard')}</span>
                 <ArrowRightIcon className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/budgets"
                 className="px-6 py-3.5 rounded-2xl font-bold bg-tertiary/20 hover:bg-tertiary/30 text-dark dark:text-light transition-all border border-tertiary/30"
               >
-                Explore Budgets
-              </a>
+                {t('about.exploreBudgets')}
+              </Link>
             </div>
           </div>
         </div>
@@ -102,9 +104,9 @@ const AboutPage = () => {
         {/* FEATURE GRID with AOS */}
         <div className="space-y-12">
           <div className="text-center space-y-3 max-w-xl mx-auto" data-aos="fade-up">
-            <h2 className="text-3xl font-bold tracking-tight font-heading">Engineered for Smart Financial Control</h2>
+            <h2 className="text-3xl font-bold tracking-tight font-heading">{t('about.featuresHeading')}</h2>
             <p className="text-xs text-dark/60 dark:text-light/60 font-sans">
-              Explore the core capabilities powering the Xpencer ecosystem.
+              {t('about.featuresSubheading')}
             </p>
           </div>
 
@@ -135,10 +137,9 @@ const AboutPage = () => {
         >
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/20 via-transparent to-transparent pointer-events-none" />
           
-          <h3 className="text-3xl font-extrabold tracking-tight font-heading">Powered by Modern Web Technologies</h3>
+          <h3 className="text-3xl font-extrabold tracking-tight font-heading">{t('about.techTitle')}</h3>
           <p className="text-sm text-dark/70 dark:text-light/70 max-w-2xl mx-auto font-sans leading-relaxed">
-            Crafted with Next.js App Router, React, Tailwind CSS, Mongoose for robust relational data persistence, 
-            and secure cookie-based session management.
+            {t('about.techSubtitle')}
           </p>
           <div className="flex flex-wrap items-center justify-center gap-2.5 pt-4">
             {["Next.js", "Express", "React", "MongoDB", "Mongoose", "Tailwind CSS", "Axios"].map((tech, idx) => (
@@ -155,5 +156,3 @@ const AboutPage = () => {
     </div>
   );
 };
-
-export default AboutPage;

@@ -19,16 +19,19 @@
     "aboutXpencer": "About Xpencer",
     "aboutXpencerDesc": "Xpencer is designed to simplify personal and group finance management, offering intelligent budgeting, expense tracking, and seamless bill splitting.",
     "techStack": "Tech Stack",
-    "techStackDesc": "Built with Next.js, Express, Mongoose, Tailwind CSS, Node Cron, AG Grid, and Chart.js analytics.",
-    "securityPrivacy": "Security & Privacy",
-    "securityPrivacyDesc": "JWT authentication, encrypted data, and secure cookie storage.",
-    "apiDocs": "API & Swagger Docs",
-    "apiDocsDesc": "Explore full-stack OpenAPI documentation and backend routes.",
-    "aboutAndArchitecture": "About & Architecture"
+    "techStackDesc": "Built with Next.js, Express, Mongoose, Tailwind CSS, Node Cron, AG Grid, and Chart.js analytics."
   },
   "expenses": {
     "title": "Manage Your Expenses",
     "totalTracked": "Total Tracked",
+    "recurring": "Recurring",
+    "mockData": "Mock Data",
+    "calendar": "Calendar",
+    "analytics": "Analytics",
+    "all": "All",
+    "personal": "Personal",
+    "split": "Room Split Shares",
+    "exportPDF": "Export PDF",
     "addExpense": "Add Expense",
     "cardView": "Card View",
     "listView": "List View",
@@ -77,8 +80,27 @@
     "feature3Title": "Secure Ledger & Privacy",
     "feature3Desc": "Your financial data is protected with encrypted sessions, secure database indexing, and strict user data isolation guarantees."
   },
+  "about": {
+    "activeSession": "Active Session",
+    "heroBadge": "Smart Expense Management",
+    "heroTitle1": "Master Your Money",
+    "heroTitle2": "Hassle-Free",
+    "heroSubtitle": "Xpencer brings clarity to personal and shared finances. Keep budgets on track, categorize daily purchases, and split group expenses effortlessly all in one beautifully engineered dashboard.",
+    "openDashboard": "Open Dashboard",
+    "exploreBudgets": "Explore Budgets",
+    "featuresHeading": "Engineered for Smart Financial Control",
+    "featuresSubheading": "Explore the core capabilities powering the Xpencer ecosystem.",
+    "feature1Title": "Intelligent Budget Planner",
+    "feature1Desc": "Set monthly category limits, receive real-time spending pace warnings, and visualize your financial allocations effortlessly.",
+    "feature2Title": "Automated Expense Tracking",
+    "feature2Desc": "Log daily transactions, organize items with custom tags, and instantly audit where every penny goes with granular type filters.",
+    "feature3Title": "Seamless Bill Splitting",
+    "feature3Desc": "Split dinners, group trips, and shared household bills with friends using flexible percentage, exact amount, or equal splits.",
+    "techTitle": "Powered by Modern Web Technologies",
+    "techSubtitle": "Crafted with Next.js App Router, React, Tailwind CSS, Mongoose for robust relational data persistence, and secure cookie-based session management."
+  },
   "login": {
-    "subtitle": "Sign in to manage your financial ledger and budgets.",
+    "subtitle": "Sign in to manage your finance and budgets.",
     "emailLabel": "Email Address",
     "passwordLabel": "Password",
     "signInButton": "Sign in to X Pencer",
@@ -89,7 +111,7 @@
     "signUpText": "Sign up"
   },
   "register": {
-    "subtitle": "Create your financial ledger account to start tracking budgets.",
+    "subtitle": "Create your X Pencer account to start managing your finance.",
     "firstNameLabel": "First Name",
     "lastNameLabel": "Last Name",
     "optional": "Optional",

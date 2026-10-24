@@ -29,6 +29,14 @@
   "expenses": {
     "title": "支出の管理",
     "totalTracked": "合計追跡額",
+    "recurring": "定期的",
+    "mockData": "モックデータ",
+    "calendar": "カレンダー",
+    "analytics": "分析",
+    "all": "すべて",
+    "personal": "個人",
+    "split": "ルーム割り勘",
+    "exportPDF": "PDFをエクスポート",
     "addExpense": "支出を追加",
     "cardView": "カード表示",
     "listView": "リスト表示",
@@ -77,8 +85,27 @@
     "feature3Title": "安全な台帳とプライバシー",
     "feature3Desc": "暗号化されたセッション、安全なデータベースインデックス、厳格なユーザーデータ分離により財務データが保護されます。"
   },
+  "about": {
+    "activeSession": "アクティブセッション",
+    "heroBadge": "スマート支出管理",
+    "heroTitle1": "お金を管理する",
+    "heroTitle2": "手間なく",
+    "heroSubtitle": "Xpencerは個人および共有の財務に明確さをもたらします。予算を管理し、日々の購入をカテゴリ分けし、グループの支出を簡単に分割できます。すべて美しく設計されたダッシュボードで行えます。",
+    "openDashboard": "ダッシュボードを開く",
+    "exploreBudgets": "予算を見る",
+    "featuresHeading": "スマートな財務管理のために設計",
+    "featuresSubheading": "Xpencerエコシステムの主要機能を探る。",
+    "feature1Title": "インテリジェント予算プランナー",
+    "feature1Desc": "月ごとのカテゴリ制限を設定し、リアルタイムで支出ペースの警告を受け取り、財務配分を簡単に可視化します。",
+    "feature2Title": "自動支出トラッキング",
+    "feature2Desc": "日々の取引を記録し、カスタムタグで項目を整理し、詳細なタイプフィルターでどのペニーがどこに使われたかを即座に確認できます。",
+    "feature3Title": "シームレスな割り勘",
+    "feature3Desc": "ディナー、グループ旅行、共有の家庭費を、柔軟なパーセンテージ、正確な金額、または均等割りで友人と分割できます。",
+    "techTitle": "最新のウェブ技術で構築",
+    "techSubtitle": "Next.js App Router、React、Tailwind CSS、Mongooseによる堅牢なリレーショナルデータ永続性、そして安全なクッキーに基づくセッション管理で構築されています。"
+  },
   "login": {
-    "subtitle": "家計簿と予算を管理するためにサインインしてください。",
+    "subtitle": "財務と予算を管理するためにサインインしてください。",
     "emailLabel": "メールアドレス",
     "passwordLabel": "パスワード",
     "signInButton": "Xpencerにサインイン",
@@ -88,7 +115,7 @@
     "signUpText": "新規登録"
   },
   "register": {
-    "subtitle": "予算の追跡を開始するためにアカウントを作成してください。",
+    "subtitle": "予算の追跡を開始するためにX Pencerのアカウントを作成してください。",
     "firstNameLabel": "名",
     "lastNameLabel": "姓",
     "optional": "任意",
